@@ -1,0 +1,40 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model ScheduleASessionViewModel
+
+<div class="form-control">
+    <form method="post">
+        @*@Html.AntiForgeryToken()*@
+        <div>
+            <label asp-for="PracticeLocation" class="form-label"></label>
+            <input asp-for="PracticeLocation" class="form-control" />
+        </div>
+        <div>
+            <label asp-for="PracticeStartTimeAndDate" class="form-label"></label>
+            <input asp-for="PracticeStartTimeAndDate" class="form-control" />
+        </div>
+        <div>
+            <label asp-for="PracticeEndTimeAndDate" class="form-label"></label>
+            <input asp-for="PracticeEndTimeAndDate" class="form-control" />
+        </div>
+        <div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Runner</th>
+                        <th scope="col">Is Attending</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var runner in Model.RunnerUsers)
+                    {
+                        <tr>
+                            <td>@runner.FirstName @runner.LastName</td>
+                            <td><input type="checkbox" name="runnersAttending" value="@runner.Id" class="form-check" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <button type="submit" class="btn btn-primary">Schedule Practice</button>
+    </form>
+</div>
