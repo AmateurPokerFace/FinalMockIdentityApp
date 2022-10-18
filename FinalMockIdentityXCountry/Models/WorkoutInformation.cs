@@ -19,15 +19,15 @@ namespace FinalMockIdentityXCountry.Models
 
         //public int RunnerId { get; set; }
         //public Runner Runner { get; set; }
-        public string RunnerId { get; set; }
+        public string? RunnerId { get; set; }
         [ValidateNever]
-        public virtual ApplicationUser Runner { get; set; }
+        public virtual ApplicationUser? Runner { get; set; }
         public int WorkoutTypeId { get; set; }
         [ValidateNever]
-        public WorkoutType WorkoutType { get; set; }
+        public WorkoutType? WorkoutType { get; set; }
         public int PracticeId { get; set; }
         [ValidateNever]
-        public Practice Practice { get; set; }
+        public Practice? Practice { get; set; }
 
         //public string ApplicationUserId { get; set; }
         //public virtual ApplicationUser ApplicationUser { get; set; }

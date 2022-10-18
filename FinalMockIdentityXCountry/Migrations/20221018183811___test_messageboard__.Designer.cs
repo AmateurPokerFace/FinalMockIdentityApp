@@ -3,6 +3,7 @@ using System;
 using FinalMockIdentityXCountry.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalMockIdentityXCountry.Migrations
 {
     [DbContext(typeof(XCountryDbContext))]
-    partial class XCountryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221018183811___test_messageboard__")]
+    partial class __test_messageboard__
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,6 +58,7 @@ namespace FinalMockIdentityXCountry.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("CoachId")
+                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("MessageBody")
@@ -65,9 +68,6 @@ namespace FinalMockIdentityXCountry.Migrations
                     b.Property<string>("MessageTitle")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<DateTime>("PublishedDateTime")
-                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -453,7 +453,9 @@ namespace FinalMockIdentityXCountry.Migrations
                 {
                     b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Coach")
                         .WithMany()
-                        .HasForeignKey("CoachId");
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Coach");
                 });

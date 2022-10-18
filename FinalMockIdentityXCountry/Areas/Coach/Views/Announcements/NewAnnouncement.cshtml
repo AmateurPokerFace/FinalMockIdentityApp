@@ -1,0 +1,17 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model NewAnnouncementViewModel
+
+<div class="form-control">
+<form method="post">
+    <div>
+        <label asp-for="AnnouncementTitle" class="form-label"></label>
+        <input asp-for="AnnouncementTitle" class="form-control"/>
+    </div>
+        <div>
+            <label asp-for="AnnouncementBody" class="form-label"></label>
+            <textarea asp-for="AnnouncementBody" class="form-text" draggable="auto" ></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    <a class="btn btn-danger">cancel</a>
+</form>
+</div>

@@ -1,0 +1,25 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model CurrentViewModel
+
+<div>
+    <label>@Model.PracticeLocation @Model.PracticeStartTimeAndDate</label>
+</div>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Runner</th>
+            </tr> 
+        </thead>
+        <tbody>
+            @foreach (var runner in Model.Runners)
+            {
+                <tr>
+                    <td>@runner</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a asp-route-currentPracticeId="@Model.practiceId" asp-controller="EndCurrentPractice" asp-action="End" class="btn btn-danger">End Current Practice</a>
+</div>

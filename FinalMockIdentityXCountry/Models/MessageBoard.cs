@@ -9,10 +9,14 @@ namespace FinalMockIdentityXCountry.Models
         public int Id { get; set; }
 
         [Required]
-        public string Message { get; set; }
-        public string CoachId { get; set; }
+        public string? MessageTitle { get; set; }
+        [Required]
+        public string? MessageBody { get; set; }
+        public string? CoachId { get; set; }
         [ValidateNever]
-        public virtual ApplicationUser Coach { get; set; }
+        public virtual ApplicationUser? Coach { get; set; }
+        [Required]
+        public DateTime PublishedDateTime { get; set; }
 
         //public int CoachId { get; set; }
         //public Coach Coach { get; set; }

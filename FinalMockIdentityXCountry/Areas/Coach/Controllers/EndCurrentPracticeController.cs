@@ -24,34 +24,26 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult End(int practiceId = 1)
+        public IActionResult End(int currentPracticeId)
         {
-            //var test = _unitOfWork.Practice.GetAll()
-            //    .Join(_unitOfWork.Attendance.GetAll(), p => p.Id, a => a.PracticeId,
-            //    (p, a) => new { Practice = p, Attendance = a }).Select(c => c.Practice.CoachId);
+            Practice? practice = _context.Practices.Where(p => p.PracticeIsInProgress).Where(p => p.Id == currentPracticeId).FirstOrDefault();
+            
+            if (practice != null)
+            {
+                practice.PracticeIsInProgress = false;
+                return View(practice);
+            }
 
-            //var test2 = _unitOfWork.Practice.GetAll()
-            //    .Join(_unitOfWork.Attendance.GetAll(), p => p.Id, a => a.PracticeId,
-            //    (p, a) => new { Practice = p, Attendance = a });
+            return View();  // return a view -> No practices match the id that was provided
+        }
 
-            //usage: var s = repository.GetAll(i => i.Name, false, i => i.NavigationProperty);
-            //var test4 = (from a in _context.Attendances
-            //               join p in _context.Practices on a.PracticeId equals p.Id into lg
-            //               from x in lg.DefaultIfEmpty()
-            //               select new
-            //               {
-            //                   a.AttendanceDate,
-            //                   a.Runner,
-            //                   a.IsPresent,
-            //                   x.PracticeIsInProgress,
-            //                   x.CoachId
-            //               }).ToList();
+        [HttpPost]
+        public IActionResult End(Practice practice)
+        {
 
-            var test5 = _context.Attendances.Include(p => p.PracticeId).ToList();
-            var test6 = _context.Attendances.Include(p => p.PracticeId == 1).ToList();
 
-             
-            return View(); 
+
+            return View();
         }
     }
 }
