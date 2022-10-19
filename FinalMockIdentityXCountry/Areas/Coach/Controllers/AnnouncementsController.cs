@@ -32,7 +32,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         }
 
         [HttpPost]
-        public IActionResult NewAnnouncement(NewAnnouncementViewModel newAnnouncementViewModel)
+        public IActionResult NewAnnouncement(NewForumThreadViewModel newAnnouncementViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -45,8 +45,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     MessageBoard messageBoard = new MessageBoard
                     {
                         CoachId = userClaim.Value,
-                        MessageTitle = newAnnouncementViewModel.AnnouncementTitle,
-                        MessageBody = newAnnouncementViewModel.AnnouncementBody,
+                        MessageTitle = newAnnouncementViewModel.ThreadTitle,
+                        MessageBody = newAnnouncementViewModel.ThreadBody,
                         PublishedDateTime = DateTime.Now
                     };
 

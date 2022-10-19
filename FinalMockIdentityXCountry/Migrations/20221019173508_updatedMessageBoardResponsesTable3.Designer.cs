@@ -3,6 +3,7 @@ using System;
 using FinalMockIdentityXCountry.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalMockIdentityXCountry.Migrations
 {
     [DbContext(typeof(XCountryDbContext))]
-    partial class XCountryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221019173508_updatedMessageBoardResponsesTable3")]
+    partial class updatedMessageBoardResponsesTable3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,9 +60,6 @@ namespace FinalMockIdentityXCountry.Migrations
                     b.Property<string>("CoachId")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("CoachName")
-                        .HasColumnType("longtext");
-
                     b.Property<string>("MessageBody")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -90,9 +89,6 @@ namespace FinalMockIdentityXCountry.Migrations
 
                     b.Property<string>("ResponderId")
                         .HasColumnType("varchar(255)");
-
-                    b.Property<string>("RespondersName")
-                        .HasColumnType("longtext");
 
                     b.Property<string>("Response")
                         .IsRequired()

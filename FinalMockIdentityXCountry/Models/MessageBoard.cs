@@ -17,6 +17,7 @@ namespace FinalMockIdentityXCountry.Models
         public virtual ApplicationUser? Coach { get; set; }
         [Required]
         public DateTime PublishedDateTime { get; set; }
+        public string? CoachName { get; set; }
 
         //public int CoachId { get; set; }
         //public Coach Coach { get; set; }

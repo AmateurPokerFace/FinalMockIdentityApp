@@ -2,11 +2,11 @@
 
 namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 {
-    public class NewAnnouncementViewModel
+    public class NewForumThreadViewModel
     {
         [Required]
-        public string? AnnouncementTitle { get; set; }
+        public string? ThreadTitle { get; set; }
         [Required]
-        public string? AnnouncementBody { get; set; }
+        public string? ThreadBody { get; set; }
     }
 }

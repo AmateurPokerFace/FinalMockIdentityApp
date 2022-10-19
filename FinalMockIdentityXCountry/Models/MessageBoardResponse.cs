@@ -7,23 +7,16 @@ namespace FinalMockIdentityXCountry.Models
     {
         [Key]
         public int Id { get; set; }
-
-        public string? RunnerResponse { get; set; }
-        public string? CoachResponse { get; set; }
-        public string RunnerId { get; set; }
-        [ValidateNever]
-        public virtual ApplicationUser Runner { get; set; }
-        public string CoachId { get; set; }
-        [ValidateNever]
-        public virtual ApplicationUser Coach { get; set; }
-
-        //public int RunnerId { get; set; }
-        //public Runner Runner { get; set; }
-
-        //public int CoachId { get; set; }
-        //public Coach Coach { get; set; }
-
         public int MessageBoardId { get; set; }
+        [ValidateNever]
         public MessageBoard? MessageBoard { get; set; }
+        [Required]
+        public string? Response { get; set; }
+        [Required]
+        public string? ResponderId { get; set; }
+        [ValidateNever]
+        public virtual ApplicationUser? Responder { get; set; }
+        public DateTime ResponseDateTime { get; set; }
+        public string? RespondersName { get; set; }
     }
 }

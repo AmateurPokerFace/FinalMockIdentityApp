@@ -1,0 +1,22 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model AddThreadCommentViewModel
+
+<div>
+    <label>Thread created on @Model.MessageBoard.PublishedDateTime</label>
+    <br />
+    <br />
+    <h1>@Model.MessageBoard.MessageTitle</h1>
+    <br />
+    <h2>@Model.MessageBoard.MessageBody</h2>
+    <a asp-action="AddThreadComment" asp-route-messageBoardId="@Model.MessageBoard.Id" class="btn btn-primary">Add new comment to thread</a>
+</div>
+
+<form method="post">
+    <label asp-for="@Model.NewMessageBoardComment.Response" class="form-label"></label>
+    <input asp-for="@Model.NewMessageBoardComment.Response" class="form-text"/>
+    <input hidden asp-for="@Model.NewMessageBoardComment.MessageBoardId"/>
+    <input hidden asp-for="@Model.NewMessageBoardComment.RespondersName"/>
+    <input hidden asp-for="@Model.NewMessageBoardComment.ResponderId"/>
+    <a asp-action="Home" class="btn btn-danger">Cancel</a>
+    <button type="submit" class="btn btn-primary">Add comment</button>
+</form>

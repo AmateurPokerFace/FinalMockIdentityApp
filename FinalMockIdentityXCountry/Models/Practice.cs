@@ -16,7 +16,7 @@ namespace FinalMockIdentityXCountry.Models
         public string? PracticeLocation { get; set; }
         public string? CoachId { get; set; }
         [ValidateNever]
-        public virtual ApplicationUser Coach { get; set; }
+        public virtual ApplicationUser? Coach { get; set; }
 
         public void StartPractice()
         {

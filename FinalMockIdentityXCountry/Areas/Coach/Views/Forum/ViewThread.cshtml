@@ -1,0 +1,27 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model ViewThreadViewModel
+
+<div>
+    <label>Thread created on @Model.MessageBoard.PublishedDateTime</label>
+   <br />
+   <br />
+   <h1>@Model.MessageBoard.MessageTitle</h1>
+   <br />
+   <h2>@Model.MessageBoard.MessageBody</h2>
+    <a asp-action="AddThreadComment" asp-route-messageBoardId="@Model.MessageBoard.Id" class="btn btn-primary">Add new comment to thread</a>
+</div>
+
+@if (Model.DatabaseMessageBoardResponses.Count() > 0)
+{
+    <br />
+    <br />
+    <hr />
+    @foreach (var response in Model.DatabaseMessageBoardResponses)
+    {
+        <div>
+            <h1>@response.RespondersName @response.ResponseDateTime</h1>
+            <label>@response.Response</label>
+        </div>
+        <hr />
+    }
+}

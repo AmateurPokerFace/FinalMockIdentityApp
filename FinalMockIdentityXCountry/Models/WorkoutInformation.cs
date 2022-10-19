@@ -16,9 +16,6 @@ namespace FinalMockIdentityXCountry.Models
 
         [Required]
         public double Pace { get; set; }
-
-        //public int RunnerId { get; set; }
-        //public Runner Runner { get; set; }
         public string? RunnerId { get; set; }
         [ValidateNever]
         public virtual ApplicationUser? Runner { get; set; }
