@@ -85,6 +85,17 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             return View(viewThreadViewModel);
         }
 
+        public IActionResult DeleteThread(int messageBoardId)
+        {
+            return View();
+        }
+
+        [HttpPost] // You will probably need a viewmodel for the httppost method below
+        public IActionResult DeleteThread()
+        {
+            return View();
+        }
+
         public IActionResult AddThreadComment(int messageBoardId)
         {
             var userClaimsIdentity = (ClaimsIdentity?)User.Identity;

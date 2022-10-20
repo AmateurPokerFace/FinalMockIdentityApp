@@ -15,7 +15,7 @@
         <br>
         <h3>@thread.MessageBody</h3>
         <br>
-        <a class="btn btn-danger">Delete Thread</a>
+        <a class="btn btn-danger" asp-action="DeleteThread" asp-route-messageBoardId="@thread.Id">Delete Thread</a>
         <a class="btn btn-primary" asp-action="ViewThread" asp-route-messageBoardId="@thread.Id">View Thread</a>
     </div>
     <hr />
