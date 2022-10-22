@@ -3,6 +3,7 @@ using System;
 using FinalMockIdentityXCountry.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalMockIdentityXCountry.Migrations
 {
     [DbContext(typeof(XCountryDbContext))]
-    partial class XCountryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221021181050_added-table-RepliesToMessageBoardResponse")]
+    partial class addedtableRepliesToMessageBoardResponse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,6 +151,13 @@ namespace FinalMockIdentityXCountry.Migrations
                     b.Property<int>("MessageBoardResponseId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ReplierId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReplierName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Reply")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -156,18 +165,9 @@ namespace FinalMockIdentityXCountry.Migrations
                     b.Property<DateTime>("ReplyDateTime")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("ReplyerId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("ReplyerName")
-                        .HasColumnType("longtext");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MessageBoardResponseId");
-
-                    b.HasIndex("ReplyerId");
 
                     b.ToTable("RepliesToMessageBoardResponse");
                 });
@@ -527,15 +527,7 @@ namespace FinalMockIdentityXCountry.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Replyer")
-                        .WithMany()
-                        .HasForeignKey("ReplyerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("MessageBoardResponse");
-
-                    b.Navigation("Replyer");
                 });
 
             modelBuilder.Entity("FinalMockIdentityXCountry.Models.WorkoutInformation", b =>

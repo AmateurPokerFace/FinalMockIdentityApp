@@ -1,0 +1,25 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model ThreadCommentViewModel
+
+<div>
+    <label>Original comment: @Model.MessageBoardResponse.Response @Model.MessageBoardResponse.ResponseDateTime</label>
+    <br />
+    <br />
+    <a asp-action="AddReplyToThreadComment" asp-route-messageBoardResponseId="@Model.MessageBoardResponse.Id" class="btn btn-primary">Add a new reply</a>
+</div>
+
+
+@if (Model.RepliesToMessageBoardResponse.Count() > 0)
+{
+    foreach (var reply in Model.RepliesToMessageBoardResponse)
+    {
+        <div>
+            <label>Reply by @reply.ReplyerName @reply.ReplyDateTime</label>
+            <br><br>
+            <label>@reply.Reply</label>
+            <br><br>
+            <a class="btn btn-danger">Delete Reply</a>
+        </div>
+        <hr />
+    }
+}

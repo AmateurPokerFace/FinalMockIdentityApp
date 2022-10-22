@@ -1,5 +1,17 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model MessageBoard
+<div>
+    <form class="form" method="post">
+        <div>
+            <label class="form-label">Thread created by @Model.CoachName on @Model.PublishedDateTime</label>
+            <br />
+            <label class="form-label">@Model.MessageTitle</label>
+            <br />
+            <br />
+            <textarea disabled="disabled">@Model.MessageBody</textarea>
+            <br />
+            <input hidden="hidden" asp-for="@Model.Id"/>
+            <a class="btn btn-outline-danger" asp-action="Home">Cancel</a>
+            <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        </div>
+    </form>
+</div>

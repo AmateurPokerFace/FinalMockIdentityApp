@@ -80,20 +80,34 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             viewThreadViewModel.DatabaseMessageBoardResponses = (IEnumerable<MessageBoardResponse>?)_context.MessageBoardResponses
                 .OrderByDescending(d => d.ResponseDateTime.Date)
                 .Where(m => m.MessageBoardId == messageBoardId);
-            
 
             return View(viewThreadViewModel);
         }
 
         public IActionResult DeleteThread(int messageBoardId)
         {
-            return View();
+            var messageBoard = _context.MessageBoards.Find(messageBoardId);
+            
+            if (messageBoard == null)
+            {
+                return RedirectToAction(nameof(Home)); // throw an error in the future
+            }
+
+            return View(messageBoard);
         }
 
         [HttpPost] // You will probably need a viewmodel for the httppost method below
-        public IActionResult DeleteThread()
+        public IActionResult DeleteThread(int messageBoardId, string dummyString)
         {
-            return View();
+            var messageBoard = _context.MessageBoards.Find(messageBoardId);
+            if (messageBoard == null)
+            {
+                return RedirectToAction(nameof(Home)); // throw an error in the future
+            }
+
+            _context.MessageBoards.Remove(messageBoard);
+            _context.SaveChanges(); 
+            return RedirectToAction(nameof(Home)); // add a deleted successfully page in the future
         }
 
         public IActionResult AddThreadComment(int messageBoardId)
@@ -130,6 +144,17 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         [HttpPost]
         public IActionResult AddThreadComment(MessageBoardResponse NewMessageBoardComment)
         {
+            if (NewMessageBoardComment.MessageBoardId == 0)
+            {
+                return RedirectToAction(nameof(Home)); // Add an error in the future
+            }
+
+            var messageBoard = _context.MessageBoards.Find(NewMessageBoardComment.MessageBoardId);
+            if (messageBoard == null)
+            {
+                return RedirectToAction(nameof(Home)); // Add an error in the future
+            }
+
             if (ModelState.IsValid) 
             {
                 NewMessageBoardComment.ResponseDateTime = DateTime.Now;
@@ -137,10 +162,111 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Home)); // create a success page in the future
             }
-
-
-
+             
             return RedirectToAction(nameof(Home)); // create an error page in the future
         }
+
+        public IActionResult ThreadCommentReplies(int messageBoardResponseId)
+        {
+
+            ThreadCommentViewModel threadCommentViewModel = new ThreadCommentViewModel();
+            threadCommentViewModel.MessageBoardResponse = _context.MessageBoardResponses.Find(messageBoardResponseId);
+
+            if (threadCommentViewModel.MessageBoardResponse == null)
+            {
+                return RedirectToAction(nameof(Home)); // redirect to not found page in the future.
+            }
+
+            threadCommentViewModel.RepliesToMessageBoardResponse = _context.RepliesToMessageBoardResponse
+                .Where(r => r.MessageBoardResponseId == threadCommentViewModel.MessageBoardResponse.Id); 
+
+            return View(threadCommentViewModel); 
+        }
+
+        public IActionResult AddReplyToThreadComment(int messageBoardResponseId) 
+        {
+
+            var userClaimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (userClaim != null)
+            {
+                AddReplyToThreadCommentViewModel addReplyToThreadCommentVm = new AddReplyToThreadCommentViewModel();
+                addReplyToThreadCommentVm.MessageBoardResponse = _context.MessageBoardResponses.Find(messageBoardResponseId);
+
+                if (addReplyToThreadCommentVm.MessageBoardResponse == null)
+                {
+                    return RedirectToAction(nameof(Home)); // redirect to not found page in the future.
+                }
+
+                addReplyToThreadCommentVm.NewReplyToMessageBoardResponse = new ReplyToMessageBoardResponse
+                {
+                    MessageBoardResponseId = messageBoardResponseId,
+                    ReplyerId = userClaim.Value,
+                    ReplyerName = _context.ApplicationUsers
+                        .Where(c => c.Id == userClaim.Value)
+                        .Select(c => $"{c.FirstName} {c.LastName}").FirstOrDefault(),
+                }; 
+
+                return View(addReplyToThreadCommentVm);
+            }
+
+            return RedirectToAction(nameof(Home)); // throw error in the future
+        }
+
+        [HttpPost]
+        public IActionResult AddReplyToThreadComment(ReplyToMessageBoardResponse NewReplyToMessageBoardResponse)
+        {
+            if (NewReplyToMessageBoardResponse.MessageBoardResponseId == 0)
+            {
+                return RedirectToAction(nameof(Home)); // Add an error in the future
+            }
+
+            var messageBoardResponse = _context.MessageBoardResponses.Find(NewReplyToMessageBoardResponse.MessageBoardResponseId);
+            if (messageBoardResponse == null)
+            {
+                return RedirectToAction(nameof(Home)); // Add an error in the future
+            }
+
+            if (ModelState.IsValid)
+            {
+                NewReplyToMessageBoardResponse.ReplyDateTime = DateTime.Now;
+                _context.RepliesToMessageBoardResponse.Add(NewReplyToMessageBoardResponse);
+                _context.SaveChanges();
+
+                return RedirectToAction(nameof(ThreadCommentReplies));
+            }
+
+
+            return RedirectToAction(nameof(Home)); // add error in the future
+        }
+
+        public IActionResult DeleteThreadComment(int messageBoardResponseId)
+        {
+            var messageBoardResponse = _context.MessageBoardResponses.Find(messageBoardResponseId);
+
+            if (messageBoardResponse == null)
+            {
+                return RedirectToAction("Home"); //throw an error in the future
+            }
+            
+            return View(messageBoardResponse);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteThreadComment(int messageBoardResponseId, string dummyString)
+        {
+            var messageBoardResponse = _context.MessageBoardResponses.Find(messageBoardResponseId);
+            if (messageBoardResponse == null)
+            {
+                return RedirectToAction("Home"); //throw an error in the future
+            }
+
+            _context.MessageBoardResponses.Remove(messageBoardResponse);
+            _context.SaveChanges();
+
+            return RedirectToAction("Home"); // redirect to a success page in the future.
+        }
+
     }
 }

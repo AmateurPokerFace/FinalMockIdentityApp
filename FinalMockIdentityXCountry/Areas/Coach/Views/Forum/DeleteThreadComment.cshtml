@@ -1,0 +1,8 @@
+﻿@model MessageBoardResponse
+<label>@Model.Responder @Model.Response @Model.ResponseDateTime</label>
+
+<form method="post">
+    <input type="hidden" asp-for="@Model.Id"/>
+    <a class="btn btn-outline-danger" asp-action="Home">Cancel</a>
+    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+</form>
