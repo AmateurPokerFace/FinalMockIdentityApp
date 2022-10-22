@@ -268,5 +268,15 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             return RedirectToAction("Home"); // redirect to a success page in the future.
         }
 
+        public IActionResult DeleteThreadReply(int replyToMessageBoardResponseId)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult DeleteThreadReply(int replyToMessageBoardResponseId, string dummyString)
+        {
+            return View();
+        }
     }
 }
