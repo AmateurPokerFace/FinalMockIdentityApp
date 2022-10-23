@@ -13,9 +13,8 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.Delete
         }
 
         public List<WorkoutSelectionInformation> WorkoutSelections { get; set; }
-        //public string WorkoutName { get; set; }
-        public string RunnersName { get; set; }
-        public string RunnerId { get; set; }
+        public string? RunnersName { get; set; }
+        public string? RunnerId { get; set; }
 
     }
 }

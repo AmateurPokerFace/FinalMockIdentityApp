@@ -7,13 +7,8 @@ namespace FinalMockIdentityXCountry.Models
     {
         [Key]
         public int Id { get; set; }
-
         [Required]
         public double Distance { get; set; }
-
-        [Required]
-        public DateTime WorkoutDateTime { get; set; }
-
         [Required]
         public double Pace { get; set; }
         public string? RunnerId { get; set; }
@@ -26,7 +21,5 @@ namespace FinalMockIdentityXCountry.Models
         [ValidateNever]
         public Practice? Practice { get; set; }
 
-        //public string ApplicationUserId { get; set; }
-        //public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }

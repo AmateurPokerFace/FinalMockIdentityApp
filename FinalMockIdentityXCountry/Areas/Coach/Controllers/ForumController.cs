@@ -54,11 +54,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                         PublishedDateTime = DateTime.Now, 
                     };
 
-                    messageBoard.CoachName = _context.ApplicationUsers
-                        .Where(c => c.Id == userClaim.Value)
-                        .Select(c => $"{c.FirstName} {c.LastName}").FirstOrDefault();
-
-
                     _context.MessageBoards.Add(messageBoard);
                     _context.SaveChanges();
 
@@ -129,9 +124,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 {
                     MessageBoardId = messageBoardId,
                     ResponderId = userClaim.Value,
-                    RespondersName = _context.ApplicationUsers
-                        .Where(c => c.Id == userClaim.Value)
-                        .Select(c => $"{c.FirstName} {c.LastName}").FirstOrDefault(),
                 };
 
                 return View(addThreadCommentViewModel);
@@ -202,10 +194,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 addReplyToThreadCommentVm.NewReplyToMessageBoardResponse = new ReplyToMessageBoardResponse
                 {
                     MessageBoardResponseId = messageBoardResponseId,
-                    ReplyerId = userClaim.Value,
-                    ReplyerName = _context.ApplicationUsers
-                        .Where(c => c.Id == userClaim.Value)
-                        .Select(c => $"{c.FirstName} {c.LastName}").FirstOrDefault(),
+                    ReplyerId = userClaim.Value, 
                 }; 
 
                 return View(addReplyToThreadCommentVm);

@@ -80,7 +80,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                 attendance.PracticeId = practice.Id;
                                 attendance.RunnerId = startNowVm.RunnerUsers[i].Id;
                                 attendance.IsPresent = true;
-                                attendance.AttendanceDate = practice.PracticeStartTimeAndDate;
                                 attendance.HasBeenSignedOut = false;
                                 startNowVm.RunnerUsers.Remove(startNowVm.RunnerUsers[i]);
                                 _unitOfWork.Attendance.Add(attendance);
@@ -94,7 +93,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                         attendance.PracticeId = practice.Id;
                         attendance.RunnerId = absentRunner.Id;
                         attendance.IsPresent = false;
-                        attendance.AttendanceDate = practice.PracticeStartTimeAndDate;
                         attendance.HasBeenSignedOut = false;
                         _unitOfWork.Attendance.Add(attendance);
                     }
@@ -170,7 +168,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                 attendance.PracticeId = practice.Id;
                                 attendance.RunnerId = scheduleASessionVm.RunnerUsers[i].Id;
                                 attendance.IsPresent = true;
-                                attendance.AttendanceDate = practice.PracticeStartTimeAndDate;
                                 attendance.HasBeenSignedOut = false;
                                 scheduleASessionVm.RunnerUsers.Remove(scheduleASessionVm.RunnerUsers[i]);
                                 _unitOfWork.Attendance.Add(attendance);
@@ -184,7 +181,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                         attendance.PracticeId = practice.Id;
                         attendance.RunnerId = runnerNotAttending.Id;
                         attendance.IsPresent = false;
-                        attendance.AttendanceDate = practice.PracticeStartTimeAndDate;
                         attendance.HasBeenSignedOut = false;
                         _unitOfWork.Attendance.Add(attendance);
                     }

@@ -8,8 +8,6 @@ namespace FinalMockIdentityXCountry.Models
     {
         [Key]
         public int Id { get; set; } 
-        [Required]
-        public DateTime AttendanceDate { get; set; }
         public bool IsPresent { get; set; }
         public bool HasBeenSignedOut { get; set; } 
         public int PracticeId { get; set; }
@@ -18,9 +16,7 @@ namespace FinalMockIdentityXCountry.Models
         public string? RunnerId { get; set; }
         [ValidateNever]
         public virtual ApplicationUser? Runner { get; set; }
-        //public string CoachId { get; set; }
-        //[ValidateNever]
-        //public virtual ApplicationUser Coach { get; set; }
 
     }
 }
+

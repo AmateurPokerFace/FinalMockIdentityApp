@@ -1,0 +1,33 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model List<AddPracticeWorkoutsViewModel> 
+
+    <form method="post" class="form-control">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Runner</th>
+                    <th scope="col">Workouts</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count(); i++)
+                {
+                    <tr>
+                        <td>@Model[i].RunnerName</td>
+                        @for (int j = 0; j < Model[i].WorkoutCheckboxOptions.Count(); j++)
+                        {
+                        <td>
+                            <input asp-for="@Model[i].WorkoutCheckboxOptions[j].IsSelected" type="checkbox"/>@Model[i].WorkoutCheckboxOptions[j].WorkoutType.WorkoutName
+                            <input type="hidden" asp-for="@Model[i].PracticeId"/>  
+                            <input type="hidden" asp-for="@Model[i].WorkoutCheckboxOptions[j].WorkoutTypeId"/>
+                            <input type="hidden" asp-for="@Model[i].WorkoutCheckboxOptions[j].RunnerId"/>
+                            <input type="hidden" asp-for="@Model[i].WorkoutCheckboxOptions[j].PracticeId"/>
+                        </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button type="submit">Submit</button>
+    </form>
+ 

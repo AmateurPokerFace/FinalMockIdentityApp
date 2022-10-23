@@ -19,7 +19,7 @@
     @foreach (var response in Model.DatabaseMessageBoardResponses)
     {
         <div>
-            <h1>@response.RespondersName @response.ResponseDateTime</h1>
+            <h1>@response.ResponseDateTime</h1>
             <label>@response.Response</label>
             <a class="btn btn-danger" asp-action="DeleteThreadComment" asp-route-messageBoardResponseId="@response.Id">Delete thread comment</a>
             <a class="btn btn-primary" asp-action="ThreadCommentReplies" asp-route-messageBoardResponseId="@response.Id">View replies/Add a reply</a>  

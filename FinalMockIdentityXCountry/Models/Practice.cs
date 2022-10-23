@@ -17,7 +17,7 @@ namespace FinalMockIdentityXCountry.Models
         public string? CoachId { get; set; }
         [ValidateNever]
         public virtual ApplicationUser? Coach { get; set; }
-
+        public bool WorkoutsAddedToPractice { get; set; }
         public void StartPractice()
         {
             PracticeStartTimeAndDate = DateTime.Now;
