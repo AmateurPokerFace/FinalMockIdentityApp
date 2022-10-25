@@ -1,21 +1,27 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 @model ScheduleASessionViewModel
 
+<div>
+    <h3>Schedule a Practice Session for Later</h3>
+</div>
 <div class="form-control">
     <form method="post">
         @*@Html.AntiForgeryToken()*@
         <div>
-            <label asp-for="PracticeLocation" class="form-label"></label>
+            <label asp-for="PracticeLocation" class="form-label">Practice Location</label>
             <input asp-for="PracticeLocation" class="form-control" />
         </div>
+        <br />
         <div>
-            <label asp-for="PracticeStartTimeAndDate" class="form-label"></label>
+            <label asp-for="PracticeStartTimeAndDate" class="form-label">Start Date and Time</label>
             <input asp-for="PracticeStartTimeAndDate" class="form-control" />
         </div>
+        <br />
         <div>
-            <label asp-for="PracticeEndTimeAndDate" class="form-label"></label>
+            <label asp-for="PracticeEndTimeAndDate" class="form-label">End Date and Time</label>
             <input asp-for="PracticeEndTimeAndDate" class="form-control" />
         </div>
+        <br />
         <div>
             <table class="table">
                 <thead>
@@ -35,6 +41,7 @@
                 </tbody>
             </table>
         </div>
+        <br />
         <button type="submit" class="btn btn-primary">Schedule Practice</button>
     </form>
 </div>
