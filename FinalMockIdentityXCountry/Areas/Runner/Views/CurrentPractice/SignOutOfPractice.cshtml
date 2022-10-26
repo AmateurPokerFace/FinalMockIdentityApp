@@ -1,0 +1,14 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
+@model SignOutOfPracticeViewModel
+
+<form method="post">
+    <div>
+        <label>@Model.PracticeStartTimeAndDate @Model.PracticeLocation</label>
+    </div>
+    <input type="hidden" asp-for="PracticeId" />
+    <input type="hidden" asp-for="PracticeLocation" />
+    <input type="hidden" asp-for="PracticeStartTimeAndDate" />
+    <input type="hidden" asp-for="RunnerId" />
+    <a class="btn btn-danger" asp-action="CurrentPractices">Cancel</a>
+    <button type="submit" class="btn btn-primary">Confirm Sign Out</button>
+</form>
