@@ -23,6 +23,11 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
             _userManager = userManager;
         } 
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         public IActionResult CurrentPractices()
         {
             var userClaimsIdentity = (ClaimsIdentity)User.Identity;
