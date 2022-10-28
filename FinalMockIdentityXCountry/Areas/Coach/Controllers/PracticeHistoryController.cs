@@ -78,5 +78,80 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             return RedirectToAction(nameof(Index)); // send to an error page in the future (no practice history found)
         }
+
+        public IActionResult Selected(int practiceId)
+        {
+            if (practiceId == 0)
+            {
+                return RedirectToAction(); // send to an error page in the future (invalid id provided)
+            }
+
+
+            var dbQueries = (from w in _context.WorkoutInformation
+                             join aspnetusers in _context.ApplicationUsers
+                             on w.RunnerId equals aspnetusers.Id
+                             join workoutTypes in _context.WorkoutTypes
+                             on w.WorkoutTypeId equals workoutTypes.Id
+                             join a in _context.Attendances
+                             on w.RunnerId equals a.RunnerId
+                             join p in _context.Practices
+                             on w.PracticeId equals p.Id
+                             where a.HasBeenSignedOut && w.PracticeId == practiceId && p.PracticeIsInProgress == false
+                             select new
+                             {
+                                 w.RunnerId,
+                                 w.PracticeId,
+                                 workoutTypes.WorkoutName,
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName,
+                                 p.PracticeStartTimeAndDate,
+                                 p.PracticeEndTimeAndDate
+                             });
+
+            if (dbQueries.Count() > 0 == false)
+            {
+                return RedirectToAction(); // send to an error page in the future
+            }
+
+            List<SelectedViewModel> selectedViewModels = new List<SelectedViewModel>();
+            
+            SelectedViewModel selectedViewModel = new SelectedViewModel ();
+
+            string runnerId = dbQueries.FirstOrDefault().RunnerId;
+
+            bool multipleLoops = false; // will be used to add the last object instance to the selectedViewModels List
+
+            foreach (var dbQuery in dbQueries)
+            {
+                if (runnerId != dbQuery.RunnerId) // will not execute on first loop. runnerId was populated using dbQueriesFirstOrDefault().RunnerId.
+                {
+                    selectedViewModels.Add(selectedViewModel);
+                    multipleLoops = true; 
+                    selectedViewModel = new SelectedViewModel();
+                }
+
+                selectedViewModel.PracticeId = dbQuery.PracticeId;
+                selectedViewModel.RunnerId = dbQuery.RunnerId;
+                selectedViewModel.RunnersName = $"{dbQuery.FirstName} {dbQuery.LastName}";
+                selectedViewModel.PracticeWorkouts.Add(dbQuery.WorkoutName);
+                selectedViewModel.PracticeStartTime = TimeOnly.FromDateTime(dbQuery.PracticeStartTimeAndDate);
+                selectedViewModel.PracticeEndingTime = TimeOnly.FromDateTime(dbQuery.PracticeEndTimeAndDate);
+                runnerId = dbQuery.RunnerId;
+
+            }
+
+            if (multipleLoops)
+            {
+                selectedViewModels.Add(selectedViewModel);
+            }
+             
+            return View(selectedViewModels);
+            
+
+            
+            //var workoutInfoQuery
+            
+        }
+
     }
 }

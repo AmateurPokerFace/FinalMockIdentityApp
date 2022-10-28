@@ -1,0 +1,34 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model List<SelectedViewModel>
+ 
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Present</th>
+            <th scope="col">Start Time</th>
+            <th scope="col">End Time</th>
+            <th scope="col">Run Type</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    @foreach (var runner in Model)
+    {
+        <tr>
+            <td>@runner.RunnersName</td>
+            <td>@runner.PracticeStartTime</td>
+            <td>@runner.PracticeEndingTime</td>
+            @if (runner.PracticeWorkouts.Count() > 0)
+            {
+                <td>
+                    @foreach (var workout in runner.PracticeWorkouts)
+                    {
+                        @workout <br />
+                    }
+                </td> 
+            }
+            else{<td></td>}
+            <td><a class="btn btn-primary">Edit</a></td>
+        </tr>
+    }
+</table>
+

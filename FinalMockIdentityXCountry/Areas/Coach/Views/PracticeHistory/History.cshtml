@@ -1,7 +1,7 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 @model List<HistoryViewModel>
 
-<form class="form-control">
+<div class="form-control">
     <table class="table">
         <thead>
             <tr>
@@ -18,9 +18,9 @@
                     <td>@attendance.PracticeDateTime</td>
                     <td>@attendance.PracticeLocation</td>
                     <td>@attendance.TotalRunners</td>
-                    <td><a class="btn btn-primary">View</a></td>
+                    <td><a asp-action="Selected" asp-route-practiceId="@attendance.PracticeId" class="btn btn-primary">View</a></td>
                 </tr>
             }
         </tbody>
     </table>
-</form>
+</div>
