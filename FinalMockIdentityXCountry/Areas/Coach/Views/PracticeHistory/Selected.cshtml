@@ -14,7 +14,7 @@
     @foreach (var runner in Model)
     {
         <tr>
-            <td>@runner.RunnersName</td>
+            <td><a asp-route-runnerId="@runner.RunnerId">@runner.RunnersName</a></td>
             <td>@runner.PracticeStartTime</td>
             <td>@runner.PracticeEndingTime</td>
             @if (runner.PracticeWorkouts.Count() > 0)
