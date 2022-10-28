@@ -18,7 +18,7 @@
             <br><br>
             <label>@reply.Reply</label>
             <br><br>
-            <a class="btn btn-danger">Delete Reply</a>
+            <a asp-action="DeleteThreadReply" asp-route-replyToMessageBoardResponseId="@reply.Id" class="btn btn-danger">Delete Reply</a>
         </div>
         <hr />
     }

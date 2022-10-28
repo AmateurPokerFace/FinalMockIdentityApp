@@ -22,6 +22,11 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             _userManager = userManager;
         }
 
+        public IActionResult Index() 
+        {
+            return View();
+        }
+
         public IActionResult Home()
         {
             List<MessageBoard> messageBoards = new List<MessageBoard>();
@@ -259,13 +264,54 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
         public IActionResult DeleteThreadReply(int replyToMessageBoardResponseId)
         {
-            return View();
+            var dbQuery = (from r in _context.RepliesToMessageBoardResponse
+                           join aspnetusers in _context.ApplicationUsers
+                           on r.ReplyerId equals aspnetusers.Id
+                           where r.Id == replyToMessageBoardResponseId
+                           select new
+                           {
+                               r.Id,
+                               r.Reply,
+                               r.ReplyDateTime,
+                               aspnetusers.FirstName,
+                               aspnetusers.LastName, 
+                           }).FirstOrDefault(); 
+
+            if (dbQuery == null)
+            {
+                return RedirectToAction(); // send to an error page in the future
+            }
+
+            DeleteThreadReplyViewModel deleteThreadReplyViewModel = new DeleteThreadReplyViewModel
+            {
+                ReplyToMessageBoardId = dbQuery.Id,
+                RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}",
+                Reply = dbQuery.Reply,
+                ReplyDateTime = dbQuery.ReplyDateTime
+            };
+
+            return View(deleteThreadReplyViewModel);
         }
 
         [HttpPost]
-        public IActionResult DeleteThreadReply(int replyToMessageBoardResponseId, string dummyString)
+        public IActionResult DeleteThreadReply(int ReplyToMessageBoardId, string dummyString)
         {
-            return View();
+            if (ReplyToMessageBoardId == 0 || ReplyToMessageBoardId == null)
+            {
+                return RedirectToAction(); // send to an invalid page in the future
+            }
+
+            ReplyToMessageBoardResponse replyToMessageBoardResponse = _context.RepliesToMessageBoardResponse.Find(ReplyToMessageBoardId);
+
+            if (replyToMessageBoardResponse == null)
+            {
+                return RedirectToAction(); // send to an invalid page in the future
+            }
+
+            _context.RepliesToMessageBoardResponse.Remove(replyToMessageBoardResponse);
+            _context.SaveChanges();
+
+            return RedirectToAction("Home"); // send to a delete successful page in the future 
         }
     }
 }
