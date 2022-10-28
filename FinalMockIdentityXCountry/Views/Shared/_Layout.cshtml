@@ -22,20 +22,20 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav nav-tabs flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin") || User.IsInRole("Coach"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="StartPractice" asp-action="StartNow">Start a Practice</a>
+                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="StartPractice" asp-action="StartNow">New Practice</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="StartPractice" asp-action="ScheduleASession">Schedule a Practice Session</a>
+                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="StartPractice" asp-action="ScheduleASession">Schedule Practice</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="RecordWorkouts" asp-action="SelectPractice">Assign Workouts</a>
+                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="RecordWorkouts" asp-action="SelectPractice">Practice History</a>
                             </li>
                         }
                     </ul>
