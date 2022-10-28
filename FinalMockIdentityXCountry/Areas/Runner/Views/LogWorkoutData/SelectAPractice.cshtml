@@ -7,7 +7,7 @@
         @foreach (var workoutInfo in Model)
         {
             <div>
-                <label>@workoutInfo.PracticeStartTimeAndDate @workoutInfo.PracticeLocation</label>
+                <label>Date:@workoutInfo.PracticeStartTimeAndDate &nbsp; Location:@workoutInfo.PracticeLocation &nbsp; Workout:@workoutInfo.WorkoutName &nbsp;</label>
                 
                 @if (workoutInfo.DataWasLogged == false)
                 {

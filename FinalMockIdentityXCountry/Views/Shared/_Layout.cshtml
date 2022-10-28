@@ -52,7 +52,10 @@
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Runner"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Runner" asp-controller="CurrentPractice" asp-action="CurrentPractices">Current Practices</a>
+                                <a class="nav-link text-dark" asp-area="Runner" asp-controller="CurrentPractice" asp-action="CurrentPractices">Sign in to/log out of practice</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Runner" asp-controller="LogWorkoutData" asp-action="SelectAPractice">Log workout data for current practice</a>
                             </li>
                         }
                     </ul>

@@ -1,5 +1,25 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
+@model EditLoggedDataViewModel
+
+<form method="post">
+    <div>
+        <label class="form-label">@Model.PracticeStartDateTime @Model.PracticeLocation</label>
+        <label class="form-label">Workout: @Model.WorkoutName</label>
+    </div>
+    <br />
+    <div>
+        <label asp-for="@Model.Distance" class="form-label">Distance:</label>
+        <input asp-for="@Model.Distance" class="form-control" />
+    </div>
+    <div>
+        <label asp-for="@Model.Pace" class="form-label">Pace:</label>
+        <input asp-for="@Model.Pace" class="form-control" />
+    </div>
+    <input type="hidden" asp-for="@Model.WorkoutInformationId" />
+    <input type="hidden" asp-for="@Model.PracticeId" />
+    <input type="hidden" asp-for="@Model.RunnerId" />
+
+    <a asp-action="Index" class="btn btn-danger">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <br />
+</form>

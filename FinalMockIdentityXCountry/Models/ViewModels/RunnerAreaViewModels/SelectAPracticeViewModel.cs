@@ -8,5 +8,6 @@
         public bool DataWasLogged { get; set; }
         public DateTime PracticeStartTimeAndDate { get; set; }
         public string? PracticeLocation { get; set; }
+        public string? WorkoutName { get; set; }
     }
 }

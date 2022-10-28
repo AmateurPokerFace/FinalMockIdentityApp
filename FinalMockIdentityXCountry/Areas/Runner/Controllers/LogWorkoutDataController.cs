@@ -40,6 +40,8 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                 var dbQueries = (from w in _context.WorkoutInformation
                                  join practices in _context.Practices
                                  on w.PracticeId equals practices.Id
+                                 join workoutTypes in _context.WorkoutTypes
+                                 on w.WorkoutTypeId equals workoutTypes.Id
                                  where practices.PracticeIsInProgress && w.RunnerId == userClaim.Value
                                  select new
                                  {
@@ -48,7 +50,8 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                                      w.RunnerId, 
                                      w.DataWasLogged,
                                      practices.PracticeStartTimeAndDate,
-                                     practices.PracticeLocation
+                                     practices.PracticeLocation,
+                                     workoutTypes.WorkoutName
                                  });
 
                 foreach (var dbQuery in dbQueries)
@@ -60,7 +63,8 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                         RunnerId = dbQuery.RunnerId,
                         DataWasLogged = dbQuery.DataWasLogged,
                         PracticeStartTimeAndDate = dbQuery.PracticeStartTimeAndDate,
-                        PracticeLocation = dbQuery.PracticeLocation
+                        PracticeLocation = dbQuery.PracticeLocation,
+                        WorkoutName = dbQuery.WorkoutName
                     };
 
                     selectAPracticeViewModels.Add(selectedVm);
@@ -79,8 +83,6 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
             {
                 var userClaimsIdentity = (ClaimsIdentity)User.Identity;
                 var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
-                CurrentPracticesViewModel currentPracticesViewModel = new CurrentPracticesViewModel();
 
                 if (userClaim != null)
                 {
@@ -152,13 +154,80 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
         public IActionResult EditLoggedData(int workoutInfoId, int practiceId)
         {
-            return View();
+            if (workoutInfoId != 0 && practiceId != 0)
+            {
+                var userClaimsIdentity = (ClaimsIdentity)User.Identity;
+                var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (userClaim != null)
+                {
+                    var dbQuery = (from w in _context.WorkoutInformation
+                                   join practices in _context.Practices
+                                   on w.PracticeId equals practices.Id
+                                   join workoutTypes in _context.WorkoutTypes
+                                   on w.WorkoutTypeId equals workoutTypes.Id
+                                   where w.Id == workoutInfoId && w.PracticeId == practiceId
+                                   select new
+                                   {
+                                       w.PracticeId,
+                                       w.Id,
+                                       w.RunnerId,
+                                       w.Distance,
+                                       w.Pace,
+                                       practices.PracticeStartTimeAndDate,
+                                       practices.PracticeLocation,
+                                       workoutTypes.WorkoutName
+                                   }).FirstOrDefault();
+
+                    if (dbQuery == null)
+                    {
+                        return RedirectToAction(); // Send to an error page in the future
+                    }
+
+                    EditLoggedDataViewModel editLoggedDataViewModel = new EditLoggedDataViewModel
+                    {
+                        PracticeId = dbQuery.PracticeId,
+                        PracticeLocation = dbQuery.PracticeLocation,
+                        PracticeStartDateTime = dbQuery.PracticeStartTimeAndDate,
+                        RunnerId = dbQuery.RunnerId,
+                        WorkoutInformationId = dbQuery.Id,
+                        WorkoutName = dbQuery.WorkoutName,
+                        Distance = dbQuery.Distance,
+                        Pace = dbQuery.Pace
+                    };
+
+                    return View(editLoggedDataViewModel);
+                }
+                return View();
+            }
+
+            return RedirectToAction(); // Send to an error page in the future
         }
 
         [HttpPost]
-        public IActionResult EditLoggedData(int dummy)
+        public IActionResult EditLoggedData(EditLoggedDataViewModel editLoggedDataViewModel)
         {
-            return View();
+            if (editLoggedDataViewModel != null)
+            {
+                WorkoutInformation workoutInformation = _context.WorkoutInformation
+                .Where(w => w.Id == editLoggedDataViewModel.WorkoutInformationId).FirstOrDefault();
+
+                if (workoutInformation != null)
+                {
+                    workoutInformation.Distance = editLoggedDataViewModel.Distance;
+                    workoutInformation.Pace = editLoggedDataViewModel.Pace;
+                    workoutInformation.DataWasLogged = true;
+
+                    _context.Update(workoutInformation);
+                    _context.SaveChanges();
+
+                    return RedirectToAction("Index"); // send to success page in the future
+                }
+
+                return RedirectToAction(); // send to an error page in the future
+            }
+
+            return RedirectToAction(); // send to an error page in the future
         }
     }
 }
