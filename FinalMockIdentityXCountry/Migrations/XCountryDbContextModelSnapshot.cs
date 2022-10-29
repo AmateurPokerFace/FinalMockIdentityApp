@@ -25,9 +25,6 @@ namespace FinalMockIdentityXCountry.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("AttendanceDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<bool>("HasBeenSignedOut")
                         .HasColumnType("tinyint(1)");
 
@@ -38,7 +35,6 @@ namespace FinalMockIdentityXCountry.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("RunnerId")
-                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
@@ -57,12 +53,18 @@ namespace FinalMockIdentityXCountry.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("CoachId")
-                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("Message")
+                    b.Property<string>("MessageBody")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<string>("MessageTitle")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("PublishedDateTime")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -77,30 +79,25 @@ namespace FinalMockIdentityXCountry.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("CoachId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("CoachResponse")
-                        .HasColumnType("longtext");
-
                     b.Property<int>("MessageBoardId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RunnerId")
+                    b.Property<string>("ResponderId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("RunnerResponse")
+                    b.Property<string>("Response")
+                        .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ResponseDateTime")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoachId");
-
                     b.HasIndex("MessageBoardId");
 
-                    b.HasIndex("RunnerId");
+                    b.HasIndex("ResponderId");
 
                     b.ToTable("MessageBoardResponses");
                 });
@@ -112,7 +109,6 @@ namespace FinalMockIdentityXCountry.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("CoachId")
-                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("PracticeEndTimeAndDate")
@@ -128,6 +124,9 @@ namespace FinalMockIdentityXCountry.Migrations
                     b.Property<DateTime>("PracticeStartTimeAndDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<bool>("WorkoutsAddedToPractice")
+                        .HasColumnType("tinyint(1)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CoachId");
@@ -135,11 +134,43 @@ namespace FinalMockIdentityXCountry.Migrations
                     b.ToTable("Practices");
                 });
 
+            modelBuilder.Entity("FinalMockIdentityXCountry.Models.ReplyToMessageBoardResponse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("MessageBoardResponseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reply")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ReplyDateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ReplyerId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageBoardResponseId");
+
+                    b.HasIndex("ReplyerId");
+
+                    b.ToTable("RepliesToMessageBoardResponse");
+                });
+
             modelBuilder.Entity("FinalMockIdentityXCountry.Models.WorkoutInformation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<bool>("DataWasLogged")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<double>("Distance")
                         .HasColumnType("double");
@@ -151,11 +182,7 @@ namespace FinalMockIdentityXCountry.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("RunnerId")
-                        .IsRequired()
                         .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime>("WorkoutDateTime")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("WorkoutTypeId")
                         .HasColumnType("int");
@@ -421,11 +448,9 @@ namespace FinalMockIdentityXCountry.Migrations
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
@@ -441,9 +466,7 @@ namespace FinalMockIdentityXCountry.Migrations
 
                     b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Runner")
                         .WithMany()
-                        .HasForeignKey("RunnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RunnerId");
 
                     b.Navigation("Practice");
 
@@ -454,49 +477,56 @@ namespace FinalMockIdentityXCountry.Migrations
                 {
                     b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Coach")
                         .WithMany()
-                        .HasForeignKey("CoachId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CoachId");
 
                     b.Navigation("Coach");
                 });
 
             modelBuilder.Entity("FinalMockIdentityXCountry.Models.MessageBoardResponse", b =>
                 {
-                    b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Coach")
-                        .WithMany()
-                        .HasForeignKey("CoachId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("FinalMockIdentityXCountry.Models.MessageBoard", "MessageBoard")
                         .WithMany()
                         .HasForeignKey("MessageBoardId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Runner")
+                    b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Responder")
                         .WithMany()
-                        .HasForeignKey("RunnerId")
+                        .HasForeignKey("ResponderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Coach");
-
                     b.Navigation("MessageBoard");
 
-                    b.Navigation("Runner");
+                    b.Navigation("Responder");
                 });
 
             modelBuilder.Entity("FinalMockIdentityXCountry.Models.Practice", b =>
                 {
                     b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Coach")
                         .WithMany()
-                        .HasForeignKey("CoachId")
+                        .HasForeignKey("CoachId");
+
+                    b.Navigation("Coach");
+                });
+
+            modelBuilder.Entity("FinalMockIdentityXCountry.Models.ReplyToMessageBoardResponse", b =>
+                {
+                    b.HasOne("FinalMockIdentityXCountry.Models.MessageBoardResponse", "MessageBoardResponse")
+                        .WithMany()
+                        .HasForeignKey("MessageBoardResponseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Coach");
+                    b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Replyer")
+                        .WithMany()
+                        .HasForeignKey("ReplyerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MessageBoardResponse");
+
+                    b.Navigation("Replyer");
                 });
 
             modelBuilder.Entity("FinalMockIdentityXCountry.Models.WorkoutInformation", b =>
@@ -509,9 +539,7 @@ namespace FinalMockIdentityXCountry.Migrations
 
                     b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Runner")
                         .WithMany()
-                        .HasForeignKey("RunnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RunnerId");
 
                     b.HasOne("FinalMockIdentityXCountry.Models.WorkoutType", "WorkoutType")
                         .WithMany()

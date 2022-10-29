@@ -1,0 +1,33 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
+@model CurrentPracticesViewModel
+
+<div>
+    <div>
+        @foreach (var runner in Model.CurrentPracticesViewModelsHelper)
+        {
+            <label>@runner.PracticeStartTimeAndDate @runner.PracticeLocation</label>
+            @if (runner.IsPresent && runner.HasBeenSignedOut == false)
+            {
+                <a asp-action="SignOutOfPractice" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId" class="btn btn-danger">Sign out of practice</a>
+                <br /><br /><br />
+            }
+            else if (!runner.IsPresent && runner.HasBeenSignedOut == false)
+            {
+                <a asp-action="JoinPractice" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId" class="btn btn-primary">Join practice</a>
+                <br />
+
+                <br />
+
+                <br />
+            } 
+            else if (runner.HasBeenSignedOut)
+            {
+                <button disabled class="alert-danger">Already signed out</button> <br />
+
+                <br />
+
+                <br />
+            }
+        }
+    </div>
+</div>

@@ -16,7 +16,7 @@ namespace FinalMockIdentityXCountry.Models
         public DbSet<WorkoutInformation> WorkoutInformation { get; set; }
         public DbSet<WorkoutType> WorkoutTypes { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers{ get; set; }
-
+        public DbSet<ReplyToMessageBoardResponse> RepliesToMessageBoardResponse { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

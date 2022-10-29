@@ -9,5 +9,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
     public class PracticesInProgressController : Controller
     {
         
+        
     }
 }

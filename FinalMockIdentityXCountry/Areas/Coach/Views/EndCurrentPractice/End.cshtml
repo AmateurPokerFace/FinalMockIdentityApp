@@ -1,27 +1,2 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
-@model EndViewModel
-
-<div class="form-control">
-    <div>
-        <label class="form-label">Start time:</label>
-        <input disabled="disabled" size="60" value="@Model.Attendance.AttendanceDate"/>
-    </div>
-    <div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Runner</th>
-                </tr>
-            </thead>
-            <tbody>
-                 @foreach (var runner in Model.ApplicationUsers)
-                {
-                    <tr>
-                        <td>@runner.FirstName @runner.LastName</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        
-    </div>
-</div>
+@model Practice

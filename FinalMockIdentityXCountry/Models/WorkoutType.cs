@@ -8,6 +8,6 @@ namespace FinalMockIdentityXCountry.Models
         public int Id { get; set; }
 
         [Required]
-        public string WorkoutName { get; set; }
+        public string? WorkoutName { get; set; }
     }
 }

@@ -21,13 +21,11 @@
   <ItemGroup>
     <Folder Include="Areas\Admin\Controllers\" />
     <Folder Include="Areas\Banned\Controllers\" />
-    <Folder Include="Areas\Runner\Controllers\" />
     <Folder Include="Areas\Unapproved\Controllers\" />
     <Folder Include="Models\ViewModels\AdminAreaViewModels\" />
     <Folder Include="Models\ViewModels\BannedAreaViewModels\" />
     <Folder Include="Models\ViewModels\WelcomeAreaViewModels\" />
     <Folder Include="Models\ViewModels\UnapprovedAreaViewModels\" />
-    <Folder Include="Models\ViewModels\RunnerAreaViewModels\" />
   </ItemGroup>
 
 </Project>

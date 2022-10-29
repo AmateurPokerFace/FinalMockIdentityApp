@@ -1,6 +1,7 @@
 ﻿using FinalMockIdentityXCountry.Models;
 using FinalMockIdentityXCountry.Models.DataLayer.Repositories.IRepository.Interfaces;
 using FinalMockIdentityXCountry.Models.ViewModelHelperClasses;
+using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.Delete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,122 +15,117 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
     [Area("Coach")] 
     public class RecordWorkoutsController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly XCountryDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager; // the UserManager object in question
 
-        private readonly UserManager<IdentityUser> _userManager; 
-        public RecordWorkoutsController(IUnitOfWork unitOfWork, UserManager<IdentityUser> userManager)
+        public RecordWorkoutsController(XCountryDbContext context, UserManager<IdentityUser> userManager)
         {
-            _unitOfWork = unitOfWork;
+            _context = context;
             _userManager = userManager;
         }
 
         public IActionResult SelectPractice()
         {
             
-            IEnumerable<Practice> practices = _unitOfWork.Practice.GetAll(p => p.PracticeIsInProgress == true);
+            IEnumerable<Practice> practices = _context.Practices.Where(p => p.PracticeIsInProgress == true && p.WorkoutsAddedToPractice == false);
             return View(practices);
         }
-
-
-        public IActionResult RecordRunnersWorkouts(int practiceId)
+         
+        public IActionResult AddPracticeWorkouts(int practiceId)
         {
-            var userClaimsIdentity = (ClaimsIdentity)User.Identity;
-            var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            // Make this controller async in the future
 
-            if (userClaim != null)
+            List<AddPracticeWorkoutsViewModel> addPracticeWorkoutsViewModels = new List<AddPracticeWorkoutsViewModel>();
+
+            IEnumerable<WorkoutType> workoutTypes = _context.WorkoutTypes;
+            
+            if (workoutTypes.Count() < 1)
             {
-                var userClaimValue = userClaim.Value;
-                
-                Practice practice = _unitOfWork.Practice.GetAll(p => p.Id == practiceId).Where(c => c.CoachId == userClaimValue).FirstOrDefault();
-
-                if (practice == null)
-                {
-                    // return a page stating there are no practices for the coach with that id?
-                    return View(); 
-                }
-
-                TempData["RecordRunnersWorkoutPracticeLocation"] = practice.PracticeLocation;
-                TempData["RecordRunnersWorkoutStartTime"] = practice.PracticeStartTimeAndDate;
-
-                List<RecordWorkoutsViewModel> recordWorkoutViewModels = new List<RecordWorkoutsViewModel>();
-
-                List<ApplicationUser> applicationUsers = new List<ApplicationUser>();
-
-                List<Attendance> attendanceRunners = _unitOfWork.Attendance.GetAll(p => p.PracticeId == practiceId).Where(r => r.IsPresent).ToList();
-
-                var identityUsers = _userManager.GetUsersInRoleAsync("Runner").Result;
-
-                foreach (var runner in identityUsers)
-                {
-                    applicationUsers.Add((ApplicationUser)runner);
-                }
-
-                IEnumerable<WorkoutType> workoutTypes = _unitOfWork.WorkoutType.GetAll();
-
-                foreach (var attendingRunner in attendanceRunners)
-                {
-                    foreach (var user in applicationUsers)
-                    {
-                        if (attendingRunner.RunnerId == user.Id)
-                        {
-                            RecordWorkoutsViewModel viewModel = new RecordWorkoutsViewModel();
-                            foreach (var workoutType in workoutTypes)
-                            {
-                                WorkoutSelectionInformation workoutSelectionInformation = new WorkoutSelectionInformation
-                                {
-                                    PracticeId = practiceId,
-                                    WorkoutDateTime = practice.PracticeStartTimeAndDate,
-                                    WorkoutTypeId = workoutType.Id,
-                                    WorkoutName = workoutType.WorkoutName,
-                                    RunnerId = attendingRunner.RunnerId,
-                                    PracticeLocation = practice.PracticeLocation
-                                };
-
-                                viewModel.WorkoutSelections.Add(workoutSelectionInformation);
-                                viewModel.RunnerId = user.Id;
-                                viewModel.RunnersName = $"{user.FirstName} {user.LastName}";
-                            }
-
-                            recordWorkoutViewModels.Add(viewModel);
-                        }
-                    }
-                }
-
-                return View(recordWorkoutViewModels);
+                return RedirectToAction("Home"); // Send to an error page in the future
             }
 
-            return View();
+            var dbQueries = (from a in _context.Attendances
+                             join aspnetusers in _context.ApplicationUsers
+                             on a.RunnerId equals aspnetusers.Id 
+                             where a.PracticeId == practiceId && a.IsPresent 
+                             select new
+                             {
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName,
+                                 a.PracticeId,
+                                 a.RunnerId 
+                             });
+
+            bool dbQueryFound = false;
+
+            foreach (var dbQuery in dbQueries)
+            {
+                dbQueryFound = true;
+                AddPracticeWorkoutsViewModel addPracticeWorkoutVm = new AddPracticeWorkoutsViewModel 
+                {
+                    PracticeId = dbQuery.PracticeId, RunnerId = dbQuery.RunnerId , RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}"
+                };
+
+                addPracticeWorkoutsViewModels.Add(addPracticeWorkoutVm);
+            }
+
+            if (dbQueryFound)
+            {
+                foreach (var vm in addPracticeWorkoutsViewModels)
+                {
+                    foreach (var workoutType in workoutTypes)
+                    {
+                        AddPracticeWorkoutCheckboxOptions addPracticeWorkoutCheckbox = new AddPracticeWorkoutCheckboxOptions
+                        {
+                            PracticeId = vm.PracticeId,
+                            RunnerId = vm.RunnerId,
+                            WorkoutType = workoutType,
+                            WorkoutTypeId = workoutType.Id
+                        };
+
+                        vm.WorkoutCheckboxOptions.Add(addPracticeWorkoutCheckbox);
+                    }
+                }
+                return View(addPracticeWorkoutsViewModels);
+            }
+            else
+            {
+                return RedirectToAction(); // return an invalid page (error in database query)
+            } 
         }
 
         [HttpPost]
-        public IActionResult RecordRunnersWorkouts(List<RecordWorkoutsViewModel> recordWorkoutsViewModels)
+        public IActionResult AddPracticeWorkouts(List<AddPracticeWorkoutsViewModel> addPracticeWorkoutsViewModels, int practiceId)
         {
-            // Create a warning page if any workouts contain null values.
-            List<RecordWorkoutsViewModel> records = new List<RecordWorkoutsViewModel>();
-            if (recordWorkoutsViewModels.Count > 0)
+            if (addPracticeWorkoutsViewModels != null && practiceId != 0)
             {
-                foreach (var record in recordWorkoutsViewModels)
+                foreach (var addPracticeWorkoutVm in addPracticeWorkoutsViewModels)
                 {
-                    foreach (var workoutInfo in record.WorkoutSelections)
+                    foreach (var checkboxOptions in addPracticeWorkoutVm.WorkoutCheckboxOptions)
                     {
-                        if (workoutInfo.WorkoutIsSelected)
+                        if (checkboxOptions.IsSelected && checkboxOptions.PracticeId != 0)
                         {
-                            WorkoutInformation workoutInformation = new WorkoutInformation 
+                            WorkoutInformation workoutInfo = new WorkoutInformation
                             {
-                                WorkoutDateTime = workoutInfo.WorkoutDateTime,
-                                WorkoutTypeId = workoutInfo.WorkoutTypeId,
-                                PracticeId = workoutInfo.PracticeId,
-                                RunnerId = workoutInfo.RunnerId
+                                PracticeId = checkboxOptions.PracticeId,
+                                RunnerId = checkboxOptions.RunnerId,
+                                WorkoutTypeId = checkboxOptions.WorkoutTypeId
                             };
-                            _unitOfWork.WorkoutInformation.Add(workoutInformation);
+                            _context.WorkoutInformation.Add(workoutInfo);
                         }
-                    }
+                    }    
                 }
-                _unitOfWork.SaveChanges();
+
+                Practice practice = _context.Practices.Where(p => p.Id == practiceId).FirstOrDefault();
+                practice.WorkoutsAddedToPractice = true;
+                _context.Practices.Update(practice);
+
+                _context.SaveChanges();
+
                 return RedirectToAction("Index", "Welcome");
             }
-
-            return RedirectToAction("Index", "Welcome");
+            
+            return RedirectToAction("Index", "Welcome"); // return error in the future
         }
     }
 }

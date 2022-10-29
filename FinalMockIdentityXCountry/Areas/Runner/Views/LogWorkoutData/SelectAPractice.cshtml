@@ -1,0 +1,27 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
+@model List<SelectAPracticeViewModel>
+
+<div>
+    @if (Model.Count > 0)
+    {
+        @foreach (var workoutInfo in Model)
+        {
+            <div>
+                <label>Date:@workoutInfo.PracticeStartTimeAndDate &nbsp; Location:@workoutInfo.PracticeLocation &nbsp; Workout:@workoutInfo.WorkoutName &nbsp;</label>
+                
+                @if (workoutInfo.DataWasLogged == false)
+                {
+                    <a asp-action="LogData" asp-route-workoutInfoId="@workoutInfo.WorkoutInformationId" asp-route-practiceId="@workoutInfo.PracticeId" class="btn btn-primary">Log Data</a>
+                    <br /><br /><br />
+                }
+                else if(workoutInfo.DataWasLogged)
+                {
+                    <a asp-action="EditLoggedData" asp-route-workoutInfoId="@workoutInfo.WorkoutInformationId" asp-route-practiceId="@workoutInfo.PracticeId" class="btn btn-warning">Edit Logged Data</a>
+                    <br /><br /><br />
+                }
+
+            </div>
+            
+        }
+    }    
+</div>

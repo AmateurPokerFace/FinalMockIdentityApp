@@ -1,0 +1,21 @@
+﻿@model IEnumerable<Practice>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Location</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+         @foreach (var practice in Model)
+        {
+            <tr>
+                <td>@practice.PracticeStartTimeAndDate</td>
+                <td>@practice.PracticeLocation</td>
+                <td><a class="btn btn-outline-danger" asp-action="Current" asp-route-currentPracticeId="@practice.Id">End Practice</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

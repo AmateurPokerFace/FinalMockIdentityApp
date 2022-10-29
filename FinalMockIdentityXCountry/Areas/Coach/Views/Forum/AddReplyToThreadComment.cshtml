@@ -1,0 +1,17 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model AddReplyToThreadCommentViewModel
+
+<div>
+    <label>Original Comment: @Model.MessageBoardResponse.Response @Model.MessageBoardResponse.ResponseDateTime</label>
+    <br />
+    <br />
+</div>
+
+<form method="post">
+    <label asp-for="@Model.NewReplyToMessageBoardResponse.Reply" class="form-label"></label> 
+    <input asp-for="@Model.NewReplyToMessageBoardResponse.Reply" class="form-text" />
+    <input type="hidden" asp-for="@Model.NewReplyToMessageBoardResponse.MessageBoardResponseId" /> 
+    <input type="hidden" asp-for="@Model.NewReplyToMessageBoardResponse.ReplyerId" />
+    <a asp-action="Home" class="btn btn-danger">Cancel</a>
+    <button type="submit" class="btn btn-primary">Add Reply</button>
+</form>

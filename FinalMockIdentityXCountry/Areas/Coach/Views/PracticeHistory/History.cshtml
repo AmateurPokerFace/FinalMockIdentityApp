@@ -1,5 +1,26 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model List<HistoryViewModel>
+
+<div class="form-control">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Location</th>
+                <th scope="col">Total Runners</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var attendance in Model)
+            {
+                <tr>
+                    <td>@attendance.PracticeDateTime</td>
+                    <td>@attendance.PracticeLocation</td>
+                    <td>@attendance.TotalRunners</td>
+                    <td><a asp-action="Selected" asp-route-practiceId="@attendance.PracticeId" class="btn btn-primary">View</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

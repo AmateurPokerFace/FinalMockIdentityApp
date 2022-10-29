@@ -1,0 +1,23 @@
+﻿@model List<MessageBoard>
+
+<div>
+    <a class="btn btn-primary" asp-action="CreateThread">Create new thread</a>
+</div>
+
+@foreach(var thread in Model)
+{
+    <br />
+    <br />
+    <br />
+    <div>
+        <h2>Thread created on @thread.PublishedDateTime</h2>
+        <br>
+        <br>
+        <h3>@thread.MessageBody</h3>
+        <br>
+        <a class="btn btn-danger" asp-action="DeleteThread" asp-route-messageBoardId="@thread.Id">Delete Thread</a>
+        <a class="btn btn-primary" asp-action="ViewThread" asp-route-messageBoardId="@thread.Id">View Thread</a>
+    </div>
+    <hr />
+    <br />
+}

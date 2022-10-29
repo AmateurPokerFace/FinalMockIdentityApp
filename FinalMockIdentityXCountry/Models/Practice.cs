@@ -13,11 +13,11 @@ namespace FinalMockIdentityXCountry.Models
         public DateTime PracticeEndTimeAndDate { get; set; }
         public bool PracticeIsInProgress { get; set; } // set the default to true in the future -> new practice == in progress until cancelled by coach
         [Required]
-        public string PracticeLocation { get; set; }
-        public string CoachId { get; set; }
+        public string? PracticeLocation { get; set; }
+        public string? CoachId { get; set; }
         [ValidateNever]
-        public virtual ApplicationUser Coach { get; set; }
-
+        public virtual ApplicationUser? Coach { get; set; }
+        public bool WorkoutsAddedToPractice { get; set; }
         public void StartPractice()
         {
             PracticeStartTimeAndDate = DateTime.Now;
