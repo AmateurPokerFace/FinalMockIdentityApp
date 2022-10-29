@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Evans HS XC</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FinalMockIdentityXCountry</title>
@@ -15,51 +16,30 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FinalMockIdentityXCountry</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Evans Cross Country</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav nav-tabs flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin") || User.IsInRole("Coach"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="StartPractice" asp-action="StartNow">Start a Practice</a>
+                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="StartPractice" asp-action="StartNow">New Practice</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="StartPractice" asp-action="ScheduleASession">Schedule a Practice Session</a>
+                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="StartPractice" asp-action="ScheduleASession">Schedule Practice</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="CurrentPractice" asp-action="CurrentPractices">Current Practices</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="RecordWorkouts" asp-action="SelectPractice">Assign Workouts</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="PracticeHistory" asp-action="History">Practice History</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="Forum" asp-action="Home">Forums</a>
-                            </li>
-                            @*<li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="Announcements" asp-action="Home">Announcements</a>
-                            </li>*@
-                        }
-                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Runner"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Runner" asp-controller="CurrentPractice" asp-action="CurrentPractices">Sign in to/log out of practice</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Runner" asp-controller="LogWorkoutData" asp-action="SelectAPractice">Log workout data for current practice</a>
+                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="RecordWorkouts" asp-action="SelectPractice">Practice History</a>
                             </li>
                         }
                     </ul>
-                    <partial name="_LoginPartial"/>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
@@ -71,9 +51,9 @@
     </div>
 
     @*<footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2022 - FinalMockIdentityXCountry - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+    <div class="container">
+    &copy; 2022 - FinalMockIdentityXCountry - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </div>
     </footer>*@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
