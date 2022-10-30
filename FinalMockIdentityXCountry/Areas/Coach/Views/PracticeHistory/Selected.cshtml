@@ -5,6 +5,7 @@
     <thead>
         <tr>
             <th scope="col">Present</th>
+            <th scope="col">Location</th>
             <th scope="col">Start Time</th>
             <th scope="col">End Time</th>
             <th scope="col">Run Type</th>
@@ -15,8 +16,9 @@
     {
         <tr>
             <td><a asp-route-runnerId="@runner.RunnerId">@runner.RunnersName</a></td>
+            <td>@runner.PracticeLocation</td>
             <td>@runner.PracticeStartTime</td>
-            <td>@runner.PracticeEndingTime</td>
+            <td>@runner.PracticeEndingTime</td> 
             @if (runner.PracticeWorkouts.Count() > 0)
             {
                 <td>

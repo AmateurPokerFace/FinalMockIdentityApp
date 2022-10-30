@@ -78,6 +78,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             return RedirectToAction(nameof(Index)); // send to an error page in the future (no practice history found)
         }
+        
 
         public IActionResult Selected(int practiceId)
         {
@@ -86,17 +87,21 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 return RedirectToAction(); // send to an error page in the future (invalid id provided)
             }
 
+            Practice practice = _context.Practices.Where(p => p.Id == practiceId).FirstOrDefault();
+
+            if (practice == null)
+            {
+                return RedirectToAction(); // send to an error page in the future
+            }
 
             var dbQueries = (from w in _context.WorkoutInformation
                              join aspnetusers in _context.ApplicationUsers
                              on w.RunnerId equals aspnetusers.Id
                              join workoutTypes in _context.WorkoutTypes
                              on w.WorkoutTypeId equals workoutTypes.Id
-                             join a in _context.Attendances
-                             on w.RunnerId equals a.RunnerId
                              join p in _context.Practices
                              on w.PracticeId equals p.Id
-                             where a.HasBeenSignedOut && w.PracticeId == practiceId && p.PracticeIsInProgress == false
+                             where w.PracticeId == practiceId
                              select new
                              {
                                  w.RunnerId,
@@ -105,8 +110,10 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                  aspnetusers.FirstName,
                                  aspnetusers.LastName,
                                  p.PracticeStartTimeAndDate,
-                                 p.PracticeEndTimeAndDate
+                                 p.PracticeEndTimeAndDate,
+                                 p.PracticeLocation
                              });
+
 
             if (dbQueries.Count() > 0 == false)
             {
@@ -136,6 +143,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 selectedViewModel.PracticeWorkouts.Add(dbQuery.WorkoutName);
                 selectedViewModel.PracticeStartTime = TimeOnly.FromDateTime(dbQuery.PracticeStartTimeAndDate);
                 selectedViewModel.PracticeEndingTime = TimeOnly.FromDateTime(dbQuery.PracticeEndTimeAndDate);
+                selectedViewModel.PracticeLocation = dbQuery.PracticeLocation == null ? "" : dbQuery.PracticeLocation;
                 runnerId = dbQuery.RunnerId;
 
             }
