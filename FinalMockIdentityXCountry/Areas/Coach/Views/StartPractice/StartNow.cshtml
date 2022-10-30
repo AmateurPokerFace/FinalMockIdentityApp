@@ -1,11 +1,14 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 @model StartNowViewModel
 
+<div>
+    <h3>Start a New Practice Session</h3>
+</div>
 <div class="form-control">
     <form method="post">
         @*@Html.AntiForgeryToken()*@
         <div>
-            <label asp-for="PracticeLocation" class="form-label"></label>
+            <label asp-for="PracticeLocation" class="form-label">Practice Location</label>
             <input asp-for="PracticeLocation" class="form-control"/>
         </div> 
         <div>
