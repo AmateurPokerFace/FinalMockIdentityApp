@@ -1,0 +1,9 @@
+﻿@model WorkoutType
+
+<form method="post">
+    <label asp-for="@Model.WorkoutName">Workout name:</label>
+    <input asp-for="@Model.WorkoutName"/>
+    <input type="hidden" asp-for="@Model.Id"/>
+    <a class="btn btn-danger">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save Edit</button>
+</form>

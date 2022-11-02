@@ -1,0 +1,26 @@
+﻿@model IEnumerable<WorkoutType>
+
+<a asp-action="AddNewWorkout" class="btn btn-primary">Add new workout</a>
+<br />
+<hr />
+
+@if(Model.Count() > 0)
+{  
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Current Database Workouts</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var workoutType in Model)
+            {
+                <tr>
+                    <td>@workoutType.WorkoutName</td>
+                    <td><a class="btn btn-primary" asp-route-workoutId="@workoutType.Id" asp-action="EditWorkoutName">Edit workout name</a></td>
+                </tr> 
+            }
+        </tbody>
+    </table>  
+}

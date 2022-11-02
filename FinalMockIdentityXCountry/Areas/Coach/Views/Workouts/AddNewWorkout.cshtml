@@ -1,0 +1,13 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model AddNewWorkoutViewModel
+
+<form method="post">
+    <div>
+        <label asp-for="@Model.WorkoutName">Workout Name:</label>
+        <input asp-for="@Model.WorkoutName"/>
+    </div>
+    <a class="btn btn-danger">Cancel</a>
+    <button class="btn btn-success">Save to database</button>
+</form>
+
+
