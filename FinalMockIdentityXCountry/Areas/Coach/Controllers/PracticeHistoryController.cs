@@ -1,5 +1,6 @@
 ﻿using FinalMockIdentityXCountry.Models;
 using FinalMockIdentityXCountry.Models.DataLayer.Repositories.IRepository.Interfaces;
+using FinalMockIdentityXCountry.Models.ViewModelHelperClasses;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.Delete;
 using Microsoft.AspNetCore.Authorization;
@@ -126,6 +127,11 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             string runnerId = dbQueries.FirstOrDefault().RunnerId;
 
+            if (runnerId == null)
+            {
+                return RedirectToAction(); // send to an invalid runner id page (null value)
+            }
+
             bool multipleLoops = false; // will be used to add the last object instance to the selectedViewModels List
 
             foreach (var dbQuery in dbQueries)
@@ -140,10 +146,13 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 selectedViewModel.PracticeId = dbQuery.PracticeId;
                 selectedViewModel.RunnerId = dbQuery.RunnerId;
                 selectedViewModel.RunnersName = $"{dbQuery.FirstName} {dbQuery.LastName}";
-                selectedViewModel.PracticeWorkouts.Add(dbQuery.WorkoutName);
+                if (dbQuery.WorkoutName != null)
+                {
+                    selectedViewModel.PracticeWorkouts.Add(dbQuery.WorkoutName);
+                } 
                 selectedViewModel.PracticeStartTime = TimeOnly.FromDateTime(dbQuery.PracticeStartTimeAndDate);
                 selectedViewModel.PracticeEndingTime = TimeOnly.FromDateTime(dbQuery.PracticeEndTimeAndDate);
-                selectedViewModel.PracticeLocation = dbQuery.PracticeLocation == null ? "" : dbQuery.PracticeLocation;
+                selectedViewModel.PracticeLocation = dbQuery.PracticeLocation == null ? " " : dbQuery.PracticeLocation;
                 runnerId = dbQuery.RunnerId;
 
             }
@@ -164,9 +173,75 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 return RedirectToAction(); // send to an error page in the future
             }
 
-            SelectedRunnerHistoryViewModel selectedRunnerHistoryViewModel = new SelectedRunnerHistoryViewModel();
+            List<SelectedRunnerHistoryViewModel> selectedRunnerHistoryViewModels = new List<SelectedRunnerHistoryViewModel>();
+            SelectedRunnerHistoryViewModel selectedRunnerHistoryVm = new SelectedRunnerHistoryViewModel();
 
-            return View();
+            var dbQueries = (from p in _context.Practices
+                             join w in _context.WorkoutInformation
+                             on p.Id equals w.PracticeId
+                             join workoutTypes in _context.WorkoutTypes
+                             on w.WorkoutTypeId equals workoutTypes.Id
+                             join aspnetusers in _context.ApplicationUsers
+                             on w.RunnerId equals aspnetusers.Id
+                             where w.RunnerId == runnerId
+                             select new
+                             {
+                                 p.PracticeStartTimeAndDate,
+                                 p.PracticeLocation,
+                                 workoutTypes.WorkoutName,
+                                 w.PracticeId,
+                                 w.RunnerId,
+                                 aspnetusers.Id,
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName
+                             });
+
+            if (dbQueries.Count() < 1)
+            {
+                return RedirectToAction(); // send to a page that states the runner has no practice history in the future
+            }
+
+            int practiceId = dbQueries.FirstOrDefault().PracticeId;
+
+            if (practiceId == null)
+            {
+                return RedirectToAction(); // send to an invalid practice id page (null value)
+            }
+
+            bool multipleLoops = false; // will be used to add the last object instance to the selectedViewModels List
+
+            foreach (var dbQuery in dbQueries)
+            { 
+                if (practiceId != dbQuery.PracticeId) // will not execute on first loop. runnerId was populated using dbQueriesFirstOrDefault().RunnerId.
+                {
+                    selectedRunnerHistoryViewModels.Add(selectedRunnerHistoryVm);
+                    multipleLoops = true;
+                    selectedRunnerHistoryVm = new SelectedRunnerHistoryViewModel();
+                }
+
+                selectedRunnerHistoryVm.PracticeId = dbQuery.PracticeId;
+                selectedRunnerHistoryVm.RunnerId = dbQuery.RunnerId;
+                selectedRunnerHistoryVm.RunnersName = $"{dbQuery.FirstName} {dbQuery.LastName}";
+                selectedRunnerHistoryVm.PracticeLocation = dbQuery.PracticeLocation == null ? " " : dbQuery.PracticeLocation;
+                selectedRunnerHistoryVm.PracticeStartDate = DateOnly.FromDateTime(dbQuery.PracticeStartTimeAndDate);
+
+                if (dbQuery.WorkoutName != null)
+                {
+                    selectedRunnerHistoryVm.PracticeWorkouts.Add(dbQuery.WorkoutName);
+                }
+            }
+
+            if (multipleLoops)
+            { 
+                selectedRunnerHistoryViewModels.Add(selectedRunnerHistoryVm);
+            }
+
+            if (selectedRunnerHistoryViewModels.Count() > 0)
+            {
+                return View(selectedRunnerHistoryViewModels);
+            }
+
+            return RedirectToAction(); // send to an error page in the future
         }
     }
 }
