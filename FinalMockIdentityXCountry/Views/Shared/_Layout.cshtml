@@ -52,6 +52,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Runner" asp-controller="PaceCalculator" asp-action="SelectCalculator">Calculator</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Coach" asp-controller="AthleteHistory" asp-action="All">Athlete History</a>
+                            </li>
                         }
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Runner"))
                         {
