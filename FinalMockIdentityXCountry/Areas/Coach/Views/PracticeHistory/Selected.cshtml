@@ -15,7 +15,7 @@
     @foreach (var runner in Model)
     {
         <tr>
-            <td><a asp-route-runnerId="@runner.RunnerId">@runner.RunnersName</a></td>
+            <td><a asp-route-runnerId="@runner.RunnerId" asp-action="SelectedRunnerHistory">@runner.RunnersName</a></td>
             <td>@runner.PracticeLocation</td>
             <td>@runner.PracticeStartTime</td>
             <td>@runner.PracticeEndingTime</td> 

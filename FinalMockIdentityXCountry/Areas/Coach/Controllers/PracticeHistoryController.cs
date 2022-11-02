@@ -153,13 +153,20 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 selectedViewModels.Add(selectedViewModel);
             }
              
-            return View(selectedViewModels);
-            
-
-            
-            //var workoutInfoQuery
+            return View(selectedViewModels); 
             
         }
 
+        public IActionResult SelectedRunnerHistory(string runnerId)
+        {
+            if (runnerId == null)
+            {
+                return RedirectToAction(); // send to an error page in the future
+            }
+
+            SelectedRunnerHistoryViewModel selectedRunnerHistoryViewModel = new SelectedRunnerHistoryViewModel();
+
+            return View();
+        }
     }
 }

@@ -36,12 +36,12 @@ namespace FinalMockIdentityXCountry.Models
             //    );
 
             modelBuilder.Entity<WorkoutType>().HasData(
-                 new WorkoutType { WorkoutName = "N/A", Id = 1 },
-                new WorkoutType { WorkoutName = "100-meters", Id = 2 },
-                new WorkoutType { WorkoutName = "200-meters", Id = 3 },
-                new WorkoutType { WorkoutName = "400-meters", Id = 4 },
-                new WorkoutType { WorkoutName = "800-meters", Id = 5 },
-                new WorkoutType { WorkoutName = "1600-meters", Id = 6 }
+                 new WorkoutType { WorkoutName = "Easy Miles", Id = 1 },
+                new WorkoutType { WorkoutName = "Tempo Run", Id = 2 },
+                new WorkoutType { WorkoutName = "Long Run", Id = 3 },
+                new WorkoutType { WorkoutName = "Progression Run", Id = 4 },
+                new WorkoutType { WorkoutName = "Interval Run", Id = 5 },
+                new WorkoutType { WorkoutName = "Track Work", Id = 6 }
                 );
         }
     }

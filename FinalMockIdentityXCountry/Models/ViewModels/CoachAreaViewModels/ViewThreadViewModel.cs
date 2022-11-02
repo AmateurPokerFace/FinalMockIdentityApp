@@ -7,7 +7,5 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 
         public MessageBoard? MessageBoard { get; set; } 
         public IEnumerable<MessageBoardResponse>? DatabaseMessageBoardResponses{ get; set; }
-       // public IEnumerable<ReplyToMessageBoardResponse>? RepliesToMessageBoardResponse { get; set; }
-        // Create a RepliesToMessageBoardResponses table?Possible fields: Id, ReplierId, ReplierName, ReplyDateTime, MessageBoardResponseId -> one to many?
     }
 }
