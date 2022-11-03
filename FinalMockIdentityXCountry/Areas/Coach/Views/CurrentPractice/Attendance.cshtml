@@ -1,0 +1,23 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+@model AttendanceViewModel
+
+<label class="form-label">@Model.PracticeStartTimeAndDate @Model.PracticeLocation</label>
+
+@if(Model.Runners.Count() > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Runners</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var runner in Model.Runners)
+            {
+                <tr>
+                    <td>@runner</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

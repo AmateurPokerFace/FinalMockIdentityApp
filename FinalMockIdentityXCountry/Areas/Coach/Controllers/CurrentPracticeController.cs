@@ -105,5 +105,45 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             return RedirectToAction();
         }
+
+        public IActionResult Attendance(int practiceId)
+        {
+            if (practiceId == 0)
+            {
+                return RedirectToAction(); // send to an invalid page in the future
+            } 
+
+
+            var dbQueries = (from a in _context.Attendances
+                             join p in _context.Practices
+                             on a.PracticeId equals p.Id
+                             join aspnetusers in _context.ApplicationUsers
+                             on a.RunnerId equals aspnetusers.Id
+                             where a.PracticeId == practiceId
+                             select new
+                             {
+                                 p.PracticeStartTimeAndDate,
+                                 p.PracticeLocation,
+                                 a.PracticeId,
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName,
+                             });
+
+            if (dbQueries.Count() < 1)
+            {
+                return RedirectToAction(); // send to an invalid page in the future
+            }
+
+            AttendanceViewModel attendanceViewModel = new AttendanceViewModel();
+
+            foreach (var dbQuery in dbQueries)
+            {
+                attendanceViewModel.PracticeStartTimeAndDate = dbQuery.PracticeStartTimeAndDate;
+                attendanceViewModel.PracticeLocation = dbQuery.PracticeLocation;
+                attendanceViewModel.Runners.Add($"{dbQuery.FirstName} {dbQuery.LastName}");
+            } 
+
+            return View(attendanceViewModel);
+        }
     }
 }

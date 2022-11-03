@@ -2,23 +2,25 @@
 
 <div class="container mx-auto">
     <h2>Select an open practice to mark closed.</h2>
-    <table class="table">
-        <thead>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Location</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+         @foreach (var practice in Model)
+        {
             <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Location</th>
-                <th scope="col"></th>
+                <td>@practice.PracticeStartTimeAndDate</td>
+                <td>@practice.PracticeLocation</td>
+                <td><a class="btn btn-outline-primary" asp-route-practiceId="@practice.Id" asp-action="Attendance">View Attendance</a></td>
+                <td><a class="btn btn-outline-danger" asp-action="Current" asp-route-currentPracticeId="@practice.Id">End Practice</a></td>
             </tr>
-        </thead>
-        <tbody>
-             @foreach (var practice in Model)
-            {
-                <tr>
-                    <td>@practice.PracticeStartTimeAndDate</td>
-                    <td>@practice.PracticeLocation</td>
-                    <td><a class="btn btn-outline-danger" asp-action="Current" asp-route-currentPracticeId="@practice.Id">End Practice</a></td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        }
+    </tbody>
+</table>
 </div>
