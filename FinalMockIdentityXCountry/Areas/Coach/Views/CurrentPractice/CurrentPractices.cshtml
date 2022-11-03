@@ -6,6 +6,7 @@
             <th scope="col">Date</th>
             <th scope="col">Location</th>
             <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
@@ -14,6 +15,7 @@
             <tr>
                 <td>@practice.PracticeStartTimeAndDate</td>
                 <td>@practice.PracticeLocation</td>
+                <td><a class="btn btn-outline-primary" asp-route-practiceId="@practice.Id" asp-action="Attendance">View Attendance</a></td>
                 <td><a class="btn btn-outline-danger" asp-action="Current" asp-route-currentPracticeId="@practice.Id">End Practice</a></td>
             </tr>
         }
