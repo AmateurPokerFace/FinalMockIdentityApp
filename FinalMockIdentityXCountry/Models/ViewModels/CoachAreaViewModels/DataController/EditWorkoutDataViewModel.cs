@@ -9,7 +9,6 @@
 
         public string? RunnerName { get; set; }
         public string? RunnerId { get; set; }
-        public int WorkoutInformationId { get; set; }
         public int PracticeId { get; set; }
         public DateTime PracticeStartTime { get; set; }
         public string? PracticeLocation { get; set; }

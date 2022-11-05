@@ -15,7 +15,6 @@
                     <th scope="col">Workouts</th>
                     <th scope="col"></th>
                     <th scope="col"></th>
-                    <th scope="col"></th>
                     <th scope="col"></th> 
                 </tr>
             </thead>
@@ -40,8 +39,7 @@
 
                         <td><a class="btn btn-link">Add workout to practice</a></td>
                         <td><a class="btn btn-link">Delete workout from practice</a></td>
-                        <td><a asp-action="ViewDataEntered" asp-route-runnerId="@data.RunnerId" asp-route-workoutInformationId="@data.WorkoutInformationId" class="btn btn-link">View data entered</a></td>
-                        <td><a class="btn btn-link">Edit entered data</a></td>
+                        <td><a asp-action="ViewDataEntered" asp-route-runnerId="@data.RunnerId" asp-route-practiceId="@data.PracticeId" class="btn btn-link">View/Edit data entered</a></td> 
                     </tr>
                 }
             </tbody>

@@ -1,0 +1,26 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.DataController
+@model EditEnteredDataViewModel
+
+<form method="post">
+    <div>
+        <label class="form-label">Runner: </label>
+        <input class="form-control" disabled="disabled" asp-for="@Model.RunnerName" value="@Model.RunnerName"/>
+    </div>
+    <div>
+        <label class="form-label" asp-for="WorkoutName">Workout:</label>
+        <input class="form-control" disabled="disabled" asp-for="WorkoutName" value="@Model.WorkoutName" />
+    </div>
+    <div>
+        <label class="form-label" asp-for="Pace">Pace:</label>
+        <input class="form-control" asp-for="Pace" />
+    </div>
+    <div>
+        <label class="form-label" asp-for="Distance">Distance:</label>
+        <input class="form-control" asp-for="Distance" />
+    </div>
+    <input type="hidden" asp-for="@Model.WorkoutInformationId"/>
+    <input type="hidden" asp-for="@Model.RunnerName" />
+    <input type="hidden" asp-for="@Model.WorkoutName" />
+    <a class="btn btn-danger" asp-action="Index">Cancel Edit</a>
+    <button class="btn btn-primary">Save Changes</button>
+</form>
