@@ -1,0 +1,37 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.DataController
+@model AddNewWorkoutsToPracticeViewModel
+
+<label>@Model.PracticeStartDateTime | @Model.PracticeLocation</label>
+<br />
+<label>Add new workout(s) for @Model.RunnerName</label>
+
+<form method="post">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Workout</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(Model.SelectedNewWorkoutCheckboxOptions.Count() > 0)
+            {
+                for (int i = 0; i < Model.SelectedNewWorkoutCheckboxOptions.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            <input asp-for="@Model.SelectedNewWorkoutCheckboxOptions[i].IsSelected" type="checkbox"/>@Model.SelectedNewWorkoutCheckboxOptions[i].WorkoutName
+                            <input type="hidden" asp-for="@Model.PracticeId">
+                            <input type="hidden" asp-for="@Model.RunnerId">
+                            <input type="hidden" asp-for="@Model.SelectedNewWorkoutCheckboxOptions[i].RunnerId">
+                            <input type="hidden" asp-for="@Model.SelectedNewWorkoutCheckboxOptions[i].PracticeId">
+                            <input type="hidden" asp-for="@Model.SelectedNewWorkoutCheckboxOptions[i].WorkoutName">
+                            <input type="hidden" asp-for="@Model.SelectedNewWorkoutCheckboxOptions[i].WorkoutTypeId">
+                        </td>  
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <a class="btn btn-danger" asp-action="Index">Cancel</a>
+    <button class="btn btn-primary">Save new workouts</button>
+</form>

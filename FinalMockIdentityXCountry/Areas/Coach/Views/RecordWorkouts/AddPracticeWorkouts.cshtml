@@ -14,16 +14,19 @@
                 {
                     <tr>
                         <td>@Model[i].RunnerName</td>
-                        @for (int j = 0; j < Model[i].WorkoutCheckboxOptions.Count(); j++)
+                        @if(Model[i].SelectedWorkoutCheckboxOptions.Count() > 0)
                         {
-                        <td>
-                            <input asp-for="@Model[i].WorkoutCheckboxOptions[j].IsSelected" type="checkbox"/>@Model[i].WorkoutCheckboxOptions[j].WorkoutType.WorkoutName
-                            <input type="hidden" asp-for="@Model[i].PracticeId"/>  
-                            <input type="hidden" asp-for="@Model[i].WorkoutCheckboxOptions[j].WorkoutTypeId"/>
-                            <input type="hidden" asp-for="@Model[i].WorkoutCheckboxOptions[j].RunnerId"/>
-                            <input type="hidden" asp-for="@Model[i].WorkoutCheckboxOptions[j].PracticeId"/>
-                        </td>
-                        }
+                            @for (int j = 0; j < Model[i].SelectedWorkoutCheckboxOptions.Count(); j++)
+                            {
+                                <td>
+                                    <input asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].IsSelected" type="checkbox" />@Model[i].SelectedWorkoutCheckboxOptions[j].WorkoutType.WorkoutName
+                                    <input type="hidden" asp-for="@Model[i].PracticeId" />
+                                    <input type="hidden" asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].WorkoutTypeId" />
+                                    <input type="hidden" asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].RunnerId" />
+                                    <input type="hidden" asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].PracticeId" />
+                                </td>
+                            }
+                        } 
                     </tr>
                 }
             </tbody>

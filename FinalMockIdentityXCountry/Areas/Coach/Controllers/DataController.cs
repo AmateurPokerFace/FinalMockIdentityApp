@@ -1,4 +1,5 @@
 ﻿using FinalMockIdentityXCountry.Models;
+using FinalMockIdentityXCountry.Models.ViewModelHelperClasses;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.DataController;
 using Microsoft.AspNetCore.Authorization;
@@ -253,6 +254,102 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 return RedirectToAction("Index"); // send to a success page in the future
             }
             return RedirectToAction("Index"); // send to an error page in the future
+        }
+
+        public IActionResult AddNewWorkoutsToPractice(string runnerId, int practiceId)
+        {
+            if (runnerId == null || practiceId == 0)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future
+            }
+
+            Practice practice = _context.Practices.Find(practiceId);
+            if (practice == null)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future
+            }
+
+            ApplicationUser applicationUser = _context.ApplicationUsers.Find(runnerId);
+
+            if (applicationUser == null)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future
+            }
+
+            var dbQueries = from wt in _context.WorkoutTypes
+                            where !_context.WorkoutInformation.Any(i => i.WorkoutTypeId == wt.Id
+                            && i.RunnerId == runnerId && i.PracticeId == practiceId)
+                            select wt;
+
+            if (dbQueries.Count() < 0)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future
+            }
+
+            AddNewWorkoutsToPracticeViewModel addNewWorkoutsToPracticeViewModel = new AddNewWorkoutsToPracticeViewModel 
+            { PracticeId = practiceId, RunnerId = runnerId, RunnerName = $"{applicationUser.FirstName} {applicationUser.LastName}", PracticeLocation = practice.PracticeLocation, PracticeStartDateTime = practice.PracticeStartTimeAndDate};
+            
+            foreach (var dbQuery in dbQueries)
+            {
+                NewWorkoutCheckboxOptions newWorkoutCheckboxOptions = new NewWorkoutCheckboxOptions
+                {
+                    PracticeId = practiceId,
+                    RunnerId = runnerId,
+                    WorkoutName = dbQuery.WorkoutName,
+                    WorkoutTypeId = dbQuery.Id,
+                    IsSelected = false
+                };
+
+                addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions?.Add(newWorkoutCheckboxOptions);
+            }
+
+            if (addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions.Count() < 1)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future. Runner already has every workout selected
+            }
+
+
+            return View(addNewWorkoutsToPracticeViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult AddNewWorkoutsToPractice(AddNewWorkoutsToPracticeViewModel addNewWorkoutsToPracticeViewModel)
+        {
+            if (addNewWorkoutsToPracticeViewModel.RunnerId == null) 
+            {
+                return RedirectToAction("Index"); // send to an error page in the future.
+            }
+
+            Practice practice = _context.Practices.Find(addNewWorkoutsToPracticeViewModel.PracticeId);
+            if (practice == null)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future. (Invalid practice id provided).
+            }
+
+            bool loopedOnce = false;
+             
+            foreach (var newWorkout in addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions.Where(i => i.IsSelected))
+            {
+                loopedOnce = true;
+
+                WorkoutInformation workoutInformation = new WorkoutInformation
+                {
+                    PracticeId = newWorkout.PracticeId,
+                    WorkoutTypeId = newWorkout.WorkoutTypeId,
+                    RunnerId = newWorkout.RunnerId,
+                };
+
+                _context.WorkoutInformation.Add(workoutInformation);
+            }
+
+            if (loopedOnce)
+            {
+                _context.SaveChanges();
+                return RedirectToAction("Index"); // send to a success page in the future
+            }
+
+             return RedirectToAction("Index"); // send to an error page in the future. Changes not reflected (loopOnce is false).  
+
         }
     }
 }

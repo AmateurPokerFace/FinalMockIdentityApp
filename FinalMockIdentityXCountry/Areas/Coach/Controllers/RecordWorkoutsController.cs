@@ -83,7 +83,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                             WorkoutTypeId = workoutType.Id
                         };
 
-                        vm.WorkoutCheckboxOptions.Add(addPracticeWorkoutCheckbox);
+                        vm.SelectedWorkoutCheckboxOptions.Add(addPracticeWorkoutCheckbox);
                     }
                 }
                 return View(addPracticeWorkoutsViewModels);
@@ -101,7 +101,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             {
                 foreach (var addPracticeWorkoutVm in addPracticeWorkoutsViewModels)
                 {
-                    foreach (var checkboxOptions in addPracticeWorkoutVm.WorkoutCheckboxOptions)
+                    foreach (var checkboxOptions in addPracticeWorkoutVm.SelectedWorkoutCheckboxOptions)
                     {
                         if (checkboxOptions.IsSelected && checkboxOptions.PracticeId != 0)
                         {
