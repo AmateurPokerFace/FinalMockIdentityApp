@@ -1,0 +1,47 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.DataController
+@model List<EditWorkoutDataViewModel>
+
+    @if (Model.FirstOrDefault().RunnerName != null)
+    {
+        <label>@Model.FirstOrDefault()?.RunnerName Practice Workout Data</label>
+    }
+    @if(Model.Count() > 0)
+    { 
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Workouts</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th> 
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var data in Model)
+                {
+                    <tr>
+                        <td>@data.PracticeStartTime</td>
+                        <td>@data.PracticeLocation</td>
+                        
+                        @if(data.Workouts.Count() > 0)
+                        {
+                            <td>
+                                @foreach (var workout in data.Workouts)
+                                {
+                                 @workout <br />
+                                }
+                            </td>
+                        }
+                        else
+                        {<td></td>}
+
+                        <td><a class="btn btn-link">Add workout to practice</a></td>
+                        <td><a class="btn btn-link">Delete workout from practice</a></td>
+                        <td><a asp-action="ViewDataEntered" asp-route-runnerId="@data.RunnerId" asp-route-practiceId="@data.PracticeId" class="btn btn-link">View/Edit data entered</a></td> 
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
