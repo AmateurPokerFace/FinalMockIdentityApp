@@ -14,7 +14,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-md navbar-toggleable-md navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Evans Cross Country</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -110,7 +110,33 @@
                         }
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Runner"))
                         {
-                        <li class="nav-item">
+                            <div class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="practiceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Practices
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="practiceDropdown">
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Runner" asp-controller="CurrentPractice" asp-action="CurrentPractices">My Practices</a>
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Runner" asp-controller="LogWorkoutData" asp-action="SelectAPractice">My Workouts</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="calcDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Calculators
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="calcDropdown">
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Runner" asp-controller="PaceCalculator" asp-action="JackDanielsVDOTCalculator">Jack Daniels VDOT</a>
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Runner" asp-controller="PaceCalculator" asp-action="OmniCalculator">Omni Calculator</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        @*<li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Runner" asp-controller="CurrentPractice" asp-action="CurrentPractices">Sign in to/log out of practice</a>
                         </li>
                         <li class="nav-item">
@@ -118,7 +144,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Runner" asp-controller="PaceCalculator" asp-action="SelectCalculator">Calculator</a>
-                        </li>
+                        </li>*@
                         }
                     </ul>
                     <partial name="_LoginPartial" />
