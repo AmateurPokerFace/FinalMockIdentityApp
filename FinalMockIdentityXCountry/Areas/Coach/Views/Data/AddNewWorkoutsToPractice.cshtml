@@ -13,7 +13,7 @@
             </tr>
         </thead>
         <tbody>
-            @if(Model.SelectedNewWorkoutCheckboxOptions.Count() > 0)
+            @if(Model.SelectedNewWorkoutCheckboxOptions != null && Model.SelectedNewWorkoutCheckboxOptions.Count() > 0)
             {
                 for (int i = 0; i < Model.SelectedNewWorkoutCheckboxOptions.Count; i++)
                 {

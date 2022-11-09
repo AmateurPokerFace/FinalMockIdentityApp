@@ -14,19 +14,19 @@
                 {
                     <tr>
                         <td>@Model[i].RunnerName</td>
-                        @if(Model[i].SelectedWorkoutCheckboxOptions.Count() > 0)
+                    @if (Model[i].SelectedWorkoutCheckboxOptions != null && Model[i].SelectedWorkoutCheckboxOptions.Count() > 0)
+                    {
+                        @for (int j = 0; j < Model[i].SelectedWorkoutCheckboxOptions.Count(); j++)
                         {
-                            @for (int j = 0; j < Model[i].SelectedWorkoutCheckboxOptions.Count(); j++)
-                            {
-                                <td>
-                                    <input asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].IsSelected" type="checkbox" />@Model[i].SelectedWorkoutCheckboxOptions[j].WorkoutType.WorkoutName
-                                    <input type="hidden" asp-for="@Model[i].PracticeId" />
-                                    <input type="hidden" asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].WorkoutTypeId" />
-                                    <input type="hidden" asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].RunnerId" />
-                                    <input type="hidden" asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].PracticeId" />
-                                </td>
-                            }
-                        } 
+                            <td>
+                                <input asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].IsSelected" type="checkbox" />@Model[i].SelectedWorkoutCheckboxOptions[j].WorkoutType.WorkoutName
+                                <input type="hidden" asp-for="@Model[i].PracticeId" />
+                                <input type="hidden" asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].WorkoutTypeId" />
+                                <input type="hidden" asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].RunnerId" />
+                                <input type="hidden" asp-for="@Model[i].SelectedWorkoutCheckboxOptions[j].PracticeId" />
+                            </td>
+                        }
+                    } 
                     </tr>
                 }
             </tbody>
