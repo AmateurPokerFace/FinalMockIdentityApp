@@ -6,10 +6,10 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
     {
         public AddPracticeWorkoutsViewModel()
         {
-            WorkoutCheckboxOptions = new List<AddPracticeWorkoutCheckboxOptions>();
+            SelectedWorkoutCheckboxOptions = new List<AddPracticeWorkoutCheckboxOptions>();
         }
 
-        public List<AddPracticeWorkoutCheckboxOptions>? WorkoutCheckboxOptions { get; set; }
+        public List<AddPracticeWorkoutCheckboxOptions>? SelectedWorkoutCheckboxOptions { get; set; }
         public string? RunnerName { get; set; }
         public string? RunnerId { get; set; }
         public int PracticeId { get; set; }
