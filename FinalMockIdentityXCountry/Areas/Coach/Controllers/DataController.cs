@@ -149,7 +149,9 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                              {
                                  p.PracticeLocation,
                                  p.PracticeStartTimeAndDate,
-                                 w.Pace,
+                                 w.Hours,
+                                 w.Minutes,
+                                 w.Seconds,
                                  w.Distance,
                                  workoutTypes.WorkoutName,
                                  aspnetusers.FirstName,
@@ -175,7 +177,9 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 foreach (var dbQuery in dbQueries)
                 {
                     vmHelper.Distance = dbQuery.Distance;
-                    vmHelper.Pace = dbQuery.Pace;
+                    vmHelper.Hours = dbQuery.Hours;
+                    vmHelper.Minutes = dbQuery.Minutes;
+                    vmHelper.Seconds = dbQuery.Seconds;
                     vmHelper.WorkoutName = dbQuery.WorkoutName;
                     vmHelper.WorkoutId = dbQuery.Id;
 
@@ -207,7 +211,9 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                            {
                                w.Id,
                                workoutTypes.WorkoutName,
-                               w.Pace,
+                               w.Hours,
+                               w.Minutes,
+                               w.Seconds,
                                w.Distance,
                                aspnetusers.FirstName,
                                aspnetusers.LastName
@@ -221,7 +227,9 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             EditEnteredDataViewModel editEnteredDataViewModel = new EditEnteredDataViewModel
             {
                 RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}",
-                Pace = dbQuery.Pace,
+                Hours = dbQuery.Hours,
+                Minutes = dbQuery.Minutes,
+                Seconds = dbQuery.Seconds,
                 Distance = dbQuery.Distance,
                 WorkoutName = dbQuery.WorkoutName,
                 WorkoutInformationId = dbQuery.Id
@@ -248,7 +256,9 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 }
 
                 workoutInformation.Distance = editEnteredDataViewModel.Distance;
-                workoutInformation.Pace = editEnteredDataViewModel.Pace;
+                workoutInformation.Hours = editEnteredDataViewModel.Hours;
+                workoutInformation.Minutes = editEnteredDataViewModel.Minutes;
+                workoutInformation.Seconds = editEnteredDataViewModel.Seconds;
                 _context.WorkoutInformation.Update(workoutInformation);
                 _context.SaveChanges();
 

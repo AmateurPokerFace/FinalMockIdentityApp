@@ -136,8 +136,10 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                 if (workoutInformation != null)
                 {
-                    workoutInformation.Distance = logDataViewModel.Distance;
-                    workoutInformation.Pace = logDataViewModel.Pace;
+                    workoutInformation.Distance = logDataViewModel.Distance; 
+                    workoutInformation.Hours = logDataViewModel.Hours;
+                    workoutInformation.Minutes = logDataViewModel.Minutes;
+                    workoutInformation.Seconds = logDataViewModel.Seconds;
                     workoutInformation.DataWasLogged = true;
                     
                     _context.Update(workoutInformation);
@@ -173,7 +175,9 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                                        w.Id,
                                        w.RunnerId,
                                        w.Distance,
-                                       w.Pace,
+                                       w.Hours,
+                                       w.Minutes,
+                                       w.Seconds,
                                        practices.PracticeStartTimeAndDate,
                                        practices.PracticeLocation,
                                        workoutTypes.WorkoutName
@@ -193,7 +197,9 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                         WorkoutInformationId = dbQuery.Id,
                         WorkoutName = dbQuery.WorkoutName,
                         Distance = dbQuery.Distance,
-                        Pace = dbQuery.Pace
+                        Hours = dbQuery.Hours,
+                        Minutes = dbQuery.Minutes,
+                        Seconds = dbQuery.Seconds, 
                     };
 
                     return View(editLoggedDataViewModel);
@@ -215,7 +221,9 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                 if (workoutInformation != null)
                 {
                     workoutInformation.Distance = editLoggedDataViewModel.Distance;
-                    workoutInformation.Pace = editLoggedDataViewModel.Pace;
+                    workoutInformation.Hours = editLoggedDataViewModel.Hours;
+                    workoutInformation.Minutes = editLoggedDataViewModel.Minutes;
+                    workoutInformation.Seconds = editLoggedDataViewModel.Seconds;   
                     workoutInformation.DataWasLogged = true;
 
                     _context.Update(workoutInformation);

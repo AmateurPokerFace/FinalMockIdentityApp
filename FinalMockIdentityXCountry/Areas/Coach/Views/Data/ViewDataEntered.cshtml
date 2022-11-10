@@ -8,9 +8,11 @@
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">Workout</th>
-                <th scope="col">Pace</th>
                 <th scope="col">Distance</th>
+                <th scope="col">Workout</th>
+                <th scope="col">Hours</th>
+                <th scope="col">Minutes</th>
+                <th scope="col">Seconds</th> 
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -19,7 +21,9 @@
             {
                 <tr>
                     <td>@workoutData?.WorkoutName</td>
-                    <td>@workoutData?.Pace</td>
+                    <td>@workoutData?.Hours</td>
+                    <td>@workoutData?.Minutes</td>
+                    <td>@workoutData?.Seconds</td>
                     <td>@workoutData?.Distance</td>
                     <td><a asp-action="EditEnteredData" asp-route-workoutInformationId="@workoutData?.WorkoutId" class="btn btn-link">Edit Data</a></td>
                 </tr>

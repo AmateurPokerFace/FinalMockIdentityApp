@@ -122,7 +122,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
                 _context.SaveChanges();
 
-                return RedirectToAction("Index", "Welcome");
+                return RedirectToAction("SelectPractice", "RecordWorkouts");
             }
             
             return RedirectToAction("Index", "Welcome"); // return error in the future

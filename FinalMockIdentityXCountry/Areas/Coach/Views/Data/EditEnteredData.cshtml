@@ -11,12 +11,20 @@
         <input class="form-control" disabled="disabled" asp-for="WorkoutName" value="@Model.WorkoutName" />
     </div>
     <div>
-        <label class="form-label" asp-for="Pace">Pace:</label>
-        <input class="form-control" asp-for="Pace" />
-    </div>
-    <div>
         <label class="form-label" asp-for="Distance">Distance:</label>
         <input class="form-control" asp-for="Distance" />
+    </div>
+    <div>
+        <label class="form-label" asp-for="Hours">Hours:</label>
+        <input class="form-control" asp-for="Hours" />
+    </div>
+    <div>
+        <label class="form-label" asp-for="Minutes">Minutes:</label>
+        <input class="form-control" asp-for="Minutes" />
+    </div>
+    <div>
+        <label class="form-label" asp-for="Seconds">Seconds:</label>
+        <input class="form-control" asp-for="Seconds" />
     </div>
     <input type="hidden" asp-for="@Model.WorkoutInformationId"/>
     <input type="hidden" asp-for="@Model.RunnerName" />

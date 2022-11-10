@@ -9,8 +9,16 @@ namespace FinalMockIdentityXCountry.Models
         public int Id { get; set; }
         [Required]
         public double Distance { get; set; }
+        //[Required]
+        //public double Pace { get; set; }
         [Required]
-        public double Pace { get; set; }
+        public int Hours { get; set; }
+        [Required]
+        [Range(0, 60.0)]
+        public int Minutes { get; set; }
+        [Required]
+        [Range(0, 60.0)]
+        public int Seconds { get; set; }
         public bool DataWasLogged { get; set; }
         public string? RunnerId { get; set; }
         [ValidateNever]
