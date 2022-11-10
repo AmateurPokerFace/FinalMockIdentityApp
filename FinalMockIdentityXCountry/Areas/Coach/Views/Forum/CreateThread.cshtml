@@ -1,17 +1,26 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 @model NewForumThreadViewModel
 
-<div class="form-control">
+<h2>Create a New Thread</h2>
+<br />
+<div class="form-control mx-auto">
     <form method="post">
-        <div>
-            <label asp-for="ThreadTitle" class="form-label"></label>
-            <input asp-for="ThreadTitle" class="form-control" />
+        <div class="input-group">
+@*            <label asp-for="ThreadTitle" class="form-label">Title: </label>
+*@            <span class="input-group-text">Title:</span>
+              <input asp-for="ThreadTitle" class="form-control" required />
+            
         </div>
-        <div>
-            <label asp-for="ThreadBody" class="form-label"></label>
-            <textarea asp-for="ThreadBody" class="form-text" draggable="auto"></textarea>
+        <br />
+        <div class="input-group">
+@*            <label asp-for="ThreadBody" class="form-label"></label>
+*@            <span class="input-group-text" >Body:</span>
+            <textarea asp-for="ThreadBody" class="form-control" required></textarea>
         </div>
+        <br />
+        <div>
         <button type="submit" class="btn btn-primary">Submit</button>
-        <a class="btn btn-danger">cancel</a>
+        <a class="btn btn-danger">Discard</a>
+        </div>
     </form>
 </div>
