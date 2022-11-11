@@ -12,6 +12,7 @@
     <input asp-for="@Model.NewReplyToMessageBoardResponse.Reply" class="form-text" />
     <input type="hidden" asp-for="@Model.NewReplyToMessageBoardResponse.MessageBoardResponseId" /> 
     <input type="hidden" asp-for="@Model.NewReplyToMessageBoardResponse.ReplyerId" />
+    <br />
     <a asp-action="Home" class="btn btn-danger">Cancel</a>
     <button type="submit" class="btn btn-primary">Add Reply</button>
 </form>
