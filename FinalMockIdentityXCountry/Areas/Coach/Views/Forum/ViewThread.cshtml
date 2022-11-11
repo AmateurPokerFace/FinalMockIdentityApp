@@ -5,9 +5,9 @@
     <p style="font-weight: lighter;">
         Created on @Model.MessageBoard.PublishedDateTime</p>
    <br />
-   <h1>@Model.MessageBoard.MessageTitle</h1>
+   <h3>@Model.MessageBoard.MessageTitle</h3>
    <br />
-   <h2>@Model.MessageBoard.MessageBody</h2>
+   <p>@Model.MessageBoard.MessageBody</p>
     <a asp-action="AddThreadComment" asp-route-messageBoardId="@Model.MessageBoard.Id" class="btn btn-primary">Comment</a>
 </div>
 

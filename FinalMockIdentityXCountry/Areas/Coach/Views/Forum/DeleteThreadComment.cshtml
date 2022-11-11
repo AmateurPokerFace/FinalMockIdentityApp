@@ -1,6 +1,7 @@
 ﻿@model MessageBoardResponse
 <label>@Model.Responder @Model.Response @Model.ResponseDateTime</label>
 
+<h3>Delete this comment?</h3>
 <form method="post">
     <input type="hidden" asp-for="@Model.Id"/>
     <a class="btn btn-outline-danger" asp-action="Home">Cancel</a>
