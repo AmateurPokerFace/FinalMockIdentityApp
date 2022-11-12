@@ -1,21 +1,23 @@
-﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.CurrentPracticeController
 @model AttendanceViewModel
 
-<label class="form-label">@Model.PracticeStartTimeAndDate @Model.PracticeLocation</label>
+<label class="form-label">@Model.PracticeStartTimeAndDate | @Model.PracticeLocation</label>
 
-@if(Model.Runners.Count() > 0)
+@if(Model.AttendanceViewModelHelpers != null && Model.AttendanceViewModelHelpers.Count > 0)
 {
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">Runners</th>
+                <th scope="col">Runner</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var runner in Model.Runners)
+            @foreach (var runner in Model.AttendanceViewModelHelpers)
             {
                 <tr>
-                    <td>@runner</td>
+                    <td>@runner.Runner</td>
+                    <td><a asp-action="SignRunnerOut" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId" class="btn btn-danger">Sign out of practice</a></td>
                 </tr>
             }
         </tbody>
