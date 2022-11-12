@@ -24,7 +24,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
         public IActionResult StartNow()
         {
-           
+
             StartNowViewModel startNowVm = new StartNowViewModel();
 
             var runnerUsers = _userManager.GetUsersInRoleAsync("Runner").Result;
@@ -33,7 +33,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             {
                 startNowVm.RunnerUsers.Add((ApplicationUser)runner);
             }
-            return View(startNowVm); 
+            return View(startNowVm);
         }
 
         [HttpPost]
@@ -55,7 +55,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     PracticeLocation = startNowVm.PracticeLocation,
                     CoachId = userClaim.Value
                 };
-                
+
                 _unitOfWork.Practice.Add(practice);
                 _unitOfWork.SaveChanges();
 
@@ -119,7 +119,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             {
                 scheduleASessionVm.RunnerUsers.Add((ApplicationUser)runner);
             }
-            return View(scheduleASessionVm); 
+            return View(scheduleASessionVm);
         }
 
         [HttpPost]
@@ -187,8 +187,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
                     _unitOfWork.SaveChanges();
 
-                    return RedirectToAction("Index", "Home", new {area = "Welcome"});
-                    }
+                    return RedirectToAction("Index", "Home", new { area = "Welcome" });
+                }
                 else
                 {
                     // add a page for no runners in database??

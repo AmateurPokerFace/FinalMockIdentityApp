@@ -262,7 +262,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 _context.WorkoutInformation.Update(workoutInformation);
                 _context.SaveChanges();
 
-                return RedirectToAction("Index"); // send to a success page in the future
+                return RedirectToAction("RunnerPracticeWorkoutData", "Data"); // send to a success page in the future
             }
             return RedirectToAction("Index"); // send to an error page in the future
         }

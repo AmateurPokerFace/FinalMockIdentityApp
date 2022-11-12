@@ -119,7 +119,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                              on a.PracticeId equals p.Id
                              join aspnetusers in _context.ApplicationUsers
                              on a.RunnerId equals aspnetusers.Id
-                             where a.PracticeId == practiceId
+                             where a.PracticeId == practiceId && a.IsPresent
                              select new
                              {
                                  p.PracticeStartTimeAndDate,
