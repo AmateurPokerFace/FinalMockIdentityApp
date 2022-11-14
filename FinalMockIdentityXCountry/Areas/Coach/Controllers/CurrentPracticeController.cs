@@ -24,26 +24,13 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
         public IActionResult CurrentPractices()
         {
-            var userClaimsIdentity = (ClaimsIdentity)User.Identity;
-            var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userClaim != null)
+            IEnumerable<Practice> practices = _context.Practices.Where(p => p.PracticeIsInProgress);
+            if (practices == null || practices.Count() == 0)
             {
-                var userClaimValue = userClaim.Value;
-
-                IEnumerable<Practice> practices = _context.Practices
-                                    .Where(c => c.CoachId == userClaimValue)
-                                    .Where(p => p.PracticeIsInProgress);
-
-                if (practices.Count() == 0)
-                {
-                    // return a page stating there are no practices for the coach with that id?
-                    return View("NoPracticesInProgress");
-                }
-
-                return View(practices);
+               return View("NoPracticesInProgress");
             }
-            return View();
+
+            return View(practices);
         }
 
         public IActionResult NoPracticesInProgress()
