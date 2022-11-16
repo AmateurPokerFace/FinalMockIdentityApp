@@ -14,5 +14,6 @@
         public string? RunnerId { get; set; }
         public int PracticeId { get; set; }
         public string? Workout { get; set; }
+        public int WorkoutTypeRecordCount { get; set; } // used to get the current count of records that are in the workouttypes table.
     }
 }

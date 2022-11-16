@@ -18,28 +18,33 @@
         </thead>
     <tbody>
         <tr>
-            <td>@Model.PracticeStartDateTime</td>
-            <td>@Model.PracticeLocation</td>
+           @*Column 1*@ <td>@Model.PracticeStartDateTime</td>
+             @*Column 2*@ <td>@Model.PracticeLocation</td>
             @if (Model.Workouts != null && Model.Workouts.Count() > 0)
             {
-                <td>
-                    @foreach (var workout in Model.Workouts)
-                    {
-                        @workout <br />
-                    }
-                </td>
+                @*Column 3*@  <td> @foreach (var workout in Model.Workouts) { @workout <br />  } </td>
                 workoutFound = true;
             }
-            else {  <td></td> }
-            <td><a>Add workout to practice</a></td>
+            else {  @*Column 3*@  <td>N/A</td> }
+            @if (Model.Workouts != null && Model.Workouts.Count() == Model.WorkoutTypeRecordCount)
+            {
+                <td></td>
+            }
+            else
+            {
+                @*Column 4*@
+                <td><a asp-action="AddNewWorkoutsToPractice" asp-route-runnerId="@Model.RunnerId" asp-route-practiceId="@Model.PracticeId" class="btn-link">Add workout to practice</a></td>
+            } 
             @if (workoutFound)
             {
-                <td><a>Delete workout from practice</a></td>
-                <td><a>View/Edit data entered</a></td>
+                @*Column 5*@ 
+                <td><a asp-action="DeleteWorkoutsFromPractice" asp-route-runnerId="@Model.RunnerId" asp-route-practiceId="@Model.PracticeId" class="btn-link">Delete workout from practice</a></td>
+                @*Column 6*@
+                <td><a asp-action="ViewDataEntered" asp-route-runnerId="@Model.RunnerId" asp-route-practiceId="@Model.PracticeId" class="btn-link">View/Edit data entered</a></td>
             }
             else{
-                <td></td>
-                <td></td>
+                 @*Column 5*@ <td></td>
+                 @*Column 6*@ <td></td>
             }
         </tr>
     </tbody>

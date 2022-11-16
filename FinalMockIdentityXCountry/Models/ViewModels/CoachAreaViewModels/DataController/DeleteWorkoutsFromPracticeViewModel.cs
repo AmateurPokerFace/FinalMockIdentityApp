@@ -13,5 +13,6 @@
         public string? PracticeLocation { get; set; }
         public DateTime PracticeStartDateTime { get; set; }
         public int PracticeId { get; set; }
+        public int WorkoutInformationId { get; set; }
     }
 }

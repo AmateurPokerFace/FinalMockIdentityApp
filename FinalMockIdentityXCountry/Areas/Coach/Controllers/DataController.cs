@@ -314,7 +314,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions?.Add(newWorkoutCheckboxOptions);
             }
 
-            if (addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions.Count() < 1)
+            if (addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions == null || addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions.Count() < 1)
             {
                 return RedirectToAction("Index"); // send to an error page in the future. Runner already has every workout selected
             }
@@ -438,30 +438,29 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             {
                 return RedirectToAction("Index"); // Send to an error page in the future
             }
-
-            List<WorkoutInformation> workouts = _context.WorkoutInformation.Where(w => w.PracticeId == deleteWorkoutsFromPracticeViewModel.PracticeId && w.RunnerId == deleteWorkoutsFromPracticeViewModel.RunnerId).ToList();
+             
             
-            if (workouts == null)
+            bool recordFound = false;
+            
+            foreach (var workout in deleteWorkoutsFromPracticeViewModel.SelectedCheckboxOptions.Where(w => w.IsSelected))
             {
-                return RedirectToAction("Index"); // Send to an error page in the future
+                WorkoutInformation workoutInformation = _context.WorkoutInformation.Find(workout.WorkoutInformationId);
+
+                if (workoutInformation != null)
+                {
+                    recordFound = true;
+                    _context.Remove(workoutInformation);
+                }
+            }
+             
+            if (recordFound)
+            {
+                _context.SaveChanges();
+
+                return RedirectToAction("Index"); // send to a success page in the future
             }
 
-            //foreach (var deletedWorkout in deleteWorkoutsFromPracticeViewModel.SelectedCheckboxOptions)
-            //{
-            //    foreach (var workout in workouts)
-            //    {
-            //        if (deletedWorkout.WorkoutInformationId == workout.Id)
-            //        {
-
-            //        }
-            //    }
-            //}
-
-            //workouts.RemoveAll(x => deleteWorkoutsFromPracticeViewModel.SelectedCheckboxOptions.Contains(x))
-
-            var matchesFound = workouts.Select(i => i.Id).Except(deleteWorkoutsFromPracticeViewModel.SelectedCheckboxOptions.Select(x => x.WorkoutInformationId)).ToList();
-
-            return RedirectToAction("Index");
+            return RedirectToAction("Index");  // send to an error page in the future (no records were found).
         }
 
         public IActionResult CurrentPracticeWorkoutData()
@@ -607,6 +606,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                aspnetusers.FirstName,
                                aspnetusers.LastName
                            }).FirstOrDefault();
+             
 
             if (dbQuery == null)
             {
@@ -619,29 +619,12 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             editRunnerCurrentPracticeDataViewModel.RunnerId = dbQuery.RunnerId;
             editRunnerCurrentPracticeDataViewModel.PracticeId = dbQuery.Id;
 
+            IQueryable<WorkoutType> records = _context.WorkoutTypes;
+            editRunnerCurrentPracticeDataViewModel.WorkoutTypeRecordCount = records.Count();
+
+
+
             return View(editRunnerCurrentPracticeDataViewModel);
-        }
-
-        public IActionResult AddWorkoutToRunnersCurrentPractice(string runnerId, int practiceId)
-        {
-            if (runnerId == null || practiceId == 0)
-            {
-                return RedirectToAction("Index"); // send to an error page in the future
-            }
-
-            return View();
-        }
-
-        public IActionResult SelectedRunnerCurrentPracticeData(string runnerId, int practiceId)
-        {
-            if (runnerId == null || practiceId == 0)
-            {
-                return RedirectToAction("Index"); // send to an error page in the future
-            }
-
-
-
-            return View();
         }
     }
 }
