@@ -1,35 +1,42 @@
-﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.StartPracticeController
 @model StartNowViewModel
 
 <div>
-    <h3>Start a New Practice Session</h3>
+    <h3>Start a new practice session</h3>
 </div>
 <div class="form-control">
-    <form method="post">
-        @*@Html.AntiForgeryToken()*@
+    <form method="post"> 
         <div>
             <label asp-for="PracticeLocation" class="form-label">Practice Location</label>
-            <input asp-for="PracticeLocation" class="form-control"/>
-        </div> 
-        <div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Runner</th>
-                        <th scope="col">Present</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var runner in Model.RunnerUsers)
+            <input asp-for="PracticeLocation" class="form-control" />
+            <span asp-validation-for="PracticeLocation" class="text-danger"></span>
+        </div>
+        <br />
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Runner</th>
+                    <th scope="col">Present</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.SessionViewModelCheckboxOptions != null && Model.SessionViewModelCheckboxOptions.Count() > 0)
+                {
+                    @for (int i = 0; i < Model.SessionViewModelCheckboxOptions.Count(); i++)
                     {
                         <tr>
-                            <td>@runner.FirstName @runner.LastName</td> 
-                            <td><input type="checkbox" name="presentRunners" value="@runner.Id" class="form-check" /></td> 
+                            <td>@Model.SessionViewModelCheckboxOptions[i].RunnerName</td>
+                            <td>
+                                <input asp-for="@Model.SessionViewModelCheckboxOptions[i].IsAttending" type="checkbox" />
+                                <input type="hidden" asp-for="@Model.SessionViewModelCheckboxOptions[i].RunnerName" />
+                                <input type="hidden" asp-for="@Model.SessionViewModelCheckboxOptions[i].RunnerId" />
+                            </td>
                         </tr>
                     }
-                </tbody>
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
+        <br />
         <button type="submit" class="btn btn-primary">Start Practice</button>
     </form>
 </div>

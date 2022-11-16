@@ -1,7 +1,5 @@
 ﻿using FinalMockIdentityXCountry.Models;
-using FinalMockIdentityXCountry.Models.DataLayer.Repositories.IRepository.Interfaces;
-using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels;
-using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.Delete;
+using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.StartPracticeController;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,189 +12,216 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
     [Area("Coach")]
     public class StartPracticeController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly XCountryDbContext _context;
         private readonly UserManager<IdentityUser> _userManager; // the UserManager object in question
-        public StartPracticeController(IUnitOfWork unitOfWork, UserManager<IdentityUser> userManager)
+        public StartPracticeController(XCountryDbContext context, UserManager<IdentityUser> userManager)
         {
-            _unitOfWork = unitOfWork;
+            _context = context;
             _userManager = userManager;
         }
 
         public IActionResult StartNow()
         {
+            StartNowViewModel startNowViewModel = new StartNowViewModel();
 
-            StartNowViewModel startNowVm = new StartNowViewModel();
+            var dbQueries = (from aspnetuserroles in _context.UserRoles
+                             join aspnetusers in _context.ApplicationUsers
+                             on aspnetuserroles.UserId equals aspnetusers.Id
+                             join aspnetroles in _context.Roles
+                             on aspnetuserroles.RoleId equals aspnetroles.Id
+                             where aspnetroles.Name.ToLower() == "runner"
+                             select new
+                             {
+                                 aspnetusers.Id,
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName,
+                             });
 
-            var runnerUsers = _userManager.GetUsersInRoleAsync("Runner").Result;
-
-            foreach (var runner in runnerUsers)
+            if (dbQueries != null && dbQueries.Count() > 0)
             {
-                startNowVm.RunnerUsers.Add((ApplicationUser)runner);
+                foreach (var dbQuery in dbQueries)
+                {
+                    ScheduleASessionViewModelCheckboxOptions checkboxOption = new ScheduleASessionViewModelCheckboxOptions
+                    {
+                        RunnerId = dbQuery.Id,
+                        RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}",
+                    };
+
+                    startNowViewModel.SessionViewModelCheckboxOptions.Add(checkboxOption);
+                }
+
+                return View(startNowViewModel);
             }
-            return View(startNowVm);
+
+            return RedirectToAction("Index"); // send to an error page in the future?
+
         }
 
         [HttpPost]
-        //[ValidateAntiForgeryToken]
-        public IActionResult StartNow(StartNowViewModel startNowVm, string[] presentRunners)
+        public IActionResult StartNow(StartNowViewModel startNowVm)
         {
             if (ModelState.IsValid)
             {
-
-            }
-            var userClaimsIdentity = (ClaimsIdentity)User.Identity;
-            var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            if (userClaim != null)
-            {
-                Practice practice = new Practice
+                var userClaimsIdentity = (ClaimsIdentity)User.Identity;
+                var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                if (userClaim != null)
                 {
-                    PracticeStartTimeAndDate = DateTime.Now,
-                    PracticeIsInProgress = true,
-                    PracticeLocation = startNowVm.PracticeLocation,
-                    CoachId = userClaim.Value
-                };
-
-                _unitOfWork.Practice.Add(practice);
-                _unitOfWork.SaveChanges();
-
-                startNowVm.RunnerUsers = new List<ApplicationUser>();
-
-                var runnerUsers = _userManager.GetUsersInRoleAsync("Runner").Result;
-
-                foreach (var runner in runnerUsers)
-                {
-                    startNowVm.RunnerUsers.Add((ApplicationUser)runner);
-                }
-
-                if (startNowVm.RunnerUsers.Count > 0)
-                {
-                    for (int i = 0; i < startNowVm.RunnerUsers.Count; i++)
+                    Practice practice = new Practice
                     {
-                        foreach (var presentRunner in presentRunners)
+                        PracticeStartTimeAndDate = DateTime.Now,
+                        PracticeIsInProgress = true,
+                        PracticeLocation = startNowVm.PracticeLocation,
+                        CoachId = userClaim.Value
+                    };
+
+                    _context.Practices.Add(practice);
+                    _context.SaveChanges();
+
+                    bool loopedAtLeastOnce = false;
+
+                    foreach (var attendingRunner in startNowVm.SessionViewModelCheckboxOptions.Where(i => i.IsAttending))
+                    {
+                        loopedAtLeastOnce = true;
+
+                        Attendance attendance = new Attendance()
                         {
-                            if (startNowVm.RunnerUsers[i].Id == presentRunner)
-                            {
-                                Attendance attendance = new Attendance();
-                                attendance.PracticeId = practice.Id;
-                                attendance.RunnerId = startNowVm.RunnerUsers[i].Id;
-                                attendance.IsPresent = true;
-                                attendance.HasBeenSignedOut = false;
-                                startNowVm.RunnerUsers.Remove(startNowVm.RunnerUsers[i]);
-                                _unitOfWork.Attendance.Add(attendance);
-                            }
-                        }
+                            PracticeId = practice.Id,
+                            IsPresent = true,
+                            RunnerId = attendingRunner.RunnerId,
+
+                        };
+
+                        _context.Attendances.Add(attendance);
                     }
 
-                    foreach (var absentRunner in startNowVm.RunnerUsers)
+                    foreach (var absentRunner in startNowVm.SessionViewModelCheckboxOptions.Where(i => i.IsAttending == false))
                     {
-                        Attendance attendance = new Attendance();
-                        attendance.PracticeId = practice.Id;
-                        attendance.RunnerId = absentRunner.Id;
-                        attendance.IsPresent = false;
-                        attendance.HasBeenSignedOut = false;
-                        _unitOfWork.Attendance.Add(attendance);
+                        loopedAtLeastOnce = true;
+                        Attendance attendance = new Attendance()
+                        {
+                            PracticeId = practice.Id,
+                            IsPresent = false,
+                            RunnerId = absentRunner.RunnerId,
+
+                        };
+
+                        _context.Attendances.Add(attendance);
                     }
 
-                    _unitOfWork.SaveChanges();
+                    if (loopedAtLeastOnce)
+                    {
+                        _context.SaveChanges();
 
-                    return RedirectToAction("Index", "Home", new { area = "Welcome" });
-                }
-                else
-                {
-                    // add a page for no runners in database??
-                }
-            }
+                        return RedirectToAction();
+                    }
 
-            return RedirectToAction("Index", "Home", new { area = "Welcome" });
+                }
+
+            } 
+
+            return View(startNowVm);
         }
 
         public IActionResult ScheduleASession()
         {
-            ScheduleASessionViewModel scheduleASessionVm = new ScheduleASessionViewModel();
-            var runnerUsers = _userManager.GetUsersInRoleAsync("Runner").Result;
+            ScheduleASessionViewModel scheduleASessionViewModel = new ScheduleASessionViewModel();
 
-            foreach (var runner in runnerUsers)
+            var dbQueries = (from aspnetuserroles in _context.UserRoles
+                             join aspnetusers in _context.ApplicationUsers
+                             on aspnetuserroles.UserId equals aspnetusers.Id
+                             join aspnetroles in _context.Roles
+                             on aspnetuserroles.RoleId equals aspnetroles.Id
+                             where aspnetroles.Name.ToLower() == "runner"
+                             select new
+                             {
+                                 aspnetusers.Id,
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName,
+                             });
+
+            if (dbQueries != null && dbQueries.Count() > 0)
             {
-                scheduleASessionVm.RunnerUsers.Add((ApplicationUser)runner);
+                foreach (var dbQuery in dbQueries)
+                {
+                    ScheduleASessionViewModelCheckboxOptions checkboxOption = new ScheduleASessionViewModelCheckboxOptions
+                    {
+                        RunnerId = dbQuery.Id,
+                        RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}",
+                    };
+
+                    scheduleASessionViewModel.SessionViewModelCheckboxOptions.Add(checkboxOption);
+                }
+
+                return View(scheduleASessionViewModel);
             }
-            return View(scheduleASessionVm);
+
+            return RedirectToAction("Index"); // send to an error page in the future?
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult ScheduleASession(ScheduleASessionViewModel scheduleASessionVm, string[] runnersAttending)
+        public IActionResult ScheduleASession(ScheduleASessionViewModel scheduleASessionVm)
         {
             if (ModelState.IsValid)
             {
-
-            }
-            var userClaimsIdentity = (ClaimsIdentity)User.Identity;
-            var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            if (userClaim != null)
-            {
-                Practice practice = new Practice
+                var userClaimsIdentity = (ClaimsIdentity)User.Identity;
+                var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                if (userClaim != null)
                 {
-                    PracticeStartTimeAndDate = scheduleASessionVm.PracticeStartTimeAndDate,
-                    PracticeEndTimeAndDate = scheduleASessionVm.PracticeEndTimeAndDate,
-                    PracticeIsInProgress = true,
-                    PracticeLocation = scheduleASessionVm.PracticeLocation,
-                    CoachId = userClaim.Value
-                };
-
-                _unitOfWork.Practice.Add(practice);
-                _unitOfWork.SaveChanges();
-
-                scheduleASessionVm.RunnerUsers = new List<ApplicationUser>();
-
-                var runnerUsers = _userManager.GetUsersInRoleAsync("Runner").Result;
-
-                foreach (var runner in runnerUsers)
-                {
-                    scheduleASessionVm.RunnerUsers.Add((ApplicationUser)runner);
-                }
-
-
-                if (scheduleASessionVm.RunnerUsers.Count > 0)
-                {
-                    for (int i = 0; i < scheduleASessionVm.RunnerUsers.Count; i++)
+                    Practice practice = new Practice
                     {
-                        foreach (var runnerAttending in runnersAttending)
+                        PracticeStartTimeAndDate = scheduleASessionVm.PracticeStartTimeAndDate,
+                        PracticeEndTimeAndDate = scheduleASessionVm.PracticeEndTimeAndDate,
+                        PracticeIsInProgress = true,
+                        PracticeLocation = scheduleASessionVm.PracticeLocation,
+                        CoachId = userClaim.Value
+                    };
+
+                    _context.Practices.Add(practice);
+                    _context.SaveChanges();
+
+                    bool loopedAtLeastOnce = false;
+
+                    foreach (var attendingRunner in scheduleASessionVm.SessionViewModelCheckboxOptions.Where(i => i.IsAttending))
+                    {
+                        loopedAtLeastOnce = true;
+
+                        Attendance attendance = new Attendance()
                         {
-                            if (scheduleASessionVm.RunnerUsers[i].Id == runnerAttending)
-                            {
-                                Attendance attendance = new Attendance();
-                                attendance.PracticeId = practice.Id;
-                                attendance.RunnerId = scheduleASessionVm.RunnerUsers[i].Id;
-                                attendance.IsPresent = true;
-                                attendance.HasBeenSignedOut = false;
-                                scheduleASessionVm.RunnerUsers.Remove(scheduleASessionVm.RunnerUsers[i]);
-                                _unitOfWork.Attendance.Add(attendance);
-                            }
-                        }
+                            PracticeId = practice.Id,
+                            IsPresent = true,
+                            RunnerId = attendingRunner.RunnerId,
+
+                        };
+
+                        _context.Attendances.Add(attendance);
                     }
 
-                    foreach (var runnerNotAttending in scheduleASessionVm.RunnerUsers)
+                    foreach (var absentRunner in scheduleASessionVm.SessionViewModelCheckboxOptions.Where(i => i.IsAttending == false))
                     {
-                        Attendance attendance = new Attendance();
-                        attendance.PracticeId = practice.Id;
-                        attendance.RunnerId = runnerNotAttending.Id;
-                        attendance.IsPresent = false;
-                        attendance.HasBeenSignedOut = false;
-                        _unitOfWork.Attendance.Add(attendance);
+                        loopedAtLeastOnce = true;
+                        Attendance attendance = new Attendance()
+                        {
+                            PracticeId = practice.Id,
+                            IsPresent = false,
+                            RunnerId = absentRunner.RunnerId,
+
+                        };
+
+                        _context.Attendances.Add(attendance);
                     }
 
-                    _unitOfWork.SaveChanges();
+                    if (loopedAtLeastOnce)
+                    {
+                        _context.SaveChanges();
 
-                    return RedirectToAction("Index", "Home", new { area = "Welcome" });
-                }
-                else
-                {
-                    // add a page for no runners in database??
-                }
+                        return RedirectToAction();
+                    }
+
+                } 
+
             }
 
-            return RedirectToAction("Index", "Home", new { area = "Welcome" });
+            return View(scheduleASessionVm);
         }
-
     }
 }
