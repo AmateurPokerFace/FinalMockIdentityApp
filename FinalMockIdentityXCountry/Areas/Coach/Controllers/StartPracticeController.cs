@@ -20,6 +20,11 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             _userManager = userManager;
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         public IActionResult StartNow()
         {
             StartNowViewModel startNowViewModel = new StartNowViewModel();
@@ -214,7 +219,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     {
                         _context.SaveChanges();
 
-                        return RedirectToAction();
+                        return RedirectToAction("Index");
                     }
 
                 } 
@@ -222,6 +227,56 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             }
 
             return View(scheduleASessionVm);
+        }
+
+        public IActionResult EditData(int practiceId)
+        {
+            if (practiceId == 0)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future
+            }
+
+            var dbQuery = (from p in _context.Practices
+                           where p.Id == practiceId
+                           select new
+                           {
+                               p.Id,
+                               p.PracticeLocation
+                           }).FirstOrDefault();
+
+            if (dbQuery == null)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future
+            }
+
+            EditDataViewModel editDataViewModel = new EditDataViewModel 
+            {
+                PracticeId = dbQuery.Id,
+                PracticeLocation = dbQuery.PracticeLocation
+            };
+
+            return View(editDataViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult EditData(EditDataViewModel editDataViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                Practice practice = _context.Practices.Find(editDataViewModel.PracticeId);
+                if (practice == null) 
+                {
+                    return RedirectToAction("Index"); // send to an error page in the future
+                }
+
+                practice.PracticeLocation = editDataViewModel.PracticeLocation;
+                _context.Practices.Update(practice);
+                _context.SaveChanges();
+
+                return RedirectToAction("CurrentPractices", "CurrentPractice");
+            }
+
+            return View(editDataViewModel);
         }
     }
 }

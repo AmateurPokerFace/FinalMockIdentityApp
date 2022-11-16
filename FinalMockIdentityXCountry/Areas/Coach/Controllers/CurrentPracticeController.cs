@@ -126,7 +126,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             AttendanceViewModel attendanceViewModel = new AttendanceViewModel
             {
                 PracticeLocation = dbQueries.FirstOrDefault()?.PracticeLocation == null ? " " : dbQueries.FirstOrDefault()?.PracticeLocation,
-                PracticeStartTimeAndDate = dbQueries.FirstOrDefault().PracticeStartTimeAndDate
+                PracticeStartTimeAndDate = dbQueries.FirstOrDefault().PracticeStartTimeAndDate,
+                PracticeId = dbQueries.FirstOrDefault().Id
             };
 
             foreach (var dbQuery in dbQueries)
@@ -212,5 +213,91 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             return RedirectToAction(nameof(CurrentPractices)); // Send to a success page in the future
         }
 
+        public IActionResult AddRunnerToCurrentPractice(int practiceId)
+        {
+            if (practiceId == 0)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future (invalid id provided)
+            }
+
+            var dbQueries = (from a in _context.Attendances
+                             join p in _context.Practices
+                             on a.PracticeId equals p.Id
+                             join aspnetusers in _context.ApplicationUsers
+                             on a.RunnerId equals aspnetusers.Id
+                             where a.IsPresent == false && a.PracticeId == practiceId
+                             select new
+                             { 
+                                 a.RunnerId,
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName,
+                                 p.PracticeLocation,
+                                 p.PracticeStartTimeAndDate,
+                                 a.Id
+                             });
+
+            if (dbQueries != null && dbQueries.Count() > 0)
+            {
+                AddRunnerToCurrentPracticeViewModel addRunnerToCurrentPracticeViewModel = new AddRunnerToCurrentPracticeViewModel
+                {
+                    PracticeLocation = dbQueries.FirstOrDefault()?.PracticeLocation, 
+                    PracticeStartDateTime = dbQueries.FirstOrDefault().PracticeStartTimeAndDate, 
+                };
+
+                foreach (var dbQuery in dbQueries)
+                {
+                    AddRunnerToCurrentPracticeViewModelCheckboxOption addRunnerToCurrentPracticeViewModelCheckboxOption = new AddRunnerToCurrentPracticeViewModelCheckboxOption
+                    { 
+                        AttendanceId = dbQuery.Id,
+                        RunnerId = dbQuery.RunnerId,
+                        RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}"
+                    };
+
+                    addRunnerToCurrentPracticeViewModel.AddRunnerToCurrentPracticeCheckboxOptions?.Add(addRunnerToCurrentPracticeViewModelCheckboxOption);
+                }
+
+                return View(addRunnerToCurrentPracticeViewModel);
+            }
+
+            return RedirectToAction("Index"); // send to an error page in the future (invalid id provided)
+            
+        }
+
+        [HttpPost]
+        public IActionResult AddRunnerToCurrentPractice(AddRunnerToCurrentPracticeViewModel addRunnerToCurrentPracticeViewModel)
+        {
+            List<Attendance> attendances = new List<Attendance>();
+            if (addRunnerToCurrentPracticeViewModel.AddRunnerToCurrentPracticeCheckboxOptions != null && addRunnerToCurrentPracticeViewModel.AddRunnerToCurrentPracticeCheckboxOptions.Count() > 0)
+            {
+                foreach (var addToAttendance in addRunnerToCurrentPracticeViewModel.AddRunnerToCurrentPracticeCheckboxOptions.Where(i => i.IsSelected))
+                {
+                    Attendance attendance = _context.Attendances.Find(addToAttendance.AttendanceId);
+                    
+                    if (attendance != null)
+                    {
+                        attendance.IsPresent = true;
+                        attendances.Add(attendance);
+                    }
+                }
+            }
+
+            bool resultsFound = false;
+            foreach (var attendance in attendances)
+            {
+                resultsFound = true;
+                _context.Attendances.Update(attendance);
+            }
+
+            if (resultsFound)
+            {
+                _context.SaveChanges();
+
+                return RedirectToAction("CurrentPractices");
+            }
+
+            return RedirectToAction("Index"); // send to an error page in the future
+        }
+
     }
+
 }

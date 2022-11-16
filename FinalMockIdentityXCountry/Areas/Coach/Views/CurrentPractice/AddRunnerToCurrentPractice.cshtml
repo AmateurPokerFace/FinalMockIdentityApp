@@ -1,0 +1,35 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.CurrentPracticeController
+@model AddRunnerToCurrentPracticeViewModel
+
+<label class="form-label">@Model.PracticeStartDateTime | @Model.PracticeLocation</label>
+<br />
+
+<form method="post">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Runner</th>
+                <th scope="col">Add to Current Practice</th> 
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.AddRunnerToCurrentPracticeCheckboxOptions != null && Model.AddRunnerToCurrentPracticeCheckboxOptions.Count() > 0)
+            {
+                @for (int i = 0; i < Model.AddRunnerToCurrentPracticeCheckboxOptions.Count(); i++)
+                {
+                    <tr>
+                        <td scope="row">@Model.AddRunnerToCurrentPracticeCheckboxOptions[i].RunnerName</td>
+                        <td>
+                            <input asp-for="@Model.AddRunnerToCurrentPracticeCheckboxOptions[i].IsSelected" type="checkbox" />
+                            <input type="hidden" asp-for="@Model.AddRunnerToCurrentPracticeCheckboxOptions[i].AttendanceId" />
+                            <input type="hidden" asp-for="@Model.AddRunnerToCurrentPracticeCheckboxOptions[i].RunnerId" />
+                            <input type="hidden" asp-for="@Model.AddRunnerToCurrentPracticeCheckboxOptions[i].RunnerName" /> 
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <a class="btn btn-danger">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>

@@ -1,0 +1,11 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.StartPracticeController
+@model EditDataViewModel
+<form method="post">
+    <div>
+        <label asp-for="PracticeLocation" class="form-label">Location</label>
+        <input asp-for="PracticeLocation" class="form-control" />
+        <span asp-validation-for="PracticeLocation" class="text-danger"></span>
+    </div>
+    <a asp-action="CurrentPractices" class="btn btn-danger">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
