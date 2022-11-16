@@ -127,7 +127,7 @@ namespace FinalMockIdentityXCountry.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt." + $" Make sure that the entered UserName doesn't contain spaces.");
                     return Page();
                 }
             }
