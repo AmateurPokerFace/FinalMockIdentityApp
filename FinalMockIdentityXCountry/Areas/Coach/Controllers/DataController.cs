@@ -28,7 +28,13 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             return View();
         }
 
+
         public IActionResult SelectType()
+        {
+            return View();
+        }
+
+        public IActionResult SelectPracticeType()
         {
             return View();
         }
@@ -511,6 +517,53 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             return RedirectToAction(nameof(Index)); // send to an error page in the future (no practice history found)
 
+        }
+
+        public IActionResult PracticesThatHaveEndedWorkoutData()
+        {
+            List<CurrentPracticeWorkoutDataViewModel> currentPracticeWorkoutDataViewModels = new List<CurrentPracticeWorkoutDataViewModel>();
+
+            var dbQueries = (from p in _context.Practices
+                             join a in _context.Attendances
+                             on p.Id equals a.PracticeId
+                             where a.IsPresent && p.PracticeIsInProgress == false
+                             group a by new
+                             {
+                                 a.PracticeId,
+                                 p.PracticeLocation,
+                                 p.PracticeStartTimeAndDate
+                             } into matchesFound
+                             select new CurrentPracticeWorkoutDataViewModel
+                             {
+                                 PracticeId = matchesFound.Key.PracticeId,
+                                 PracticeDateTime = matchesFound.Key.PracticeStartTimeAndDate,
+                                 PracticeLocation = matchesFound.Key.PracticeLocation,
+                                 TotalRunners = matchesFound.Count(),
+                             });
+
+            if (dbQueries.Count() > 0)
+            {
+                foreach (var dbQuery in dbQueries)
+                {
+                    CurrentPracticeWorkoutDataViewModel currentPracticeVm = new CurrentPracticeWorkoutDataViewModel
+                    {
+                        PracticeId = dbQuery.PracticeId,
+                        PracticeDateTime = dbQuery.PracticeDateTime,
+                        PracticeLocation = dbQuery.PracticeLocation,
+                        TotalRunners = dbQuery.TotalRunners
+                    };
+
+                    currentPracticeWorkoutDataViewModels.Add(currentPracticeVm);
+                }
+            }
+
+            if (currentPracticeWorkoutDataViewModels.Count() > 0)
+            {
+                currentPracticeWorkoutDataViewModels = currentPracticeWorkoutDataViewModels.OrderByDescending(d => d.PracticeDateTime).ToList();
+                return View(currentPracticeWorkoutDataViewModels);
+            }
+
+            return RedirectToAction(nameof(Index)); // send to an error page in the future (no practice history found)
         }
 
         public IActionResult SelectRunnerFromPractice(int practiceId)
