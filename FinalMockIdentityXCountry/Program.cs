@@ -19,7 +19,7 @@ var serverVersion = new MySqlServerVersion(new Version(8, 0, 30)); //current ver
 builder.Services.AddDbContext<XCountryDbContext>(options => options.UseMySql(connectionString, serverVersion));
 
 //builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<XCountryDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -44,7 +44,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication();;
+app.UseAuthentication();
 
 app.UseAuthorization();
 app.MapRazorPages();
