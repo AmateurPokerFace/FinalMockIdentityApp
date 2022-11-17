@@ -24,6 +24,11 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             _userManager = userManager;
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         public IActionResult SelectPractice()
         {
             
@@ -90,7 +95,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             }
             else
             {
-                return RedirectToAction(); // return an invalid page (error in database query)
+                return RedirectToAction(nameof(NoPresentRunners)); // return an invalid page (error in database query)
             } 
         }
 
@@ -122,10 +127,15 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
                 _context.SaveChanges();
 
-                return RedirectToAction("SelectPractice", "RecordWorkouts");
+                return RedirectToAction("CurrentPractice", "CurrentPractices");
             }
             
             return RedirectToAction("Index", "Welcome"); // return error in the future
+        }
+
+        public IActionResult NoPresentRunners()
+        {
+            return View();
         }
     }
 }

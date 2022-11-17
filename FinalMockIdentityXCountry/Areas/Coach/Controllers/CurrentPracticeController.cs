@@ -117,10 +117,10 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                  p.PracticeStartTimeAndDate,
                                  p.Id
                              });
-
-            if (dbQueries.Count() < 1 || dbQueries == null)
+ 
+            if (dbQueries == null || dbQueries.Count() < 1 )
             {
-                return RedirectToAction(); // send to an invalid page in the future
+                return View("NoPracticesInProgress");
             }
 
             AttendanceViewModel attendanceViewModel = new AttendanceViewModel

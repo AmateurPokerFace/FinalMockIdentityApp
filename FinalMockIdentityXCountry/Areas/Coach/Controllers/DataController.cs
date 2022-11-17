@@ -57,7 +57,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (runnerPracticeWorkoutDataViewModel.RunnerUsers.Count() < 1)
             {
-                return RedirectToAction(); // send to an error page in the future
+                return RedirectToAction("Index"); // send to an error page in the future
             }
 
             return View(runnerPracticeWorkoutDataViewModel); 
@@ -362,7 +362,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             if (loopedOnce)
             {
                 _context.SaveChanges();
-                return RedirectToAction("Index"); // send to a success page in the future
+                return RedirectToAction("CurrentPracticeWorkoutData"); // send to a success page in the future
             }
 
              return RedirectToAction("Index"); // send to an error page in the future. Changes not reflected (loopOnce is false).  
@@ -463,7 +463,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             {
                 _context.SaveChanges();
 
-                return RedirectToAction("Index"); // send to a success page in the future
+                return RedirectToAction("CurrentPracticeWorkoutData"); // send to a success page in the future
             }
 
             return RedirectToAction("Index");  // send to an error page in the future (no records were found).
@@ -674,8 +674,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             IQueryable<WorkoutType> records = _context.WorkoutTypes;
             editRunnerCurrentPracticeDataViewModel.WorkoutTypeRecordCount = records.Count();
-
-
 
             return View(editRunnerCurrentPracticeDataViewModel);
         }

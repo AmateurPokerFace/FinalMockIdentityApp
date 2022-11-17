@@ -117,7 +117,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     {
                         _context.SaveChanges();
 
-                        return RedirectToAction();
+                        return RedirectToAction("SelectPractice", "RecordWorkouts");
                     }
 
                 }

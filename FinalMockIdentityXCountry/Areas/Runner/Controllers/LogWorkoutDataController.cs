@@ -73,7 +73,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                 return View(selectAPracticeViewModels);
             }
-                return RedirectToAction(); // send to an error page in the future
+            return RedirectToAction("Index"); // send to an error page in the future
         }
 
         public IActionResult LogData(int workoutInfoId, int practiceId)
@@ -104,7 +104,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                     if (dbQuery == null)
                     {
-                        return RedirectToAction(); // Send to an error page in the future
+                        return RedirectToAction("Index"); // send to an error page in the future
                     }
 
                     LogDataViewModel logDataViewModel = new LogDataViewModel
@@ -122,7 +122,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                 return View();
             }
 
-            return RedirectToAction(); // Send to an error page in the future
+            return RedirectToAction("Index"); // Send to an error page in the future
             
         }
 
@@ -145,13 +145,13 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                     _context.Update(workoutInformation);
                     _context.SaveChanges();
 
-                    return RedirectToAction("Index"); // send to success page in the future
+                    return RedirectToAction("SelectAPractice"); // send to success page in the future
                 }
 
-                return RedirectToAction(); // send to an error page in the future
+                return RedirectToAction("Index"); // send to an error page in the future
             }
 
-            return RedirectToAction(); // send to an error page in the future
+            return RedirectToAction("Index"); // send to an error page in the future
         }
 
         public IActionResult EditLoggedData(int workoutInfoId, int practiceId)
@@ -207,7 +207,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                 return View();
             }
 
-            return RedirectToAction(); // Send to an error page in the future
+            return RedirectToAction("Index"); // send to an error page in the future
         }
 
         [HttpPost]
@@ -229,13 +229,13 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                     _context.Update(workoutInformation);
                     _context.SaveChanges();
 
-                    return RedirectToAction("Index"); // send to success page in the future
+                    return RedirectToAction("SelectAPractice"); // send to success page in the future
                 }
 
-                return RedirectToAction(); // send to an error page in the future
+                return RedirectToAction("Index"); // send to an error page in the future
             }
 
-            return RedirectToAction(); // send to an error page in the future
+            return RedirectToAction("Index"); // send to an error page in the future
         }
     }
 }
