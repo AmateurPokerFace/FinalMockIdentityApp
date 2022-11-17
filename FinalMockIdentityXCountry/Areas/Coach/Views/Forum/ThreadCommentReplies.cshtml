@@ -1,25 +1,29 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 @model ThreadCommentViewModel
 
-<div>
-    <label>Original comment: @Model.MessageBoardResponse.Response @Model.MessageBoardResponse.ResponseDateTime</label>
-    <br />
-    <br />
-    <a asp-action="AddReplyToThreadComment" asp-route-messageBoardResponseId="@Model.MessageBoardResponse.Id" class="btn btn-primary">Add a new reply</a>
-</div>
+<div class="container mx-auto">
+    <div>
+        <h3>Add a reply.</h3>
+        <br />
+        <p>Author said: @Model.MessageBoardResponse.Response </p>
+        <p style="font-weight: lighter;">@Model.MessageBoardResponse.ResponseDateTime</p>
+        <br />
+        <a asp-action="AddReplyToThreadComment" asp-route-messageBoardResponseId="@Model.MessageBoardResponse.Id" class="btn btn-primary">Reply</a>
+    </div>
 
 
-@if (Model.RepliesToMessageBoardResponse.Count() > 0)
-{
-    foreach (var reply in Model.RepliesToMessageBoardResponse)
+    @if (Model.RepliesToMessageBoardResponse.Count() > 0)
     {
-        <div> 
-            <label>@reply.ReplyDateTime</label>
-            <br><br>
-            <label>@reply.Reply</label>
-            <br><br>
-            <a asp-action="DeleteThreadReply" asp-route-replyToMessageBoardResponseId="@reply.Id" class="btn btn-danger">Delete Reply</a>
-        </div>
-        <hr />
+        foreach (var reply in Model.RepliesToMessageBoardResponse)
+        {
+            <div> 
+                <br>
+                <p>@reply.Reply</p>
+                <p style="font-weight: lighter;">@reply.ReplyDateTime</p>
+                <br>
+                <a asp-action="DeleteThreadReply" asp-route-replyToMessageBoardResponseId="@reply.Id" class="btn btn-danger">Delete Reply</a>
+            </div>
+            <hr />
+        }
     }
-}
+</div>

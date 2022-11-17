@@ -1,15 +1,19 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 @model DeleteThreadReplyViewModel
 
-<h3>Delete this comment?</h3>
-<form method="post">
-    <div>
-        <label class="form-label">Reply by @Model.RunnerName on @Model.ReplyDateTime</label>
-    </div>
-    <div>
-        <label>Reply: @Model.Reply</label>
-    </div>
-    <a asp-action="index" class="btn btn-outline-danger">Cancel</a>
-    <input type="hidden" asp-for="@Model.ReplyToMessageBoardId"/>
-    <button type="submit" class="btn btn-danger">Confirm Delete</button>
-</form>
+<div class="container mx-auto">
+    <h3>Delete this comment?</h3>
+    <form method="post">
+        <div>
+            <label>Reply: @Model.Reply</label>
+        </div>
+        <div>
+            <label class="form-label">Reply by @Model.RunnerName on @Model.ReplyDateTime</label>
+        </div>
+        <br />
+        <a asp-action="Home" class="btn btn-outline-danger">Cancel</a>
+        <input type="hidden" asp-for="@Model.ReplyToMessageBoardId" />
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+    </form>
+</div>
+
