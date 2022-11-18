@@ -9,12 +9,11 @@
     <br />
     <p>@Model.MessageBoard.MessageBody</p>
     <br />
-    <a asp-action="AddThreadComment" asp-route-messageBoardId="@Model.MessageBoard.Id" class="btn btn-primary">New Comment</a>
 </div>
 <br />
 <form method="post">
-    <label asp-for="@Model.NewMessageBoardComment.Response" class="form-label"></label>
-    <input asp-for="@Model.NewMessageBoardComment.Response" class="form-text" required/>
+    <label asp-for="@Model.NewMessageBoardComment.Response" class="form-label" for="replyThread">Reply to this thread: </label>
+    <input asp-for="@Model.NewMessageBoardComment.Response" class="form-control" id="replyThread" rows="2" required/>
     <input hidden asp-for="@Model.NewMessageBoardComment.MessageBoardId"/> 
     <input hidden asp-for="@Model.NewMessageBoardComment.ResponderId"/>
     <br />

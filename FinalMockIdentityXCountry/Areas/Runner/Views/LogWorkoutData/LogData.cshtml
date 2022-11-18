@@ -10,20 +10,20 @@
     </div>
     <br />
     <div>
-        <label asp-for="@Model.Distance" class="form-label">Distance:</label>
-        <input asp-for="@Model.Distance" class="form-control"/>
+        <label asp-for="@Model.Distance" class="form-label" for="distance">Distance:</label>
+        <input asp-for="@Model.Distance" class="form-control" id="distance"/>
     </div>
     <div>
-        <label asp-for="@Model.Hours" class="form-label">Hours:</label>
-        <input asp-for="@Model.Hours" class="form-control" />
+        <label asp-for="@Model.Hours" class="form-label" for="hours">Hours:</label>
+        <input asp-for="@Model.Hours" class="form-control" id="hours"/>
     </div>
     <div>
-        <label asp-for="@Model.Minutes" class="form-label">Minutes:</label>
-        <input asp-for="@Model.Minutes" class="form-control" />
+        <label asp-for="@Model.Minutes" class="form-label" for="minutes">Minutes:</label>
+        <input asp-for="@Model.Minutes" class="form-control" id="minutes"/>
     </div>
     <div>
-        <label asp-for="@Model.Seconds" class="form-label">Seconds:</label>
-        <input asp-for="@Model.Seconds" class="form-control" />
+        <label asp-for="@Model.Seconds" class="form-label" for="seconds">Seconds:</label>
+        <input asp-for="@Model.Seconds" class="form-control" id="seconds"/>
     </div>
     <input type="hidden" asp-for="@Model.WorkoutInformationId"/>
     <input type="hidden" asp-for="@Model.PracticeId"/>

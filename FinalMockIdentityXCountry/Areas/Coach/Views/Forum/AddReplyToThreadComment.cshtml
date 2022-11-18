@@ -8,8 +8,8 @@
 </div>
 
 <form method="post">
-    <label asp-for="@Model.NewReplyToMessageBoardResponse.Reply" class="form-label"></label> 
-    <input asp-for="@Model.NewReplyToMessageBoardResponse.Reply" class="form-text" />
+    <label asp-for="@Model.NewReplyToMessageBoardResponse.Reply" class="form-label" for="threadReply">Your Response: </label> 
+    <input asp-for="@Model.NewReplyToMessageBoardResponse.Reply" class="form-control" id="threadReply"/>
     <input type="hidden" asp-for="@Model.NewReplyToMessageBoardResponse.MessageBoardResponseId" /> 
     <input type="hidden" asp-for="@Model.NewReplyToMessageBoardResponse.ReplyerId" />
     <br />
