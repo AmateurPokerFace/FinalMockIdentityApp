@@ -61,6 +61,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             _context.Practices.Update(practice);
             _context.SaveChanges();
 
+            TempData["success"] = "Practice ended successfully.";
+
             return RedirectToAction("CurrentPractices", "CurrentPractice"); // send to a page showing each runner who hasn't signed out.
         }
     }

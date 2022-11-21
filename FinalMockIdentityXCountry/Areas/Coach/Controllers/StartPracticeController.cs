@@ -33,6 +33,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             {
                 startNowVm.RunnerUsers.Add((ApplicationUser)runner);
             }
+             
             return View(startNowVm);
         }
 
@@ -98,6 +99,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     }
 
                     _unitOfWork.SaveChanges();
+
+                    TempData["success"] = "Practice started successfully";
 
                     return RedirectToAction("Index", "Home", new { area = "Welcome" });
                 }
@@ -186,6 +189,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     }
 
                     _unitOfWork.SaveChanges();
+                    TempData["success"] = "Practice scheduled successfully";
 
                     return RedirectToAction("Index", "Home", new { area = "Welcome" });
                 }

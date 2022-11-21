@@ -15,12 +15,16 @@
                 </tr> 
             </thead>
             <tbody>
-                @foreach (var runner in Model.Runners)
+                @if (Model.Runners != null && Model.Runners.Count > 0)
                 {
-                    <tr>
-                        <td>@runner</td>
-                    </tr>
+                    @foreach (var runner in Model.Runners)
+                    {
+                        <tr>
+                            <td>@runner</td>
+                        </tr>
+                    }
                 }
+                
             </tbody>
         </table>
         <a asp-route-currentPracticeId="@Model.practiceId" asp-controller="EndCurrentPractice" asp-action="End" class="btn btn-danger">End Current Practice</a>

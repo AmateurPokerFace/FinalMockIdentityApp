@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Security.Claims;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 {
@@ -87,11 +88,21 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 }
                 else
                 {
-                    return RedirectToAction(); // return a practice already ended page
+                    Practice practice = _context.Practices.Find(currentPracticeId); // no runners are in the provided practiceId
+                    if (practice == null) // check to see if a practice exists with the provided id in the database
+                    {
+                        TempData["error"] = "The practice doesn't exist in the database. Please provide a valid practice id.";
+                    }
+                    else
+                    {
+                        currentViewModel.PracticeLocation = practice.PracticeLocation;
+                        currentViewModel.PracticeStartTimeAndDate = practice.PracticeStartTimeAndDate;
+                        return View(currentViewModel);
+                    }
                 }
             }
 
-            return RedirectToAction();
+            return RedirectToAction("Index");
         }
 
         public IActionResult Attendance(int practiceId)

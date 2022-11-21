@@ -43,7 +43,7 @@ namespace FinalMockIdentityXCountry.Migrations
 
                     b.HasIndex("RunnerId");
 
-                    b.ToTable("Attendances");
+                    b.ToTable("Attendances", (string)null);
                 });
 
             modelBuilder.Entity("FinalMockIdentityXCountry.Models.MessageBoard", b =>
@@ -70,7 +70,7 @@ namespace FinalMockIdentityXCountry.Migrations
 
                     b.HasIndex("CoachId");
 
-                    b.ToTable("MessageBoards");
+                    b.ToTable("MessageBoards", (string)null);
                 });
 
             modelBuilder.Entity("FinalMockIdentityXCountry.Models.MessageBoardResponse", b =>
@@ -99,7 +99,7 @@ namespace FinalMockIdentityXCountry.Migrations
 
                     b.HasIndex("ResponderId");
 
-                    b.ToTable("MessageBoardResponses");
+                    b.ToTable("MessageBoardResponses", (string)null);
                 });
 
             modelBuilder.Entity("FinalMockIdentityXCountry.Models.Practice", b =>
@@ -131,7 +131,7 @@ namespace FinalMockIdentityXCountry.Migrations
 
                     b.HasIndex("CoachId");
 
-                    b.ToTable("Practices");
+                    b.ToTable("Practices", (string)null);
                 });
 
             modelBuilder.Entity("FinalMockIdentityXCountry.Models.ReplyToMessageBoardResponse", b =>
@@ -160,7 +160,7 @@ namespace FinalMockIdentityXCountry.Migrations
 
                     b.HasIndex("ReplyerId");
 
-                    b.ToTable("RepliesToMessageBoardResponse");
+                    b.ToTable("RepliesToMessageBoardResponse", (string)null);
                 });
 
             modelBuilder.Entity("FinalMockIdentityXCountry.Models.WorkoutInformation", b =>
@@ -201,7 +201,7 @@ namespace FinalMockIdentityXCountry.Migrations
 
                     b.HasIndex("WorkoutTypeId");
 
-                    b.ToTable("WorkoutInformation");
+                    b.ToTable("WorkoutInformation", (string)null);
                 });
 
             modelBuilder.Entity("FinalMockIdentityXCountry.Models.WorkoutType", b =>
@@ -216,7 +216,7 @@ namespace FinalMockIdentityXCountry.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WorkoutTypes");
+                    b.ToTable("WorkoutTypes", (string)null);
 
                     b.HasData(
                         new
