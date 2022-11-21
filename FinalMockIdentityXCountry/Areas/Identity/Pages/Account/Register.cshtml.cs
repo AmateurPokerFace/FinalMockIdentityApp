@@ -81,10 +81,13 @@ namespace FinalMockIdentityXCountry.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            //[Required]
+            //[EmailAddress]
+            //[Display(Name = "Email")]
+            //public string Email { get; set; }
             [Required]
-            [EmailAddress]
-            [Display(Name = "Email")]
-            public string Email { get; set; }
+            [Display(Name = "UserName")]
+            public string UserName { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -107,7 +110,7 @@ namespace FinalMockIdentityXCountry.Areas.Identity.Pages.Account
 
             [ValidateNever]
             public IEnumerable<SelectListItem> CurrentRolesList { get; set; }
-            public string? Role { get; set; }
+            public string Role { get; set; }
             [Required]
             public string FirstName { get; set; }
             public string LastName { get; set; }
@@ -119,12 +122,12 @@ namespace FinalMockIdentityXCountry.Areas.Identity.Pages.Account
             if (_roleManager.RoleExistsAsync(StaticDetails.Role_Master_Admin).GetAwaiter().GetResult() == false)
             {
                 _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Master_Admin)).GetAwaiter().GetResult();
-                _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Coach)).GetAwaiter().GetResult(); 
+                _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Coach)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Runner)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Not_Assigned)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Was_Revoked)).GetAwaiter().GetResult();
             }
-            
+
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             Input = new InputModel()
@@ -147,11 +150,12 @@ namespace FinalMockIdentityXCountry.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                
+                //await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                //await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
+                user.UserName = Input.UserName;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -168,31 +172,34 @@ namespace FinalMockIdentityXCountry.Areas.Identity.Pages.Account
                         await _userManager.AddToRoleAsync(user, Input.Role);
                     }
 
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
+                    //var userId = await _userManager.GetUserIdAsync(user);
+                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    //var callbackUrl = Url.Page(
+                    //    "/Account/ConfirmEmail",
+                    //    pageHandler: null,
+                    //    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                    //    protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                    //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
+                    //if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                    //{
+                    //    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                    //}
+                    //else
+                    //{
+                    //    await _signInManager.SignInAsync(user, isPersistent: false);
+                    //    return LocalRedirect(returnUrl);
+                    //}
+
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return LocalRedirect(returnUrl);
                 }
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError(string.Empty, error.Description + $" Spaces are also not allowed.");
                 }
             }
 
