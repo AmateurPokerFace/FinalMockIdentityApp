@@ -406,6 +406,51 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
             TempData["error"] = "Invalid runner provided";
             return RedirectToAction("Index");
         }
+
+        public IActionResult ChangeUserPassword(string userId)
+        {
+            ApplicationUser applicationUser = _context.ApplicationUsers.Find(userId);
+            if (applicationUser == null)
+            {
+                TempData["error"] = "Invalid user provided";
+                return RedirectToAction("Index");
+            }
+
+            ChangeUserPasswordViewModel changeUserPasswordViewModel = new ChangeUserPasswordViewModel
+            {
+                UsersName = $"{applicationUser.FirstName} {applicationUser.LastName}",
+                UserId = applicationUser.Id
+            };
+            return View(changeUserPasswordViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult ChangeUserPassword(ChangeUserPasswordViewModel changeUserPasswordViewModel)
+        {
+            var user = _context.ApplicationUsers.Find(changeUserPasswordViewModel.UserId);
+
+            if (user == null)
+            {
+                TempData["error"] = "Invalid user provided";
+                return RedirectToAction("Index");
+            }
+
+            if (changeUserPasswordViewModel.NewPassword == null)
+            {
+                TempData["error"] = "Invalid password provided";
+                return RedirectToAction("Index");
+            }
+
+            var newPassword = _userManager.PasswordHasher.HashPassword(user, changeUserPasswordViewModel.NewPassword);
+            user.PasswordHash = newPassword;
+
+            _context.ApplicationUsers.Update(user);
+            _context.SaveChanges();
+
+            TempData["success"] = "Password updated successfully";
+            return RedirectToAction("Index");
+        }
+
         public IActionResult RemoveCoach()
         {
             return View();
