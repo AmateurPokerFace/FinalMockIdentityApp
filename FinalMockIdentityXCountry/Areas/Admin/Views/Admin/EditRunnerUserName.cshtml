@@ -1,0 +1,14 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels
+@model EditRunnerUserNameViewModel
+
+<label class="form-label">Current Name: @Model.CurrentName</label>
+
+<form method="post">
+    <div>
+        <label asp-for="NewUserName" class="form-label">Enter New UserName:</label>
+        <input asp-for="NewUserName" class="form-control" />
+    </div> 
+    <input type="hidden" asp-for="@Model.RunnerId" />
+    <a asp-action="CurrentRunnersList" class="btn btn-danger">Cancel</a>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
