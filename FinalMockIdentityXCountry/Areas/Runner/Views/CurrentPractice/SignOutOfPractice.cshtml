@@ -1,15 +1,19 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
 @model SignOutOfPracticeViewModel
 
-<h3>End this practice?</h3>
-<form method="post">
-    <div>
-        <label>@Model.PracticeStartTimeAndDate @Model.PracticeLocation</label>
-    </div>
-    <input type="hidden" asp-for="PracticeId" />
-    <input type="hidden" asp-for="PracticeLocation" />
-    <input type="hidden" asp-for="PracticeStartTimeAndDate" />
-    <input type="hidden" asp-for="RunnerId" />
-    <a class="btn btn-danger" asp-action="CurrentPractices">Cancel</a>
-    <button type="submit" class="btn btn-primary">Confirm Sign Out</button>
-</form>
+<div class="container mx-auto">
+    <form method="post">
+        <div>
+            <h3>Are you sure you want to sign out of this practice?</h3>
+            <p>Start Date/Time: @Model.PracticeStartTimeAndDate </p>
+            <p> Location: @Model.PracticeLocation</p>
+        </div>
+        <input type="hidden" asp-for="PracticeId" />
+        <input type="hidden" asp-for="PracticeLocation" />
+        <input type="hidden" asp-for="PracticeStartTimeAndDate" />
+        <input type="hidden" asp-for="RunnerId" />
+        <br />
+        <a class="btn btn-danger" asp-action="CurrentPractices">Cancel</a>
+        <button type="submit" class="btn btn-primary">Sign Out</button>
+    </form>
+</div>
