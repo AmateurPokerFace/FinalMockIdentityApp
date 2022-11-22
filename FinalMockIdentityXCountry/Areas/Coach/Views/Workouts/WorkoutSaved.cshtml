@@ -1,6 +1,9 @@
 ﻿@model string
-@if (TempData.ContainsKey("WorkoutSavedMessage"))
-{
-    <label class="form-label">@TempData.Peek("WorkoutSavedMessage")</label>
-    <a class="btn btn-primary" asp-action="Index">OK</a>
-}
+
+<div class="container mx-auto">
+    @if (TempData.ContainsKey("WorkoutSavedMessage"))
+    {
+        <label class="form-label">@TempData.Peek("WorkoutSavedMessage")</label>
+        <a class="btn btn-primary" asp-action="Index">OK</a>
+    }
+</div>

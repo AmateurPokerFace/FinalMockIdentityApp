@@ -1,9 +1,12 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 @model Practice
 
-<form method="post">
-    <label class="form-label">@Model.PracticeStartTimeAndDate @Model.PracticeLocation</label>
-    <a class="btn btn-outline-danger">Cancel</a>
-    <input type="hidden" asp-for="@Model.Id" />
-    <button type="submit" class="btn btn-danger">Confirm Practice End</button>
-</form>
+<div class="container mx-auto">
+    <h3>End this practice?</h3>
+    <form method="post">
+        <label class="form-label">@Model.PracticeStartTimeAndDate at @Model.PracticeLocation</label>
+        <a class="btn btn-outline-danger">Cancel</a>
+        <input type="hidden" asp-for="@Model.Id" />
+        <button type="submit" class="btn btn-danger">End Practice</button>
+    </form>
+</div>

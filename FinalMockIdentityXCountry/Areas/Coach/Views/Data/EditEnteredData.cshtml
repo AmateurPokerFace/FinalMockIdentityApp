@@ -1,34 +1,30 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.DataController
 @model EditEnteredDataViewModel
 
-<form method="post">
-    <div>
-        <label class="form-label">Runner: </label>
-        <input class="form-control" disabled="disabled" asp-for="@Model.RunnerName" value="@Model.RunnerName"/>
-    </div>
-    <div>
-        <label class="form-label" asp-for="WorkoutName">Workout:</label>
-        <input class="form-control" disabled="disabled" asp-for="WorkoutName" value="@Model.WorkoutName" />
-    </div>
-    <div>
-        <label class="form-label" asp-for="Distance">Distance:</label>
-        <input class="form-control" asp-for="Distance" />
-    </div>
-    <div>
-        <label class="form-label" asp-for="Hours">Hours:</label>
-        <input class="form-control" asp-for="Hours" />
-    </div>
-    <div>
-        <label class="form-label" asp-for="Minutes">Minutes:</label>
-        <input class="form-control" asp-for="Minutes" />
-    </div>
-    <div>
-        <label class="form-label" asp-for="Seconds">Seconds:</label>
-        <input class="form-control" asp-for="Seconds" />
-    </div>
-    <input type="hidden" asp-for="@Model.WorkoutInformationId"/>
-    <input type="hidden" asp-for="@Model.RunnerName" />
-    <input type="hidden" asp-for="@Model.WorkoutName" />
-    <a class="btn btn-danger" asp-action="RunnerPracticeWorkoutData">Cancel Edit</a>
-    <button class="btn btn-primary">Save Changes</button>
-</form>
+<div class="container mx-auto">
+    <h3>Edit Workout Data for @Model.RunnerName</h3>
+    <form method="post">
+        <div class="input-group">
+            <label class="input-group-text" asp-for="WorkoutName">Workout:</label>
+            <input class="form-control" disabled="disabled" asp-for="WorkoutName" value="@Model.WorkoutName" />
+        </div>
+        <br />
+        <div class="input-group">
+            <span class="input-group-text">Distance (in miles):</span>
+            <input asp-for="@Model.Distance" class="form-control" aria-label="distance" />
+        </div>
+        <br />
+        <div class="input-group">
+            <span class="input-group-text">Time (Hours:Minutes:Seconds)</span>
+            <input asp-for="@Model.Hours" class="form-control" aria-label="hours" />
+            <input asp-for="@Model.Minutes" class="form-control" aria-label="minutes" />
+            <input asp-for="@Model.Seconds" class="form-control" aria-label="seconds" />
+        </div>
+        <input type="hidden" asp-for="@Model.WorkoutInformationId" />
+        <input type="hidden" asp-for="@Model.RunnerName" />
+        <input type="hidden" asp-for="@Model.WorkoutName" />
+        <br />
+        <a class="btn btn-danger" asp-action="RunnerPracticeWorkoutData">Cancel Edit</a>
+        <button class="btn btn-primary">Save Changes</button>
+    </form>
+</div>

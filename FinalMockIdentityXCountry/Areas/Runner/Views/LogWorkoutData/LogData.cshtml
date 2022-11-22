@@ -2,34 +2,45 @@
 @model LogDataViewModel
 
 
+<div class="container mx-auto">
+    <h3>Enter your run data for this practice.</h3>
+    <form method="post">
+        <div>
+            <p>Start Date/Time: @Model.PracticeStartDateTime</p>
+            <p>Location: @Model.PracticeLocation</p>
+            <p>Workout: @Model.WorkoutName</p>
+        </div>
+        <br />
+        <div class="input-group">
+            <span class="input-group-text">Distance (in miles):</span>
+            <input asp-for="@Model.Distance" class="form-control" aria-label="distance" />
+        </div>
+        <br />
+        <div class="input-group">
+            <span class="input-group-text">Time (Hours:Minutes:Seconds)</span>
+            <input asp-for="@Model.Hours" class="form-control" aria-label="hours" />
+            <input asp-for="@Model.Minutes" class="form-control" aria-label="minutes" />
+            <input asp-for="@Model.Seconds" class="form-control" aria-label="seconds" />
+        </div>
+        @*<div>
+            <label asp-for="@Model.Hours" class="form-label" for="hours">Hours:</label>
+            <input asp-for="@Model.Hours" class="form-control" id="hours" />
+        </div>
+        <div>
+            <label asp-for="@Model.Minutes" class="form-label" for="minutes">Minutes:</label>
+            <input asp-for="@Model.Minutes" class="form-control" id="minutes" />
+        </div>
+        <div>
+            <label asp-for="@Model.Seconds" class="form-label" for="seconds">Seconds:</label>
+            <input asp-for="@Model.Seconds" class="form-control" id="seconds" />
+        </div>*@
+        <input type="hidden" asp-for="@Model.WorkoutInformationId" />
+        <input type="hidden" asp-for="@Model.PracticeId" />
+        <input type="hidden" asp-for="@Model.RunnerId" />
+        <br />
+        <a asp-action="Index" class="btn btn-danger">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <br />
+    </form>
+</div>
 
-<form method="post">
-    <div>
-        <label class="form-label">@Model.PracticeStartDateTime @Model.PracticeLocation</label>
-        <label class="form-label">Workout: @Model.WorkoutName</label>
-    </div>
-    <br />
-    <div>
-        <label asp-for="@Model.Distance" class="form-label" for="distance">Distance:</label>
-        <input asp-for="@Model.Distance" class="form-control" id="distance"/>
-    </div>
-    <div>
-        <label asp-for="@Model.Hours" class="form-label" for="hours">Hours:</label>
-        <input asp-for="@Model.Hours" class="form-control" id="hours"/>
-    </div>
-    <div>
-        <label asp-for="@Model.Minutes" class="form-label" for="minutes">Minutes:</label>
-        <input asp-for="@Model.Minutes" class="form-control" id="minutes"/>
-    </div>
-    <div>
-        <label asp-for="@Model.Seconds" class="form-label" for="seconds">Seconds:</label>
-        <input asp-for="@Model.Seconds" class="form-control" id="seconds"/>
-    </div>
-    <input type="hidden" asp-for="@Model.WorkoutInformationId"/>
-    <input type="hidden" asp-for="@Model.PracticeId"/>
-    <input type="hidden" asp-for="@Model.RunnerId"/>
-
-    <a asp-action="Index" class="btn btn-danger">Cancel</a>
-    <button type="submit" class="btn btn-primary">Save</button>
-    <br />
-</form>

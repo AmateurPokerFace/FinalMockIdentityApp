@@ -1,24 +1,26 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 @model AllViewModel
 
-<h3>Athelete Workout History</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <td scope="col">Runner</td>
-            <td scope="col"></td>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.RunnerUsers.Count() > 0)
-        {
-            @foreach (var runner in Model.RunnerUsers)
+<div class="container mx-auto">
+    <h3>Athelete Workout History</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <td scope="col">Runner</td>
+                <td scope="col"></td>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.RunnerUsers.Count() > 0)
             {
-                <tr>
-                    <td>@runner.FirstName @runner.LastName</td>
-                    <td><a class="btn btn-primary" asp-route-runnerId="@runner.Id" asp-action="SelectedAthlete">View Past Practices</a></td>
-                </tr>
+                @foreach (var runner in Model.RunnerUsers)
+                {
+                    <tr>
+                        <td>@runner.FirstName @runner.LastName</td>
+                        <td><a class="btn btn-primary" asp-route-runnerId="@runner.Id" asp-action="SelectedAthlete">View Past Practices</a></td>
+                    </tr>
+                }
             }
-        }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>

@@ -1,27 +1,32 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.DataController
 @model List<CurrentPracticeWorkoutDataViewModel>
 
-@if (Model != null && Model.Count() > 0)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Location</th>
-                <th scope="col">Attendance Count</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var practice in Model)
-            {
+<div class="container mx-auto">
+    <h3>Finished Practices</h3>
+    <a asp-action="CurrentPracticeWorkoutData" class="btn btn-link">Switch to practices in progress.</a>
+    <br />
+    @if (Model != null && Model.Count() > 0)
+    {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@practice.PracticeDateTime</td>
-                    <td>@practice.PracticeLocation</td>
-                    <td>@practice.TotalRunners</td>
-                    <td><a asp-action="SelectRunnerFromPractice" asp-route-practiceId="@practice.PracticeId" class="btn btn-primary">Select Practice</a></td>
+                    <th scope="col">Date</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Attendance Count</th>
+                    <th scope="col"></th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var practice in Model)
+                {
+                    <tr>
+                        <td>@practice.PracticeDateTime</td>
+                        <td>@practice.PracticeLocation</td>
+                        <td>@practice.TotalRunners</td>
+                        <td><a asp-action="SelectRunnerFromPractice" asp-route-practiceId="@practice.PracticeId" class="btn btn-primary">Select Practice</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
