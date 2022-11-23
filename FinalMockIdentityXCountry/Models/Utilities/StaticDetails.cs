@@ -15,6 +15,9 @@
         public const string Role_Not_Assigned = "Waiting for approval";
 
         // will be used for banned users
-        public const string Role_Was_Revoked= "Banned user"; 
+        public const string Role_Was_Revoked= "Banned user";
+
+        // will be used for rejected users
+        public const string Role_Was_Rejected = "Rejected";
     }
 }

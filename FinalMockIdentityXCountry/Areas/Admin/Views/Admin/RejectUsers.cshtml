@@ -1,18 +1,21 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels
 @model List<WaitingForApprovalListViewModel>
 
-    @if(Model != null && Model.Count > 0)
-    {
-    <form method="post" asp-action="AddToRunner" class="form-control">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">UserName</th>
-                        <th scope="col">Approve User</th>
-                    </tr>
-                </thead>
-                <tbody>
+@if (Model != null && Model.Count > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        Rejected users will be deleted permanently
+    </div>
+    <form method="post" asp-action="DeleteUsersInRejectedList" class="form-control">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">UserName</th>
+                    <th scope="col">Reject User</th>
+                </tr>
+            </thead>
+            <tbody>
                 @for (int i = 0; i < Model.Count(); i++)
                 {
                     <tr>
@@ -23,23 +26,23 @@
                             @for (int j = 0; j < Model[i].SelectedApproveUserCheckboxOptions.Count(); j++)
                             {
                                 <td>
-                                    <input asp-for="@Model[i].SelectedApproveUserCheckboxOptions[j].IsSelected" type="checkbox" /> 
+                                    <input asp-for="@Model[i].SelectedApproveUserCheckboxOptions[j].IsSelected" type="checkbox" />
                                     <input type="hidden" asp-for="@Model[i].UserId" />
                                     <input type="hidden" asp-for="@Model[i].RoleId" />
                                     <input type="hidden" asp-for="@Model[i].SelectedApproveUserCheckboxOptions[j].UserId" />
-                                    <input type="hidden" asp-for="@Model[i].SelectedApproveUserCheckboxOptions[j].RoleId" /> 
+                                    <input type="hidden" asp-for="@Model[i].SelectedApproveUserCheckboxOptions[j].RoleId" />
                                 </td>
                             }
                         }
                     </tr>
                 }
-                </tbody>
-            </table>
-        <button class="btn btn-primary" type="submit">Submit</button>
-        </form>
-    }
-    else
-    {
-        <label class="form-label">There are no users in the Waiting For Approval list</label>
-        <a asp-action="Index" class="btn btn-primary">Okay</a>
-    }
+            </tbody>
+        </table>
+        <button class="btn btn-danger" type="submit">Reject User(s)</button>
+    </form>
+}
+else
+{
+    <label class="form-label">There are no users in the Waiting For Approval list</label>
+    <a asp-action="Index" class="btn btn-primary">Okay</a>
+}

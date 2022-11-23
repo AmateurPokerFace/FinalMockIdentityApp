@@ -1,4 +1,5 @@
 ﻿using FinalMockIdentityXCountry.Models;
+using FinalMockIdentityXCountry.Models.Utilities;
 using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -65,9 +66,20 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                         UserName = dbQuery.UserName,
                         UserId = dbQuery.Id,
                         RoleId = dbQuery.RoleId,
-                    }; 
+                    };
 
-                    waitingForApprovalListViewModels.Add(waitingForApprovalListVm);
+                    if (waitingForApprovalListVm != null)
+                    {
+                        ApproveUserCheckboxOptions approveUserCheckboxOptions = new ApproveUserCheckboxOptions 
+                        {
+                            UserId = dbQuery.Id,
+                            RoleId = dbQuery.RoleId
+                        };
+
+                        waitingForApprovalListVm.SelectedApproveUserCheckboxOptions?.Add(approveUserCheckboxOptions);
+                       
+                        waitingForApprovalListViewModels.Add(waitingForApprovalListVm);
+                    } 
                 }
 
                 if (waitingForApprovalListViewModels != null && waitingForApprovalListViewModels.Count > 0)
@@ -75,6 +87,63 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                     return View(waitingForApprovalListViewModels);
                 }
                 
+            }
+
+            TempData["error"] = "There are no current users waiting for approval";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult RejectUsers()
+        {
+            var dbQueries = (from aspnetusers in _context.ApplicationUsers
+                             join userroles in _context.UserRoles
+                             on aspnetusers.Id equals userroles.UserId
+                             join roles in _context.Roles
+                             on userroles.RoleId equals roles.Id
+                             where roles.Name.ToLower() == "waiting for approval"
+                             select new
+                             {
+                                 aspnetusers.UserName,
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName,
+                                 aspnetusers.Id,
+                                 userroles.RoleId,
+                             });
+
+            if (dbQueries != null && dbQueries.Count() > 0)
+            {
+                List<WaitingForApprovalListViewModel> rejectUsersViewModel = new List<WaitingForApprovalListViewModel>();
+
+                foreach (var dbQuery in dbQueries)
+                {
+                    WaitingForApprovalListViewModel rejectUsersListVm = new WaitingForApprovalListViewModel
+                    {
+                        Name = $"{dbQuery.FirstName} {dbQuery.LastName}",
+                        UserName = dbQuery.UserName,
+                        UserId = dbQuery.Id,
+                        RoleId = dbQuery.RoleId,
+                    };
+
+                    if (rejectUsersListVm != null)
+                    {
+                        ApproveUserCheckboxOptions approveUserCheckboxOptions = new ApproveUserCheckboxOptions
+                        {
+                            UserId = dbQuery.Id,
+                            RoleId = dbQuery.RoleId
+                        };
+
+                        rejectUsersListVm.SelectedApproveUserCheckboxOptions?.Add(approveUserCheckboxOptions);
+
+                        rejectUsersViewModel.Add(rejectUsersListVm);
+                    }
+                }
+
+                if (rejectUsersViewModel != null && rejectUsersViewModel.Count > 0)
+                {
+                    return View(rejectUsersViewModel);
+                }
+
             }
 
             TempData["error"] = "There are no current users waiting for approval";
@@ -171,126 +240,15 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
             TempData["error"] = "Invalid Runner Provided";
             return RedirectToAction("Index");
         }
-
-        public IActionResult EditRunnerFirstName(string runnerId) 
-        {
-            ApplicationUser applicationUser = _context.ApplicationUsers.Find(runnerId);
-
-            if (applicationUser == null)
-            {
-                TempData["error"] = "Invalid runner provided";
-                return RedirectToAction("Index");
-            }
-
-            var runnerRole = (from userroles in _context.UserRoles
-                              join roles in _context.Roles
-                              on userroles.RoleId equals roles.Id
-                              where roles.Name.ToLower() == "runner" && applicationUser.Id == runnerId
-                              select new
-                              { }).FirstOrDefault();
-
-            if (runnerRole == null)
-            {
-                TempData["error"] = "Invalid user provided. User does not have the role of runner";
-                return RedirectToAction("Index");
-            }
-
-            EditRunnerFirstNameViewModel editRunnerFirstNameViewModel = new EditRunnerFirstNameViewModel
-            {
-                RunnerId = runnerId,
-                CurrentName = $"{applicationUser.FirstName} {applicationUser.LastName}"
-            };
-
-            return View(editRunnerFirstNameViewModel);
-        }
-
-
-        [HttpPost]
-        public IActionResult EditRunnerFirstName(EditRunnerFirstNameViewModel editRunnerFirstNameViewModel)
-        {
-            if (ModelState.IsValid)
-            {
-                ApplicationUser applicationUser = _context.ApplicationUsers.Find(editRunnerFirstNameViewModel.RunnerId);
-                if (applicationUser == null)
-                {
-                    TempData["error"] = "Invalid runner provided";
-                    return RedirectToAction("Index");
-                }
-
-                applicationUser.FirstName = editRunnerFirstNameViewModel.NewFirstName;
-
-                _context.ApplicationUsers.Update(applicationUser);
-                _context.SaveChanges();
-
-                TempData["success"] = "The runners' First Name was updated successfully";
-
-                return RedirectToAction(nameof(CurrentRunnersList));
-            }
-
-            TempData["error"] = "Invalid runner provided";
-            return RedirectToAction("Index");
-        }
-
-        public IActionResult EditRunnerLastName(string runnerId)
-        {
-            ApplicationUser applicationUser = _context.ApplicationUsers.Find(runnerId);
-
-            if (applicationUser == null)
-            {
-                TempData["error"] = "Invalid runner provided";
-                return RedirectToAction("Index");
-            }
-
-            var runnerRole = (from userroles in _context.UserRoles
-                              join roles in _context.Roles
-                              on userroles.RoleId equals roles.Id
-                              where roles.Name.ToLower() == "runner" && applicationUser.Id == runnerId
-                              select new
-                              { }).FirstOrDefault();
-
-            if (runnerRole == null)
-            {
-                TempData["error"] = "Invalid user provided. User does not have the role of runner";
-                return RedirectToAction("Index");
-            }
-
-            EditRunnerLastNameViewModel editRunnerLastNameViewModel = new EditRunnerLastNameViewModel
-            {
-                RunnerId = runnerId,
-                CurrentName = $"{applicationUser.FirstName} {applicationUser.LastName}"
-            };
-
-            return View(editRunnerLastNameViewModel);
-        }
-
-        [HttpPost]
-        public IActionResult EditRunnerLastName(EditRunnerLastNameViewModel editRunnerLastNameViewModel)
-        {
-            if (ModelState.IsValid)
-            {
-                ApplicationUser applicationUser = _context.ApplicationUsers.Find(editRunnerLastNameViewModel.RunnerId);
-                if (applicationUser == null)
-                {
-                    TempData["error"] = "Invalid runner provided";
-                    return RedirectToAction("Index");
-                }
-                 
-                applicationUser.LastName = editRunnerLastNameViewModel.NewLastName;
-
-                _context.ApplicationUsers.Update(applicationUser);
-                _context.SaveChanges();
-
-                TempData["success"] = "The runners' Last Name was updated successfully";
-
-                return RedirectToAction(nameof(CurrentRunnersList));
-            }
-
-            TempData["error"] = "Invalid runner provided";
-            return RedirectToAction("Index");
-        }
-
+         
         public IActionResult EditRunnerName(string runnerId)
         {
+            if (runnerId == null)
+            {
+                TempData["error"] = "Invalid runner provided";
+                return RedirectToAction("Index");
+            }
+
             ApplicationUser applicationUser = _context.ApplicationUsers.Find(runnerId);
 
             if (applicationUser == null)
@@ -315,7 +273,9 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
             EditRunnerNameViewModel editRunnerNameViewModel = new EditRunnerNameViewModel
             {
                 RunnerId = runnerId,
-                CurrentName = $"{applicationUser.FirstName} {applicationUser.LastName}"
+                FirstName = applicationUser.FirstName,
+                LastName = applicationUser.LastName,
+                OldName = $"{applicationUser.FirstName} {applicationUser.LastName}"
             };
 
             return View(editRunnerNameViewModel);
@@ -333,13 +293,13 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                     return RedirectToAction("Index");
                 }
 
-                applicationUser.FirstName = editRunnerNameViewModel.NewFirstName;
-                applicationUser.LastName = editRunnerNameViewModel.NewLastName;
+                applicationUser.FirstName = editRunnerNameViewModel.FirstName;
+                applicationUser.LastName = editRunnerNameViewModel.LastName;
 
                 _context.ApplicationUsers.Update(applicationUser);
                 _context.SaveChanges();
 
-                TempData["success"] = "The runners' Full Name was updated successfully";
+                TempData["success"] = "The runner's Name was updated successfully";
                 
                 return RedirectToAction(nameof(CurrentRunnersList));
             }
@@ -374,7 +334,8 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
             EditRunnerUserNameViewModel editRunnerUserNameViewModel = new EditRunnerUserNameViewModel
             {
                 RunnerId = runnerId,
-                CurrentName = $"{applicationUser.FirstName} {applicationUser.LastName}"
+                UserName = applicationUser.UserName,
+                OldUserName = $"{applicationUser.FirstName} {applicationUser.LastName}"
             };
 
             return View(editRunnerUserNameViewModel);
@@ -392,13 +353,13 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                     return RedirectToAction("Index");
                 }
 
-                applicationUser.UserName = editRunnerUserNameViewModel.NewUserName;
-                applicationUser.NormalizedUserName = editRunnerUserNameViewModel.NewUserName.ToUpper();
+                applicationUser.UserName = editRunnerUserNameViewModel.UserName;
+                applicationUser.NormalizedUserName = editRunnerUserNameViewModel.UserName.ToUpper();
 
                 _context.ApplicationUsers.Update(applicationUser);
                 _context.SaveChanges();
 
-                TempData["success"] = "The runners' UserName was updated successfully";
+                TempData["success"] = "The runner's UserName was updated successfully";
 
                 return RedirectToAction(nameof(CurrentRunnersList));
             }
@@ -449,6 +410,110 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
 
             TempData["success"] = "Password updated successfully";
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddToRunner(List<WaitingForApprovalListViewModel> waitingForApprovalListViewModels)
+        {
+            if (waitingForApprovalListViewModels == null)
+            {
+                TempData["error"] = "Invalid users provided.";
+                return RedirectToAction("Index");
+            }
+             
+            int approvedRunners = 0;
+
+            foreach (var waitingForApprovalVm in waitingForApprovalListViewModels)
+            {
+                foreach (var selectedCheckboxOption in waitingForApprovalVm.SelectedApproveUserCheckboxOptions.Where(i => i.IsSelected))
+                {
+                    var user = await _userManager.FindByIdAsync(selectedCheckboxOption.UserId);
+
+                    if (user != null)
+                    {
+                        bool userFoundInRoleNotAssigned = false;
+
+                        if (await _userManager.IsInRoleAsync(user, StaticDetails.Role_Not_Assigned)) // remove the user from the role "Waiting for approval" if true
+                        {
+                            await _userManager.RemoveFromRoleAsync(user, StaticDetails.Role_Not_Assigned);
+                            userFoundInRoleNotAssigned = true;
+                        }
+
+                        if (userFoundInRoleNotAssigned)
+                        {
+                            await _userManager.AddToRoleAsync(user, "Runner");
+                            approvedRunners++;
+                        }
+                    }
+                } 
+            }
+
+            if (approvedRunners == 0)
+            {
+                TempData["error"] = "Zero runners were approved.";
+                return RedirectToAction("Index");
+            }
+            else 
+            {
+                TempData["success"] = approvedRunners == 1 ? $"{approvedRunners} user was approved" : $"{approvedRunners} users were approved";
+                return RedirectToAction("Index");
+            }
+
+        }
+         
+        public IActionResult SelectRoleForApprovedUser(string userId) 
+        {
+            if (userId == null)
+            {
+                TempData["error"] = $"Invalid user provided";
+                return RedirectToAction("Index");
+            }
+
+
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUsersInRejectedList(List<WaitingForApprovalListViewModel> rejectUsersViewModel)
+        {
+            if (rejectUsersViewModel == null)
+            {
+                TempData["error"] = "Invalid users provided.";
+                return RedirectToAction("Index");
+            }
+
+            int rejectedUsers = 0;
+
+            foreach (var rejectUsersVm in rejectUsersViewModel)
+            {
+                foreach (var selectedCheckboxOption in rejectUsersVm.SelectedApproveUserCheckboxOptions.Where(i => i.IsSelected))
+                {
+                    var user = await _userManager.FindByIdAsync(selectedCheckboxOption.UserId);
+
+                    if (user != null)
+                    { 
+
+                        if (await _userManager.IsInRoleAsync(user, StaticDetails.Role_Not_Assigned)) // remove the user from the role "Waiting for approval" if true
+                        {
+                            //await _userManager.RemoveFromRoleAsync(user, StaticDetails.Role_Not_Assigned);
+                            await _userManager.DeleteAsync(user);
+                            rejectedUsers++;
+                        } 
+                    }
+                }
+            }
+
+            if (rejectedUsers == 0)
+            {
+                TempData["warning"] = "Zero users were rejected.";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                TempData["success"] = rejectedUsers == 1 ? $"{rejectedUsers} user was rejected and deleted from the database permanently" : $"{rejectedUsers} users were rejected and deleted from the database permanently";
+                return RedirectToAction("Index");
+            }
         }
 
         public IActionResult RemoveCoach()

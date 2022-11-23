@@ -4,10 +4,10 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels
 {
     public class EditRunnerNameViewModel
     {
-        public string? NewFirstName { get; set; }
-        public string? NewLastName { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
         public string? RunnerId { get; set; }
         [ValidateNever]
-        public string? CurrentName { get; set; }
+        public string? OldName { get; set; }
     }
 }

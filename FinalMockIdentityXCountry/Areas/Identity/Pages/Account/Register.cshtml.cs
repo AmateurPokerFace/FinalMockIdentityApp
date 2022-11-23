@@ -126,6 +126,7 @@ namespace FinalMockIdentityXCountry.Areas.Identity.Pages.Account
                 _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Runner)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Not_Assigned)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Was_Revoked)).GetAwaiter().GetResult();
+                _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Was_Rejected)).GetAwaiter().GetResult();
             }
 
             ReturnUrl = returnUrl;

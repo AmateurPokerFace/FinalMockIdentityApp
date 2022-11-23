@@ -19,10 +19,8 @@
         <tr>
             <td>@Model.Name</td>
             <td>@Model.UserName</td>
-            <td><a class="btn btn-outline-danger" asp-action="EditRunnerFirstName" asp-route-runnerId="@Model.UserId">Edit First Name</a></td>
-            <td><a class="btn btn-outline-danger" asp-action="EditRunnerLastName" asp-route-runnerId="@Model.UserId">Edit Last Name</a></td>
-            <td><a class="btn btn-outline-danger" asp-action="EditRunnerName" asp-route-runnerId="@Model.UserId">Edit Full Name</a></td>
-            <td><a class="btn btn-outline-danger" asp-action="EditRunnerUserName" asp-route-runnerId="@Model.UserId">Edit UserName</a></td>
+            <td><a class="btn btn-outline-danger" asp-action="EditRunnerName" asp-route-runnerId="@Model.UserId">Edit Runner's Name</a></td>
+            <td><a class="btn btn-outline-danger" asp-action="EditRunnerUserName" asp-route-runnerId="@Model.UserId">Edit Runner's UserName</a></td>
             <td><a class="btn btn-outline-danger" asp-action="ChangeUserPassword" asp-route-userId="@Model.UserId">Change Password</a></td>
             <td><a class="btn btn-outline-danger" asp-action="ChangeRunnerRole" asp-route-runnerId="@Model.UserId">Change Role</a></td>
             <td><a class="btn btn-outline-danger" asp-action="" asp-route-runnerId="@Model.UserId">Delete Permanently</a></td>
