@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
-using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels;
 
 namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
 {
@@ -110,7 +109,7 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
          
 
         [HttpPost]
-        public async Task<IActionResult> ChangeRole(ChangeUserRoleViewModel changeUserRoleViewModel, List<WaitingForApprovalListViewModel> rejectUsersViewModel)
+        public async Task<IActionResult> ChangeRole(ChangeUserRoleViewModel changeUserRoleViewModel)
         {
             if (changeUserRoleViewModel == null)
             {
@@ -160,7 +159,231 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                 return RedirectToAction(nameof(MasterAdminPanel));
             }
 
-            return View();
+            var dbQuery = (from aspnetusers in _context.ApplicationUsers
+                           join userroles in _context.UserRoles
+                           on aspnetusers.Id equals userroles.UserId
+                           join roles in _context.Roles
+                           on userroles.RoleId equals roles.Id
+                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() && aspnetusers.Id == userId
+                           select new
+                           {
+                               aspnetusers.UserName,
+                               aspnetusers.FirstName,
+                               aspnetusers.LastName,
+                               aspnetusers.Id,
+                               userroles.RoleId,
+                           }).FirstOrDefault();
+
+            if (dbQuery != null)
+            {
+                EditUserViewModel editUserViewModel = new EditUserViewModel
+                {
+                    Name = $"{dbQuery.FirstName} {dbQuery.LastName}",
+                    UserName = dbQuery.UserName,
+                    UserId = dbQuery.Id,
+                    RoleId = dbQuery.RoleId,
+                };
+
+                return View(editUserViewModel);
+            }
+
+            TempData["error"] = "Invalid User Provided";
+            return RedirectToAction("Index"); 
+        }
+
+        public IActionResult EditUsersName(string userId)
+        {
+            if (userId == null)
+            {
+                TempData["error"] = "Invalid User provided";
+                return RedirectToAction(nameof(MasterAdminPanel));
+            }
+
+            var dbQuery = (from aspnetusers in _context.ApplicationUsers
+                           join userroles in _context.UserRoles
+                           on aspnetusers.Id equals userroles.UserId
+                           join roles in _context.Roles
+                           on userroles.RoleId equals roles.Id
+                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() && aspnetusers.Id == userId
+                           select new
+                           { 
+                               aspnetusers.FirstName,
+                               aspnetusers.LastName,
+                               aspnetusers.Id, 
+                           }).FirstOrDefault();
+
+            if (dbQuery != null)
+            {
+                EditUsersNameViewModel editUserViewModel = new EditUsersNameViewModel
+                {
+                    OldName = $"{dbQuery.FirstName} {dbQuery.LastName}",
+                    FirstName = dbQuery.FirstName,
+                    LastName = dbQuery.LastName,
+                    UserId = dbQuery.Id, 
+                };
+
+                return View(editUserViewModel);
+            }
+
+            TempData["error"] = "Invalid User Provided";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult EditUsersName(EditUsersNameViewModel editUserViewModel) 
+        {
+            if (ModelState.IsValid)
+            {
+                ApplicationUser applicationUser = _context.ApplicationUsers.Find(editUserViewModel.UserId);
+                if (applicationUser == null)
+                {
+                    TempData["error"] = "Invalid User Provided";
+                    return RedirectToAction("Index");
+                }
+
+                applicationUser.FirstName = editUserViewModel.FirstName;
+                applicationUser.LastName = editUserViewModel.LastName;
+
+                _context.ApplicationUsers.Update(applicationUser);
+                _context.SaveChanges();
+
+                TempData["success"] = "The user's Name was updated successfully";
+
+                return RedirectToAction(nameof(MasterAdminPanel));
+            }
+
+            TempData["error"] = "Invalid User Provided";
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult EditUserUsersName(string userId) 
+        {
+            ApplicationUser applicationUser = _context.ApplicationUsers.Find(userId);
+
+            if (applicationUser == null)
+            {
+                TempData["error"] = "Invalid User Provided";
+                return RedirectToAction("Index");
+            }
+
+            var dbQuery = (from aspnetusers in _context.ApplicationUsers
+                           join userroles in _context.UserRoles
+                           on aspnetusers.Id equals userroles.UserId
+                           join roles in _context.Roles
+                           on userroles.RoleId equals roles.Id
+                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() && aspnetusers.Id == userId
+                           select new
+                           {
+                               aspnetusers.FirstName,
+                               aspnetusers.LastName,
+                               aspnetusers.Id,
+                           }).FirstOrDefault();
+
+            if (dbQuery == null)
+            {
+                TempData["error"] = "Invalid User Provided.";
+                return RedirectToAction("Index");
+            }
+
+            EditUserUsersNameViewModel editUserUsersNameViewModel = new EditUserUsersNameViewModel
+            {
+                UserId = applicationUser.Id,
+                UserName = applicationUser.UserName,
+                OldUserName = $"{applicationUser.FirstName} {applicationUser.LastName}"
+            };
+
+            return View(editUserUsersNameViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult EditUserUsersName(EditUserUsersNameViewModel editUserUsersNameViewModel)
+        {
+            if (ModelState.IsValid && editUserUsersNameViewModel.UserName != null)
+            {
+                ApplicationUser applicationUser = _context.ApplicationUsers.Find(editUserUsersNameViewModel.UserId);
+                if (applicationUser == null)
+                {
+                    TempData["error"] = "Invalid User Provided.";
+                    return RedirectToAction("Index");
+                }
+
+                applicationUser.UserName = editUserUsersNameViewModel.UserName;
+                applicationUser.NormalizedUserName = editUserUsersNameViewModel.UserName.ToUpper();
+
+                _context.ApplicationUsers.Update(applicationUser);
+                _context.SaveChanges();
+
+                TempData["success"] = "The User's UserName was updated successfully";
+
+                return RedirectToAction(nameof(MasterAdminPanel));
+            }
+
+            TempData["error"] = "Invalid User Provided.";
+            return RedirectToAction(nameof(MasterAdminPanel));
+        }
+
+
+        public IActionResult ChangeUserPassword(string userId)
+        {
+            ApplicationUser applicationUser = _context.ApplicationUsers.Find(userId);
+            if (applicationUser == null)
+            {
+                TempData["error"] = "Invalid user provided";
+                return RedirectToAction(nameof(MasterAdminPanel));
+            }
+
+            var dbQuery = (from aspnetusers in _context.ApplicationUsers
+                           join userroles in _context.UserRoles
+                           on aspnetusers.Id equals userroles.UserId
+                           join roles in _context.Roles
+                           on userroles.RoleId equals roles.Id
+                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() && aspnetusers.Id == userId
+                           select new
+                           {
+                               roles.Name
+                           }).FirstOrDefault();
+
+            if (dbQuery == null)
+            {
+                TempData["error"] = "Invalid User Provided.";
+                return RedirectToAction(nameof(MasterAdminPanel));
+            }
+
+            ChangeUserPasswordViewModel changeUserPasswordViewModel = new ChangeUserPasswordViewModel
+            {
+                UsersName = $"{applicationUser.FirstName} {applicationUser.LastName}",
+                UserId = applicationUser.Id,
+                UserRole = dbQuery.Name
+            };
+
+            return View(changeUserPasswordViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult ChangeUserPassword(ChangeUserPasswordViewModel changeUserPasswordViewModel)
+        {
+            var user = _context.ApplicationUsers.Find(changeUserPasswordViewModel.UserId);
+
+            if (user == null)
+            {
+                TempData["error"] = "Invalid user provided";
+                return RedirectToAction(nameof(MasterAdminPanel));
+            }
+
+            if (changeUserPasswordViewModel.NewPassword == null)
+            {
+                TempData["error"] = "Invalid password provided";
+                return RedirectToAction(nameof(MasterAdminPanel));
+            }
+
+            var newPassword = _userManager.PasswordHasher.HashPassword(user, changeUserPasswordViewModel.NewPassword);
+            user.PasswordHash = newPassword;
+
+            _context.ApplicationUsers.Update(user);
+            _context.SaveChanges();
+
+            TempData["success"] = "Password updated successfully";
+            return RedirectToAction(nameof(MasterAdminPanel));
         }
 
         public IActionResult DeleteUser(string userId) 
