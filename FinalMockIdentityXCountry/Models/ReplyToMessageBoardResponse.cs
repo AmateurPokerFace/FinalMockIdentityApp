@@ -9,7 +9,7 @@ namespace FinalMockIdentityXCountry.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public string? ReplyerId { get; set; }
+        public string ReplyerId { get; set; }
         [ValidateNever]
         public virtual ApplicationUser? Replyer { get; set; } 
         public DateTime ReplyDateTime { get; set; }

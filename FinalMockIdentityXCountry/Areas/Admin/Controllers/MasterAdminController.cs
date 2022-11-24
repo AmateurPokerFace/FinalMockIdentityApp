@@ -425,6 +425,7 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteUser(DeleteUserViewModel deleteUserViewModel) 
         {
+            //throw new Exception("Need to delete foreign key relationship(s). Error is thrown because of reference"); 
             if (deleteUserViewModel.UserId == null)
             {
                 TempData["error"] = "Invalid User Provided.";

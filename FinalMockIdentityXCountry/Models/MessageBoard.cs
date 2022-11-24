@@ -12,7 +12,7 @@ namespace FinalMockIdentityXCountry.Models
         public string? MessageTitle { get; set; }
         [Required]
         public string? MessageBody { get; set; }
-        public string? CoachId { get; set; }
+        public string CoachId { get; set; }
         [ValidateNever]
         public virtual ApplicationUser? Coach { get; set; }
         [Required]

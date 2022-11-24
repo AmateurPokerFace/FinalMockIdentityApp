@@ -1,0 +1,23 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels.CoachControllerViewModels
+@model EditUserViewModel
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">UserName</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@Model.Name</td>
+            <td>@Model.UserName</td>
+            <td><a class="btn btn-outline-danger" asp-action="EditUsersName" asp-route-userId="@Model.UserId">Edit User's Name</a></td>
+            <td><a class="btn btn-outline-danger" asp-action="EditUserUsersName" asp-route-userId="@Model.UserId">Edit User's UserName</a></td>
+            <td><a class="btn btn-outline-danger" asp-action="ChangeUserPassword" asp-route-userId="@Model.UserId">Change User's Password</a></td>
+        </tr>
+    </tbody>
+</table>

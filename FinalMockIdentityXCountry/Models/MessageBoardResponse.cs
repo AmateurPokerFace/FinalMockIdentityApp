@@ -13,7 +13,7 @@ namespace FinalMockIdentityXCountry.Models
         [Required]
         public string? Response { get; set; }
         [Required]
-        public string? ResponderId { get; set; }
+        public string ResponderId { get; set; }
         [ValidateNever]
         public virtual ApplicationUser? Responder { get; set; }
         public DateTime ResponseDateTime { get; set; } 

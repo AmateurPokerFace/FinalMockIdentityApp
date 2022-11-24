@@ -3,6 +3,7 @@ using System;
 using FinalMockIdentityXCountry.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalMockIdentityXCountry.Migrations
 {
     [DbContext(typeof(XCountryDbContext))]
-    partial class XCountryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221124234507_test_removing_nullable")]
+    partial class test_removing_nullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +56,6 @@ namespace FinalMockIdentityXCountry.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("CoachId")
-                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("MessageBody")
@@ -111,7 +112,6 @@ namespace FinalMockIdentityXCountry.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("CoachId")
-                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("PracticeEndTimeAndDate")
@@ -488,9 +488,7 @@ namespace FinalMockIdentityXCountry.Migrations
                 {
                     b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Coach")
                         .WithMany()
-                        .HasForeignKey("CoachId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CoachId");
 
                     b.Navigation("Coach");
                 });
@@ -518,9 +516,7 @@ namespace FinalMockIdentityXCountry.Migrations
                 {
                     b.HasOne("FinalMockIdentityXCountry.Models.ApplicationUser", "Coach")
                         .WithMany()
-                        .HasForeignKey("CoachId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CoachId");
 
                     b.Navigation("Coach");
                 });
