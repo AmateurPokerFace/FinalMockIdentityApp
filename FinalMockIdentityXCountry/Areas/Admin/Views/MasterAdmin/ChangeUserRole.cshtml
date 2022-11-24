@@ -1,0 +1,23 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels.MasterAdminControllerViewModels
+@model ChangeUserRoleViewModel
+
+
+@if (Model.RolesList != null && Model.RolesList.Count > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        Warning! Changing the role of the user may result in the loss of data.
+    </div>
+
+    <form method="post" asp-action="ChangeRole">
+        <div class="mb-3">
+            <label class="form-label">Select Role</label>
+            <select class="form-select" asp-items="Model.RolesList" asp-for="SelectedRoleName">
+            </select>
+        </div>
+        <input type="hidden" asp-for="CurrentRoleName">
+        <input type="hidden" asp-for="UserId">
+        <a class="btn btn-outline-danger">Cancel</a>
+        <button class="btn btn-danger">Confirm Role Change</button>
+    </form>
+    
+}

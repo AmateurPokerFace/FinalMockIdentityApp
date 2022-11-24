@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using System.Security.Claims;
 
 namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
 {
@@ -13,7 +14,7 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
     public class AdminController : Controller
     {
         private readonly XCountryDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager; // the UserManager object in question
+        private readonly UserManager<IdentityUser> _userManager;
 
         public AdminController(XCountryDbContext context, UserManager<IdentityUser> userManager)
         {
@@ -34,7 +35,45 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
         [Authorize(Roles = "Master Admin, Coach")]
         public IActionResult AdminPanel()
         {
-            return View();
+            var dbQueries = (from aspnetusers in _context.ApplicationUsers
+                             join userroles in _context.UserRoles
+                             on aspnetusers.Id equals userroles.UserId
+                             join roles in _context.Roles
+                             on userroles.RoleId equals roles.Id
+                             where roles.Name.ToLower() == "runner"
+                             select new
+                             {
+                                 aspnetusers.UserName,
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName,
+                                 aspnetusers.Id,
+                                 userroles.RoleId,
+                                 roles.Name,
+                             });
+
+
+            AdminPanelViewModel adminPanelViewModel = new AdminPanelViewModel { AdminPanelRole = "" };
+             
+            ApplicationUser adminUser = _context.ApplicationUsers.Find(_userManager.GetUserId(User));
+             
+            adminPanelViewModel.AdminPanelRole = _userManager.IsInRoleAsync(adminUser, StaticDetails.Role_Master_Admin).Result == true ? StaticDetails.Role_Master_Admin : StaticDetails.Role_Coach;
+
+            foreach (var dbQuery in dbQueries)
+            {
+                AdminPanelViewModelHelper adminPanelViewModelHelper = new AdminPanelViewModelHelper
+                {
+                    Name = $"{dbQuery.FirstName} {dbQuery.LastName}",
+                    RoleId = dbQuery.RoleId,
+                    UserId = dbQuery.Id,
+                    UserName = dbQuery.UserName,
+                    UserRole = dbQuery.Name
+                };
+
+                adminPanelViewModel.AdminPanelViewModelHelpers?.Add(adminPanelViewModelHelper);
+            } 
+            
+
+        return View(adminPanelViewModel);
         }
 
         public IActionResult WaitingForApprovalList()
@@ -468,8 +507,6 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                 TempData["error"] = $"Invalid user provided";
                 return RedirectToAction("Index");
             }
-
-
 
             return View();
         }
