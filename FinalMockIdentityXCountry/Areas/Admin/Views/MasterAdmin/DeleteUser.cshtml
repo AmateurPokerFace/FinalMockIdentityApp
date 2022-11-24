@@ -1,5 +1,14 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels.MasterAdminControllerViewModels
+@model DeleteUserViewModel
+
+<div class="alert alert-danger" role="alert">
+    Warning! All data for the user @Model.UsersName will be permanently deleted and will not be recoverable.
+</div>
+
+<label class="form-label">Are you sure that you want to delete @Model.UsersName?</label>
+<form method="post">
+    <a class="btn btn-outline-danger">Cancel</a>
+    <input type="hidden" asp-for="@Model.UserId"/>
+    <input type="hidden" asp-for="@Model.UsersName" />
+    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+</form>

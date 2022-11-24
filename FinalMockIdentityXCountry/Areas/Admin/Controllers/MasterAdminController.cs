@@ -394,7 +394,64 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                 return RedirectToAction(nameof(MasterAdminPanel));
             }
 
-            return View();
+            var dbQuery = (from aspnetusers in _context.ApplicationUsers
+                           join userroles in _context.UserRoles
+                           on aspnetusers.Id equals userroles.UserId
+                           join roles in _context.Roles
+                           on userroles.RoleId equals roles.Id
+                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() && aspnetusers.Id == userId
+                           select new
+                           {
+                               aspnetusers.Id,
+                               aspnetusers.FirstName,
+                               aspnetusers.LastName
+                           }).FirstOrDefault();
+
+            if (dbQuery == null)
+            {
+                TempData["error"] = "Invalid User Provided.";
+                return RedirectToAction(nameof(MasterAdminPanel));
+            }
+
+            DeleteUserViewModel deleteUserViewModel = new DeleteUserViewModel
+            {
+                UsersName = $"{dbQuery.FirstName} {dbQuery.LastName}",
+                UserId = dbQuery.Id,
+            };
+
+            return View(deleteUserViewModel);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(DeleteUserViewModel deleteUserViewModel) 
+        {
+            if (deleteUserViewModel.UserId == null)
+            {
+                TempData["error"] = "Invalid User Provided.";
+                return RedirectToAction(nameof(MasterAdminPanel));
+            }
+
+            var user = await _userManager.FindByIdAsync(deleteUserViewModel.UserId);
+            if (user == null)
+            {
+                TempData["error"] = "Invalid User Provided.";
+                return RedirectToAction(nameof(MasterAdminPanel));
+            }
+            else
+            {
+                var result = await _userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                {
+                    TempData["success"] = $"The user {deleteUserViewModel.UsersName} was deleted from the database successfully";
+                    return RedirectToAction(nameof(MasterAdminPanel));
+                }
+
+                TempData["error"] = $"An error occured during the delete process. The user {deleteUserViewModel.UsersName} was not deleted from the database successfully";
+                return RedirectToAction(nameof(MasterAdminPanel));
+            }
+            
+        }
+
     }
 }
