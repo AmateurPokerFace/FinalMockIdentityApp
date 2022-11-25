@@ -265,6 +265,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 workoutInformation.Hours = editEnteredDataViewModel.Hours;
                 workoutInformation.Minutes = editEnteredDataViewModel.Minutes;
                 workoutInformation.Seconds = editEnteredDataViewModel.Seconds;
+                workoutInformation.DataWasLogged = true;
                 _context.WorkoutInformation.Update(workoutInformation);
                 _context.SaveChanges();
 

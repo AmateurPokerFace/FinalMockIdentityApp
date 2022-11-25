@@ -1,0 +1,32 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
+@model CustomCalculatorViewModel
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div>        
+        <label asp-for="Hours" class="form-label"></label>
+        <input asp-for="Hours" class="form-control"/>
+        <span asp-validation-for="Hours" class="text-danger"></span>
+    </div>
+    <div>        
+        <label asp-for="Minutes" class="form-label"></label>
+        <input asp-for="Minutes" class="form-control" />
+        <span asp-validation-for="Minutes" class="text-danger"></span>
+    </div>
+    <div>        
+        <label asp-for="Seconds" class="form-label"></label>
+        <input asp-for="Seconds" class="form-control" />
+        <span asp-validation-for="Seconds" class="text-danger"></span>
+    </div>
+    <div>        
+        <label asp-for="Distance" class="form-label">Distance in Miles</label>
+        <input asp-for="Distance" class="form-control" />
+        <span asp-validation-for="Distance" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="PaceString" class="form-label"></label>
+        <input asp-for="PaceString" disabled="disabled" class="form-control" />
+    </div>
+    <br />
+    <a asp-action="CustomCalculator" class="btn btn-danger">Clear</a>
+    <button type="submit" class="btn btn-primary">Calculate Pace</button>
+</form>
