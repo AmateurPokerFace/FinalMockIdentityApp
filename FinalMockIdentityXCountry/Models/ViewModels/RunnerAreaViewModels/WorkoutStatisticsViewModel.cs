@@ -1,17 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels.Helper;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
 {
     [ValidateNever]
     public class WorkoutStatisticsViewModel
     {
-        public DateTime PracticeDate { get; set; }
-        public double Distance { get; set; }
-        public string? TimeDisplayString { get; set; }
-        public string? PaceDisplayString { get; set; }
-        public string? Workout { get; set; }
-        public double AveragePace { get; set; }
-        public double FastestPace { get; set; }
+        public WorkoutStatisticsViewModel()
+        {
+            WorkoutStatisticsViewModelHelpers = new List<WorkoutStatisticsViewModelHelper>();
+        }
+
+        
+        public TimeSpan AveragePace { get; set; }
+        public TimeSpan FastestPace { get; set; }
         public double LongestDistance { get; set; }
+        public List<WorkoutStatisticsViewModelHelper>? WorkoutStatisticsViewModelHelpers { get; set; } 
     }
 }

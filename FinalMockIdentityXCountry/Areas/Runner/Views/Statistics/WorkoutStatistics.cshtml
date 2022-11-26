@@ -1,5 +1,36 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
+@model WorkoutStatisticsViewModel
+
+@if(Model.WorkoutStatisticsViewModelHelpers != null && Model.WorkoutStatisticsViewModelHelpers.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Location</th>
+                <th scope="col">Distance</th>
+                <th scope="col">Time</th>
+                <th scope="col">Pace</th>
+                <th scope="col">Workout</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var modelHelper in Model.WorkoutStatisticsViewModelHelpers)
+            {
+               <tr>
+                   <td>@modelHelper.PracticeDate</td>
+                   <td>@modelHelper.PracticeLocation</td>
+                   <td>@modelHelper.Distance</td>
+                   <td>@modelHelper.TimeDisplayString</td>
+                   <td>@modelHelper.PaceDisplayString</td>
+                   <td>@modelHelper.Workout</td> 
+               </tr> 
+            }
+        </tbody>
+    </table>
+
+    <br />
+    <div class="form-label">Average Pace: @Model.AveragePace</div>
+    <div class="form-label">Fastest Pace: @Model.FastestPace</div>
+    <div class="form-label">Longest Distance: @Model.LongestDistance</div>
 }

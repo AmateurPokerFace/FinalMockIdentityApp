@@ -122,6 +122,9 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             {
                 scheduleASessionVm.RunnerUsers.Add((ApplicationUser)runner);
             }
+
+
+
             return View(scheduleASessionVm);
         }
 
