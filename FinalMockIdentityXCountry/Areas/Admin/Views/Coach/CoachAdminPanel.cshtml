@@ -1,33 +1,39 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels.CoachControllerViewModels
 @model CoachAdminPanelViewModel
 
-<label class="form-label">Admin Panel | Your Role: @Model.CoachAdminPanelRole</label>
-
-@if (Model.CoachAdminPanelViewModelViewHelpers != null && Model.CoachAdminPanelViewModelViewHelpers.Count > 0)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">UserName</th>
-                <th scope="col">Current Role</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in Model.CoachAdminPanelViewModelViewHelpers)
-            {
+<div class="conatiner mx-auto">
+    <h3>Administrator Panel</h3>
+    <p style="font-weight: lighter;">Your Role: @Model.CoachAdminPanelRole</p>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@user.Name</td>
-                    <td>@user.UserName</td>
-                    <td>@user.UserRole</td>
-                    <td><a asp-route-userId="@user.UserId" asp-route-currentRoleName="@user.UserRole" asp-action="ChangeUserRole">Change Role</a></td>
-                    <td><a asp-route-userId="@user.UserId" asp-action="EditUser">Edit User</a></td>
-                    <td><a asp-route-userId="@user.UserId" asp-action="DeleteUser">Delete User</a></td>
+                    <th scope="col">Name</th>
+                    <th scope="col">UserName</th>
+                    <th scope="col">Current Role</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+    @if (Model.CoachAdminPanelViewModelViewHelpers != null && Model.CoachAdminPanelViewModelViewHelpers.Count > 0)
+    {
+        
+            <tbody>
+                @foreach (var user in Model.CoachAdminPanelViewModelViewHelpers)
+                {
+                    <tr>
+                        <td>@user.Name</td>
+                        <td>@user.UserName</td>
+                        <td>@user.UserRole</td>
+                        <td><a class="btn btn-primary" asp-route-userId="@user.UserId" asp-route-currentRoleName="@user.UserRole" asp-action="ChangeUserRole">Change Role</a></td>
+                        <td><a class="btn btn-primary" asp-route-userId="@user.UserId" asp-action="EditUser">Edit User</a></td>
+                        <td><a class="btn btn-primary" asp-route-userId="@user.UserId" asp-action="DeleteUser">Delete User</a></td>
+                    </tr>
+                }
+            </tbody>
+        
+    }
+        </table>
+    </div>
+</div>

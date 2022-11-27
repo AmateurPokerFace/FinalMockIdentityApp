@@ -1,14 +1,18 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels.MasterAdminControllerViewModels
 @model EditUserUsersNameViewModel
 
-<label class="form-label">Current Name: @Model.OldUserName</label>
+<div class="container mx-auto">
+    <h3>Edit Username for @Model.OldUserName</h3>
+    <form method="post">
+        <div class="input-group">
+            <span class="input-group-text">Edit Username</span>
+            <input asp-for="UserName" class="form-control" required/>
+        </div>
+        <input type="hidden" asp-for="@Model.UserId" />
+        <br />
+        <a asp-action="MasterAdminPanel" class="btn btn-danger">Cancel</a>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
 
-<form method="post">
-    <div>
-        <label asp-for="UserName" class="form-label">Enter New UserName:</label>
-        <input asp-for="UserName" class="form-control" />
-    </div>
-    <input type="hidden" asp-for="@Model.UserId" />
-    <a asp-action="MasterAdminPanel" class="btn btn-danger">Cancel</a>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+
