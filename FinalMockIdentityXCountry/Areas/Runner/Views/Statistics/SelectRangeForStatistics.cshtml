@@ -1,0 +1,17 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
+@model SelectRangeForStatisticsViewModel
+
+<form method="get" asp-action="WorkoutStatistics">
+    <div>
+        <label asp-for="InitialDate" class="form-label">Select initial Date or switch to the All Time option to view all statistical data</label>
+        <input asp-for=InitialDate class="form-control"/>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Select Filter</label>
+        <select class="form-select" asp-items="Model.QueryFilters" asp-for="SelectedQueryFilter">
+        </select>
+    </div>
+    <input type="hidden" asp-for="RunnerId"> 
+    <a asp-action="Index" class="btn btn-danger">Cancel</a>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
