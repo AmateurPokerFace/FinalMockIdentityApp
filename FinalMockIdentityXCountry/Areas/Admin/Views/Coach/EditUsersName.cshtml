@@ -1,18 +1,18 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels.CoachControllerViewModels
 @model EditUsersNameViewModel
 
-<label class="form-label">Current Name: @Model.OldName</label>
-
-<form method="post">
-    <div>
-        <label asp-for="FirstName" class="form-label">Enter New First Name:</label>
-        <input asp-for="FirstName" class="form-control" />
-    </div>
-    <div>
-        <label asp-for="LastName" class="form-label">Enter New Last Name:</label>
-        <input asp-for="LastName" class="form-control" />
-    </div>
-    <input type="hidden" asp-for="@Model.UserId" />
-    <a asp-action="MasterAdminPanel" class="btn btn-danger">Cancel</a>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<div class="container mx-auto">
+    <h3 class="form-label">Edit Name for @Model.OldName</h3>
+    <br />
+    <form method="post">
+        <div class="input-group">
+            <span class="input-group-text">Edit first and last name</span>
+            <input type="text" asp-for="FirstName" aria-label="First name" class="form-control" required>
+            <input type="text" asp-for="LastName" aria-label="Last name" class="form-control" required>
+        </div>
+        <input type="hidden" asp-for="@Model.UserId" />
+        <br />
+        <a asp-action="CoachAdminPanel" class="btn btn-danger">Cancel</a>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>

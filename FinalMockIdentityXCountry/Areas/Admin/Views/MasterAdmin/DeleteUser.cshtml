@@ -7,8 +7,9 @@
     </div>
 
     <label class="form-label">Are you sure that you want to delete @Model.UsersName?</label>
+    <br />
     <form method="post">
-        <a class="btn btn-outline-danger">Cancel</a>
+        <a class="btn btn-outline-danger" asp-action="MasterAdminPanel">Cancel</a>
         <input type="hidden" asp-for="@Model.UserId" />
         <input type="hidden" asp-for="@Model.UsersName" />
         <button type="submit" class="btn btn-danger">Confirm Delete</button>

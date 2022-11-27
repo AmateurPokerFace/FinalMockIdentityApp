@@ -22,18 +22,6 @@
             <input asp-for="@Model.Minutes" class="form-control" aria-label="minutes" />
             <input asp-for="@Model.Seconds" class="form-control" aria-label="seconds" />
         </div>
-        @*<div>
-            <label asp-for="@Model.Hours" class="form-label" for="hours">Hours:</label>
-            <input asp-for="@Model.Hours" class="form-control" id="hours" />
-        </div>
-        <div>
-            <label asp-for="@Model.Minutes" class="form-label" for="minutes">Minutes:</label>
-            <input asp-for="@Model.Minutes" class="form-control" id="minutes" />
-        </div>
-        <div>
-            <label asp-for="@Model.Seconds" class="form-label" for="seconds">Seconds:</label>
-            <input asp-for="@Model.Seconds" class="form-control" id="seconds" />
-        </div>*@
         <input type="hidden" asp-for="@Model.WorkoutInformationId" />
         <input type="hidden" asp-for="@Model.PracticeId" />
         <input type="hidden" asp-for="@Model.RunnerId" />

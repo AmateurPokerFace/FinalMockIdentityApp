@@ -1,48 +1,51 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels
 @model List<WaitingForApprovalListViewModel>
 
-@if (Model != null && Model.Count > 0)
-{
-    <div class="alert alert-danger" role="alert">
-        Rejected users will be deleted permanently
-    </div>
-    <form method="post" asp-action="DeleteUsersInRejectedList" class="form-control">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">UserName</th>
-                    <th scope="col">Reject User</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < Model.Count(); i++)
-                {
+<div class="container mx-auto">
+    <h3>Rejected Users</h3>
+    @if (Model != null && Model.Count > 0)
+    {
+        <div class="alert alert-danger" role="alert">
+            Rejected users will be deleted permanently!
+        </div>
+        <form method="post" asp-action="DeleteUsersInRejectedList" class="form-control">
+            <table class="table">
+                <thead>
                     <tr>
-                        <td scope="row">@Model[i].Name</td>
-                        <td scope="row">@Model[i].UserName</td>
-                        @if (Model[i].SelectedApproveUserCheckboxOptions != null && Model[i].SelectedApproveUserCheckboxOptions.Count > 0)
-                        {
-                            @for (int j = 0; j < Model[i].SelectedApproveUserCheckboxOptions.Count(); j++)
-                            {
-                                <td>
-                                    <input asp-for="@Model[i].SelectedApproveUserCheckboxOptions[j].IsSelected" type="checkbox" />
-                                    <input type="hidden" asp-for="@Model[i].UserId" />
-                                    <input type="hidden" asp-for="@Model[i].RoleId" />
-                                    <input type="hidden" asp-for="@Model[i].SelectedApproveUserCheckboxOptions[j].UserId" />
-                                    <input type="hidden" asp-for="@Model[i].SelectedApproveUserCheckboxOptions[j].RoleId" />
-                                </td>
-                            }
-                        }
+                        <th scope="col">Name</th>
+                        <th scope="col">UserName</th>
+                        <th scope="col">Reject User</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-        <button class="btn btn-danger" type="submit">Reject User(s)</button>
-    </form>
-}
-else
-{
-    <label class="form-label">There are no users in the Waiting For Approval list</label>
-    <a asp-action="Index" class="btn btn-primary">Okay</a>
-}
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count(); i++)
+                    {
+                        <tr>
+                            <td scope="row">@Model[i].Name</td>
+                            <td scope="row">@Model[i].UserName</td>
+                            @if (Model[i].SelectedApproveUserCheckboxOptions != null && Model[i].SelectedApproveUserCheckboxOptions.Count > 0)
+                            {
+                                @for (int j = 0; j < Model[i].SelectedApproveUserCheckboxOptions.Count(); j++)
+                                {
+                                    <td>
+                                        <input asp-for="@Model[i].SelectedApproveUserCheckboxOptions[j].IsSelected" type="checkbox" />
+                                        <input type="hidden" asp-for="@Model[i].UserId" />
+                                        <input type="hidden" asp-for="@Model[i].RoleId" />
+                                        <input type="hidden" asp-for="@Model[i].SelectedApproveUserCheckboxOptions[j].UserId" />
+                                        <input type="hidden" asp-for="@Model[i].SelectedApproveUserCheckboxOptions[j].RoleId" />
+                                    </td>
+                                }
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button class="btn btn-danger" type="submit">Reject User(s)</button>
+        </form>
+    }
+    else
+    {
+        <label class="form-label">There are no users in the Rejected list.</label>
+        <a asp-action="Index" class="btn btn-primary">Okay</a>
+    }
+</div>
