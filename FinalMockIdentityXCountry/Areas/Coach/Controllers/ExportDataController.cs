@@ -1,4 +1,5 @@
 ﻿using FinalMockIdentityXCountry.Models;
+using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.DataController;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.ExportDataController;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.PracticeHistoryController;
@@ -232,12 +233,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         [HttpPost]
         public IActionResult ExportAllPracticeHistoryToCSV()
         {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult ExportCurrentPracticeHistoryToCSV(int practiceId) 
-        {
             var dbQueries = (from p in _context.Practices
                              join a in _context.Attendances
                              on p.Id equals a.PracticeId
@@ -248,14 +243,96 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                  p.PracticeLocation,
                                  p.PracticeStartTimeAndDate
                              } into matchesFound
-                             select new CurrentPracticeWorkoutDataViewModel
+                             select new ExportAllPracticeHistoryToCSVViewModel()
                              {
-                                 PracticeId = matchesFound.Key.PracticeId,
-                                 PracticeDateTime = matchesFound.Key.PracticeStartTimeAndDate,
+                                 PracticeDateOnly = DateOnly.FromDateTime(matchesFound.Key.PracticeStartTimeAndDate),
+                                 PracticeStartTime = TimeOnly.FromDateTime(matchesFound.Key.PracticeStartTimeAndDate),
+                                 AttendanceCount = matchesFound.Count(),
                                  PracticeLocation = matchesFound.Key.PracticeLocation,
-                                 TotalRunners = matchesFound.Count(),
-                             });
-            return View();
+                                 PracticeFullDateTime = matchesFound.Key.PracticeStartTimeAndDate
+                             }).ToList();
+
+            if (dbQueries != null && dbQueries.Count() > 0)
+            {
+                List<ExportAllPracticeHistoryToCSVViewModel> exportAllPracticeHistoryToCSVViewModels = new List<ExportAllPracticeHistoryToCSVViewModel>();
+               
+                foreach (var dbQuery in dbQueries)
+                {
+                    ExportAllPracticeHistoryToCSVViewModel exportPracticeHistoryViewModel = new ExportAllPracticeHistoryToCSVViewModel
+                    {
+                        PracticeDateOnly = dbQuery.PracticeDateOnly,
+                        PracticeStartTime = dbQuery.PracticeStartTime,
+                        AttendanceCount = dbQuery.AttendanceCount,
+                        PracticeLocation = dbQuery.PracticeLocation,
+                        PracticeFullDateTime = dbQuery.PracticeFullDateTime
+                    }; 
+                 
+                    exportAllPracticeHistoryToCSVViewModels.Add(exportPracticeHistoryViewModel);
+                }
+                
+                if (exportAllPracticeHistoryToCSVViewModels != null && exportAllPracticeHistoryToCSVViewModels.Count > 0)
+                {
+                    exportAllPracticeHistoryToCSVViewModels = exportAllPracticeHistoryToCSVViewModels.OrderByDescending(d => d.PracticeFullDateTime).ToList();
+
+                    var builder = new StringBuilder();
+                    builder.AppendLine("Date,Start Time,Location,Attendance Count");
+
+                    foreach (var data in exportAllPracticeHistoryToCSVViewModels)
+                    {
+                        builder.AppendLine($"{data.PracticeDateOnly},{data.PracticeStartTime},{data.PracticeLocation},{data.AttendanceCount}"); 
+                    }
+                    return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", $"all_practice_history.csv");
+                }
+                else
+                {
+                    TempData["error"] = "No data was found with the provided query";
+                    return RedirectToAction("Index");
+                }
+
+            }
+
+            TempData["error"] = "There was no data found with the provided query.";
+            return View("Index");
+        }
+
+        [HttpPost]
+        public IActionResult ExportCurrentPracticeHistoryToCSV(int practiceId) 
+        {
+            if (practiceId == 0)
+            {
+                TempData["error"] = "Invalid practice id provided";
+                return RedirectToAction("Index");
+            }
+
+            var dbQuery = (from p in _context.Practices
+                             join a in _context.Attendances
+                             on p.Id equals a.PracticeId
+                             where a.IsPresent && p.PracticeIsInProgress == false && p.Id == practiceId
+                             group a by new
+                             {
+                                 a.PracticeId,
+                                 p.PracticeLocation,
+                                 p.PracticeStartTimeAndDate
+                             } into matchesFound
+                             select new ExportCurrentPracticeHistoryToCSVViewModel
+                             { 
+                                 PracticeDate = DateOnly.FromDateTime( matchesFound.Key.PracticeStartTimeAndDate),
+                                 PracticeStartTime = TimeOnly.FromDateTime(matchesFound.Key.PracticeStartTimeAndDate),
+                                 AttendanceCount = matchesFound.Count(),
+                                 PracticeLocation = matchesFound.Key.PracticeLocation, 
+                             }).FirstOrDefault();
+
+            if (dbQuery != null)
+            {
+                var builder = new StringBuilder();
+                builder.AppendLine("Date,Start Time,Location,Attendance Count");
+                builder.AppendLine($"{dbQuery.PracticeDate},{dbQuery.PracticeStartTime},{dbQuery.PracticeLocation},{dbQuery.AttendanceCount}");
+
+                return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", $"selected_practice_history.csv");
+            }
+
+            TempData["error"] = "There was no data found with the provided query.";
+            return View("Index");
         }
     }
 }

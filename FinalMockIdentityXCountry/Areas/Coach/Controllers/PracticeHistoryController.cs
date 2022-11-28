@@ -56,7 +56,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                       TotalRunners = matchesFound.Count(),
                                   });
 
-            if (dbQueries.Count() > 0)
+            if (dbQueries != null && dbQueries.Count() > 0)
             {
                 foreach (var dbQuery in dbQueries)
                 {
