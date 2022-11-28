@@ -213,7 +213,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 if (exportAthletePracticeHistoryToCSVViewModels != null && exportAthletePracticeHistoryToCSVViewModels.Count > 0)
                 {
                     
-                    exportAthletePracticeHistoryToCSVViewModels = exportAthletePracticeHistoryToCSVViewModels.OrderBy(i => i.PracticeLocation).ToList();
+                    exportAthletePracticeHistoryToCSVViewModels = exportAthletePracticeHistoryToCSVViewModels.OrderByDescending(d => d.PracticeDate).ToList();
 
                     foreach (var data in exportAthletePracticeHistoryToCSVViewModels)
                     {
