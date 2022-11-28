@@ -10,5 +10,6 @@
         public string? RunnerName { get; set; }
         public string? RunnerId { get; set; }
         public List<string>? Workouts { get; set; }
+        public int PracticeId { get; set; }
     }
 }

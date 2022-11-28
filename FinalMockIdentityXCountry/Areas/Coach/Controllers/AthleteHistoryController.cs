@@ -62,6 +62,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             SelectedAthleteViewModel selectedAthleteViewModel = new SelectedAthleteViewModel();
             selectedAthleteViewModel.AthleteName = $"{applicationUser.FirstName} {applicationUser.LastName}";
+            selectedAthleteViewModel.RunnerId = applicationUser.Id;
 
             var dbQueries = (from a in _context.Attendances
                              join p in _context.Practices
@@ -71,6 +72,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                              {
                                  p.PracticeLocation,
                                  p.PracticeStartTimeAndDate, 
+                                 a.RunnerId,
+                                 p.Id
                              });
 
             if (dbQueries == null)
@@ -84,6 +87,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 {
                     PracticeLocation = dbQuery.PracticeLocation == null ? " " : dbQuery.PracticeLocation,
                     PracticeStartTimeAndDate = dbQuery.PracticeStartTimeAndDate,
+                    RunnerId = dbQuery.RunnerId,
+                    PracticeId = dbQuery.Id
                 };
 
                 if (selectedAthleteViewModelHelper != null)
@@ -96,7 +101,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             {
                 selectedAthleteViewModel.SelectedAthleteHelper = selectedAthleteViewModel.SelectedAthleteHelper.OrderByDescending(p => p.PracticeStartTimeAndDate).ToList();
             }
-            
 
             return View(selectedAthleteViewModel);
         }

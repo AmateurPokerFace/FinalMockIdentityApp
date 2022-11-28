@@ -125,7 +125,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             {
                 PracticeStartTime =  TimeOnly.FromDateTime(practice.PracticeStartTimeAndDate),
                 PracticeEndTime = TimeOnly.FromDateTime(practice.PracticeEndTimeAndDate),
-                PracticeLocation = practice.PracticeLocation
+                PracticeLocation = practice.PracticeLocation,
+                PracticeId = practice.Id
             };
 
             SelectedViewModelHelper viewModelHelper = new SelectedViewModelHelper();
@@ -142,6 +143,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     if (firstLoop)
                     {
                         viewModelHelper.RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}";
+                        viewModelHelper.RunnerId = dbQuery.RunnerId;
+                        viewModelHelper.PracticeId = dbQuery.PracticeId;
                     }
 
                     if (currentRunnerId != dbQuery.RunnerId && firstLoop == false)
@@ -150,7 +153,9 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
                         viewModelHelper = new SelectedViewModelHelper
                         {
-                            RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}"
+                            RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}",
+                            RunnerId = dbQuery.RunnerId,
+                            PracticeId = dbQuery.PracticeId,
                         };
                     }
 

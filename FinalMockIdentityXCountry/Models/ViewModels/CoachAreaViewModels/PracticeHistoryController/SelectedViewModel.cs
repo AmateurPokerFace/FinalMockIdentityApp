@@ -9,6 +9,7 @@
         public string? PracticeLocation { get; set; }
         public TimeOnly PracticeStartTime { get; set; }
         public TimeOnly PracticeEndTime { get; set; }
+        public int PracticeId { get; set; }
         public List<SelectedViewModelHelper>? SelectedViewModelHelpers { get; set; }
     }
 }
