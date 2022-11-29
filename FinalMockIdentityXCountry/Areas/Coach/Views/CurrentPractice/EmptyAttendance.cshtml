@@ -1,0 +1,7 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.CurrentPracticeController
+@model EmptyAttendanceViewModel
+
+<div class="alert alert-warning" role="alert">
+    There are no current logged runners
+    <a class="btn-link" asp-action="AddRunnerToCurrentPractice" asp-route-practiceId="@Model.PracticeId">Add a runner to the current practice</a>
+</div>

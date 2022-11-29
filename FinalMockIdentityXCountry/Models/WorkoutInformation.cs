@@ -20,7 +20,7 @@ namespace FinalMockIdentityXCountry.Models
         [Range(0, 60.0)]
         public int Seconds { get; set; }
         public bool DataWasLogged { get; set; }
-        public string? RunnerId { get; set; }
+        public string RunnerId { get; set; }
         [ValidateNever]
         public virtual ApplicationUser? Runner { get; set; }
         public int WorkoutTypeId { get; set; }

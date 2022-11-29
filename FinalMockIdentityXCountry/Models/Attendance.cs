@@ -13,10 +13,10 @@ namespace FinalMockIdentityXCountry.Models
         public bool HasBeenSignedOut { get; set; } 
         public int PracticeId { get; set; }
         [ValidateNever]
-        public Practice? Practice { get; set; } 
+        public Practice Practice { get; set; } 
         public string RunnerId { get; set; }
         [ValidateNever]
-        public virtual ApplicationUser? Runner { get; set; }
+        public virtual ApplicationUser Runner { get; set; }
 
     }
 }

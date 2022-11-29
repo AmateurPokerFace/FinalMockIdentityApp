@@ -1,32 +1,58 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 @model CurrentViewModel
 
-<div class="container mx-auto">
-    <h2>Are you sure you want to close this practice?</h2>
-    <div>
-        <label>@Model.PracticeLocation @Model.PracticeStartTimeAndDate</label>
-    </div>
+@if (Model != null)
+{
+    @if (Model.Runners != null && Model.Runners.Count > 0)
+    {
+        <div class="container mx-auto">
+            <h2>Are you sure you want to close this practice?</h2>
+            <div>
+                <label>@Model.PracticeLocation @Model.PracticeStartTimeAndDate</label>
+            </div>
 
-    <div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Runner</th>
-                </tr> 
-            </thead>
-            <tbody>
-                @if (Model.Runners != null && Model.Runners.Count > 0)
-                {
-                    @foreach (var runner in Model.Runners)
-                    {
+            <div>
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td>@runner</td>
+                            <th scope="col">Runner</th>
                         </tr>
-                    }
-                }
-                
-            </tbody>
-        </table>
-        <a asp-route-currentPracticeId="@Model.practiceId" asp-controller="EndCurrentPractice" asp-action="End" class="btn btn-danger">End Current Practice</a>
+                    </thead>
+                    <tbody>
+                        @if (Model.Runners != null && Model.Runners.Count > 0)
+                        {
+                            @foreach (var runner in Model.Runners)
+                            {
+                                <tr>
+                                    <td>@runner</td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+                <a asp-route-currentPracticeId="@Model.practiceId" asp-controller="EndCurrentPractice" asp-action="End" class="btn btn-danger">End Current Practice</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="container mx-auto">
+            <h2>Are you sure you want to close this practice?</h2>
+            <div>
+                <label>@Model.PracticeLocation @Model.PracticeStartTimeAndDate</label>
+            </div>
+            <div>
+                <a asp-route-currentPracticeId="@Model.practiceId" asp-controller="EndCurrentPractice" asp-action="End" class="btn btn-danger">End Current Practice</a>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div>
+        <label class="form-label">The requested data wasn't found</label>
+        <a class="btn btn-primary" asp-action="Index">Ok</a>
     </div>
-</div>
+}
+

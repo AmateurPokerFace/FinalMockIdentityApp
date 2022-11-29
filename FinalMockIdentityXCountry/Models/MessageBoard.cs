@@ -14,7 +14,7 @@ namespace FinalMockIdentityXCountry.Models
         public string? MessageBody { get; set; }
         public string CoachId { get; set; }
         [ValidateNever]
-        public virtual ApplicationUser? Coach { get; set; }
+        public virtual ApplicationUser Coach { get; set; }
         [Required]
         public DateTime PublishedDateTime { get; set; }
     }

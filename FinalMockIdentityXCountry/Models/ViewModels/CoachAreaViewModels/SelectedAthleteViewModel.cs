@@ -11,5 +11,6 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
         
         public string? AthleteName { get; set; }
         public List<SelectedAthleteViewModelHelper>? SelectedAthleteHelper { get; set; }
+        public string? RunnerId { get; set; }
     }
 }

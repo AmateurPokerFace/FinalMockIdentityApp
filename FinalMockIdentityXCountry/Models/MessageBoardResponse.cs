@@ -9,13 +9,13 @@ namespace FinalMockIdentityXCountry.Models
         public int Id { get; set; }
         public int MessageBoardId { get; set; }
         [ValidateNever]
-        public MessageBoard? MessageBoard { get; set; }
+        public MessageBoard MessageBoard { get; set; }
         [Required]
-        public string? Response { get; set; }
+        public string Response { get; set; }
         [Required]
         public string ResponderId { get; set; }
         [ValidateNever]
-        public virtual ApplicationUser? Responder { get; set; }
+        public virtual ApplicationUser Responder { get; set; }
         public DateTime ResponseDateTime { get; set; } 
     }
 }
