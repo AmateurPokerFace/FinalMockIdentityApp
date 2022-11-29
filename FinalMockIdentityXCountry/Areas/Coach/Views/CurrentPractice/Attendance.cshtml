@@ -1,32 +1,30 @@
-﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.CurrentPracticeController
+@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.CurrentPracticeController
 @model AttendanceViewModel
 
-@if (Model != null)
-{
-    <div class="container mx-auto">
-        <label class="form-label">@Model.PracticeStartTimeAndDate | @Model.PracticeLocation</label>
-        <br /><br />
-        <a class="btn-link" asp-action="AddRunnerToCurrentPractice" asp-route-practiceId="@Model.PracticeId">Add a runner to the current practice</a>
-        @if (Model.AttendanceViewModelHelpers != null && Model.AttendanceViewModelHelpers.Count > 0)
-        {
-            <table class="table">
-                <thead>
+<div class="container mx-auto">
+    <h3>Practice at @Model.PracticeLocation</h3>
+    <p style="font-weight: lighter;">@Model.PracticeStartTimeAndDate</p>
+    <label class="form-label">Select a runner to sign in or out. </label>
+    <br /><br />
+    <a class="btn-link" asp-action="AddRunnerToCurrentPractice" asp-route-practiceId="@Model.PracticeId">Add a runner to the current practice</a>
+    @if (Model.AttendanceViewModelHelpers != null && Model.AttendanceViewModelHelpers.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Runner</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var runner in Model.AttendanceViewModelHelpers)
+                {
                     <tr>
-                        <th scope="col">Runner</th>
-                        <th scope="col"></th>
+                        <td>@runner.Runner</td>
+                        <td><a asp-action="SignRunnerOut" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId" class="btn btn-danger">Sign Out</a></td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var runner in Model.AttendanceViewModelHelpers)
-                    {
-                        <tr>
-                            <td>@runner.Runner</td>
-                            <td><a asp-action="SignRunnerOut" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId" class="btn btn-danger">Sign out of practice</a></td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-    </div>
-}
-
+                }
+            </tbody>
+        </table>
+    }
+</div>
