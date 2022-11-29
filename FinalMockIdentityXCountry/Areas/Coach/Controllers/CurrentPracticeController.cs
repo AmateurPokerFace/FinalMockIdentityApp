@@ -1,4 +1,6 @@
 ﻿using FinalMockIdentityXCountry.Models;
+using FinalMockIdentityXCountry.Models.Utilities;
+using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.CurrentPracticeController;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +25,10 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             _userManager = userManager;
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
         public IActionResult CurrentPractices()
         {
             IEnumerable<Practice> practices = _context.Practices.Where(p => p.PracticeIsInProgress);
@@ -48,6 +54,12 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (currentPracticeId != 0)
             {
+                Practice practice = _context.Practices.Find(currentPracticeId);
+                if (practice == null) // check to see if a practice exists with the provided id in the database
+                {
+                    TempData["error"] = "The practice doesn't exist in the database. Please provide a valid practice id.";
+                    return RedirectToAction("Index");
+                }
                 CurrentViewModel currentViewModel = new CurrentViewModel { practiceId = currentPracticeId };
 
                 var dbQueries = (from a in _context.Attendances
@@ -63,45 +75,30 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                      practices.PracticeStartTimeAndDate,
                                      practices.PracticeLocation,
                                  });
-
-                bool dbQueryFound = false;
-
-                foreach (var dbQuery in dbQueries)
+                  
+                if (dbQueries != null && dbQueries.Count() > 0)
                 {
-                    dbQueryFound = true;
-                    currentViewModel.PracticeLocation = dbQuery.PracticeLocation;
-                    currentViewModel.PracticeStartTimeAndDate = dbQuery.PracticeStartTimeAndDate;
-                    currentViewModel.RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}";
-                    currentViewModel.Runners.Add(currentViewModel.RunnerName);
-                }
+                    foreach (var dbQuery in dbQueries)
+                    {
+                        currentViewModel.PracticeLocation = dbQuery.PracticeLocation;
+                        currentViewModel.PracticeStartTimeAndDate = dbQuery.PracticeStartTimeAndDate;
+                        currentViewModel.RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}";
+                        currentViewModel.Runners?.Add(currentViewModel.RunnerName);
+                    }
 
-                if (dbQueryFound)
-                {
-                    if (currentViewModel.Runners.Count() > 0)
-                    {
-                        return View(currentViewModel);
-                    }
-                    else
-                    {
-                        // empty runners list. may not need else statement
-                    }
+                    return View(currentViewModel);
                 }
                 else
                 {
-                    Practice practice = _context.Practices.Find(currentPracticeId); // no runners are in the provided practiceId
-                    if (practice == null) // check to see if a practice exists with the provided id in the database
-                    {
-                        TempData["error"] = "The practice doesn't exist in the database. Please provide a valid practice id.";
-                    }
-                    else
-                    {
-                        currentViewModel.PracticeLocation = practice.PracticeLocation;
-                        currentViewModel.PracticeStartTimeAndDate = practice.PracticeStartTimeAndDate;
-                        return View(currentViewModel);
-                    }
+                    currentViewModel.PracticeLocation = practice.PracticeLocation;
+                    currentViewModel.PracticeStartTimeAndDate = practice.PracticeStartTimeAndDate; 
+                    return View(currentViewModel);
                 }
+                
+                
             }
 
+            TempData["error"] = "Invalid practice id provided";
             return RedirectToAction("Index");
         }
 
@@ -109,9 +106,16 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (practiceId == 0)
             {
-                return RedirectToAction(); // send to an invalid page in the future
+                TempData["error"] = "Invalid practice id provided";
+                return RedirectToAction("Index"); 
             }
-
+            Practice practice = _context.Practices.Find(practiceId);
+           
+            if (practice == null)
+            {
+                TempData["error"] = "Invalid practice id provided";
+                return RedirectToAction("Index");
+            }
 
             var dbQueries = (from a in _context.Attendances
                              join aspnetusers in _context.ApplicationUsers
@@ -131,13 +135,23 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (dbQueries.Count() < 1 || dbQueries == null)
             {
-                return RedirectToAction(); // send to an invalid page in the future
+                if (practice == null)
+                {
+                    TempData["error"] = "Invalid practice provided";
+                    return RedirectToAction("Index"); // send to an invalid page in the future
+                }
+                else
+                {
+                    return RedirectToAction("EmptyAttendance",new {practiceId = practiceId});
+                }
+                
             }
 
             AttendanceViewModel attendanceViewModel = new AttendanceViewModel
             {
-                PracticeLocation = dbQueries.FirstOrDefault()?.PracticeLocation == null ? " " : dbQueries.FirstOrDefault()?.PracticeLocation,
-                PracticeStartTimeAndDate = dbQueries.FirstOrDefault().PracticeStartTimeAndDate
+                PracticeLocation = practice?.PracticeLocation == null ? " " : dbQueries.FirstOrDefault()?.PracticeLocation,
+                PracticeStartTimeAndDate = practice.PracticeStartTimeAndDate,
+                PracticeId = practice.Id
             };
 
             foreach (var dbQuery in dbQueries)
@@ -158,6 +172,135 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             }
 
             return RedirectToAction("Index"); // send to an error page in the future
+        }
+
+        public IActionResult EmptyAttendance(int practiceId)
+        {
+            Practice practice = _context.Practices.Where(p => p.PracticeIsInProgress && p.Id == practiceId).FirstOrDefault();
+            if (practice == null)
+            {
+                TempData["error"] = "Invalid practice id provided";
+                return RedirectToAction("Index");
+            }
+
+            EmptyAttendanceViewModel model = new EmptyAttendanceViewModel(practiceId);
+
+            return View(model);
+        }
+
+        public IActionResult AddRunnerToCurrentPractice(int practiceId)
+        {
+            if (practiceId == 0)
+            {
+                TempData["error"] = "Invalid practice id provided";
+                return RedirectToAction("CurrentPractices");
+            }
+
+            Practice practice = _context.Practices.Where(p => p.PracticeIsInProgress && p.Id == practiceId).FirstOrDefault();
+            
+            if (practice == null)
+            {
+                TempData["error"] = "Invalid practice id provided. Practice not found.";
+                return RedirectToAction("CurrentPractices");
+            }
+
+            var dbQueries = (from a in _context.Attendances
+                             join p in _context.Practices
+                             on a.PracticeId equals p.Id
+                             join aspnetusers in _context.ApplicationUsers
+                             on a.RunnerId equals aspnetusers.Id
+                             where a.IsPresent == false && p.Id == practiceId
+                             select new
+                             {
+                                 p.PracticeStartTimeAndDate,
+                                 p.PracticeLocation,
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName,
+                                 a.Id,
+                                 a.RunnerId
+                             });
+
+            if (dbQueries == null || dbQueries.Count() < 1)
+            {
+                TempData["error"] = "There are no runners marked as absent.";
+                return RedirectToAction("Index");
+            }
+
+            List<AddRunnerToCurrentPracticeViewModel> models = new List<AddRunnerToCurrentPracticeViewModel>();
+            
+            foreach (var dbQuery in dbQueries)
+            {
+                AddRunnerToCurrentPracticeViewModel model = new AddRunnerToCurrentPracticeViewModel
+                {
+                    Name = $"{dbQuery.FirstName} {dbQuery.LastName}",
+                    AttendanceId = dbQuery.Id,
+                    RunnerId = dbQuery.RunnerId,
+                    PracticeLocation = dbQuery.PracticeLocation,
+                    PracticeStartTimeAndDate = dbQuery.PracticeStartTimeAndDate
+                };
+
+                if (model != null)
+                {
+                    AddRunnerToCurrentPracticeChkboxOptionViewModel modelChkboxOption = new AddRunnerToCurrentPracticeChkboxOptionViewModel
+                    { 
+                        AttendanceId = model.AttendanceId,
+                        RunnerId = model.RunnerId
+                    };
+
+                    model.SelectedCheckboxOptions?.Add(modelChkboxOption);
+                    models.Add(model);
+                }
+            }
+
+            if (models != null && models.Count > 0)
+            {
+                return View(models);
+            }
+
+            TempData["error"] = "There are no runners marked as absent.";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult>AddRunnerToCurrentPractice(List<AddRunnerToCurrentPracticeViewModel> models) 
+        {
+            if (models == null)
+            {
+                TempData["error"] = "Invalid runners provided.";
+                return RedirectToAction("Index");
+            }
+
+            int updatedRunners = 0;
+
+            foreach (var model in models)
+            {
+                if (model.SelectedCheckboxOptions != null)
+                {
+                    foreach (var selectedCheckboxOption in model.SelectedCheckboxOptions.Where(i => i.IsSelected))
+                    {
+                        var runner = await _context.Attendances.FindAsync(selectedCheckboxOption.AttendanceId);
+
+                        if (runner != null)
+                        {
+                            runner.IsPresent = true;
+                            _context.Attendances.Update(runner);
+                            updatedRunners++;
+                        }
+                    }
+                }
+            }
+
+            if (updatedRunners == 0)
+            {
+                TempData["error"] = "An error occured. No runners were added to the attendance";
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                await _context.SaveChangesAsync();
+                TempData["success"] = updatedRunners == 1 ? $"{updatedRunners} runner was added to the practice" : $"{updatedRunners} runners were added to the practice";
+                return RedirectToAction("Index");
+            }
         }
 
         public IActionResult SignRunnerOut(string runnerId, int practiceId)

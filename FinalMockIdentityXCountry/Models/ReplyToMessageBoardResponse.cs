@@ -11,12 +11,12 @@ namespace FinalMockIdentityXCountry.Models
         [Required]
         public string ReplyerId { get; set; }
         [ValidateNever]
-        public virtual ApplicationUser? Replyer { get; set; } 
+        public virtual ApplicationUser Replyer { get; set; } 
         public DateTime ReplyDateTime { get; set; }
         [Required]
         public string? Reply { get; set; }
         public int MessageBoardResponseId { get; set; }
         [ValidateNever]
-        public MessageBoardResponse? MessageBoardResponse { get; set; }
+        public MessageBoardResponse MessageBoardResponse { get; set; }
     }
 }

@@ -6,8 +6,8 @@
     <p style="font-weight: lighter;">@Model.PracticeStartTimeAndDate</p>
     <label class="form-label">Select a runner to sign in or out. </label>
     <br /><br />
-@*    <a class="btn-link">Add a runner to the current practice</a>
-*@    @if (Model.AttendanceViewModelHelpers != null && Model.AttendanceViewModelHelpers.Count > 0)
+    <a class="btn-link" asp-action="AddRunnerToCurrentPractice" asp-route-practiceId="@Model.PracticeId">Add a runner to the current practice</a>
+    @if (Model.AttendanceViewModelHelpers != null && Model.AttendanceViewModelHelpers.Count > 0)
     {
         <table class="table">
             <thead>

@@ -3,6 +3,7 @@ using FinalMockIdentityXCountry.Models.DataLayer.Repositories.IRepository.Interf
 using FinalMockIdentityXCountry.Models.ViewModelHelperClasses;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels;
 using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.Delete;
+using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.PracticeHistoryController;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +56,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                       TotalRunners = matchesFound.Count(),
                                   });
 
-            if (dbQueries.Count() > 0)
+            if (dbQueries != null && dbQueries.Count() > 0)
             {
                 foreach (var dbQuery in dbQueries)
                 {
@@ -85,84 +86,95 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (practiceId == 0)
             {
-                return RedirectToAction(); // send to an error page in the future (invalid id provided)
+                TempData["error"] = "The practice id provided is invalid.";
+                return RedirectToAction("Index"); 
             }
 
             Practice practice = _context.Practices.Where(p => p.Id == practiceId).FirstOrDefault();
 
             if (practice == null)
             {
-                return RedirectToAction(); // send to an error page in the future
+                TempData["error"] = "The practice provided is invalid.";
+                return RedirectToAction("Index"); 
             }
 
-            var dbQueries = (from w in _context.WorkoutInformation
+            var dbQueries = (from p in _context.Practices
+                             join a in _context.Attendances
+                             on p.Id equals a.PracticeId
+                             join wi in _context.WorkoutInformation
+                             on p.Id equals wi.PracticeId
+                             join wt in _context.WorkoutTypes
+                             on wi.WorkoutTypeId equals wt.Id
                              join aspnetusers in _context.ApplicationUsers
-                             on w.RunnerId equals aspnetusers.Id
-                             join workoutTypes in _context.WorkoutTypes
-                             on w.WorkoutTypeId equals workoutTypes.Id
-                             join p in _context.Practices
-                             on w.PracticeId equals p.Id
-                             where w.PracticeId == practiceId
+                             on wi.RunnerId equals aspnetusers.Id
+                             where p.Id == practiceId && a.IsPresent && wi.RunnerId == a.RunnerId && p.PracticeIsInProgress == false
                              select new
                              {
-                                 w.RunnerId,
-                                 w.PracticeId,
-                                 workoutTypes.WorkoutName,
-                                 aspnetusers.FirstName,
-                                 aspnetusers.LastName,
                                  p.PracticeStartTimeAndDate,
                                  p.PracticeEndTimeAndDate,
-                                 p.PracticeLocation
+                                 p.PracticeLocation,
+                                 wt.WorkoutName,
+                                 wi.PracticeId,
+                                 wi.RunnerId,
+                                 aspnetusers.Id,
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName
                              });
 
-
-            if (dbQueries.Count() > 0 == false)
+            SelectedViewModel selectedViewModel = new SelectedViewModel
             {
-                return RedirectToAction(); // send to an error page in the future
-            }
+                PracticeStartTime =  TimeOnly.FromDateTime(practice.PracticeStartTimeAndDate),
+                PracticeEndTime = TimeOnly.FromDateTime(practice.PracticeEndTimeAndDate),
+                PracticeLocation = practice.PracticeLocation,
+                PracticeId = practice.Id
+            };
 
-            List<SelectedViewModel> selectedViewModels = new List<SelectedViewModel>();
-            
-            SelectedViewModel selectedViewModel = new SelectedViewModel ();
+            SelectedViewModelHelper viewModelHelper = new SelectedViewModelHelper();
 
-            string runnerId = dbQueries.FirstOrDefault().RunnerId;
-
-            if (runnerId == null)
+            if (dbQueries != null && dbQueries.Count() > 0)
             {
-                return RedirectToAction(); // send to an invalid runner id page (null value)
-            }
+                int currentRow = 1;
+                bool firstLoop = true;
+                string currentRunnerId = "";
+                int dbQueriesRecordCount = dbQueries.Count();
 
-            bool multipleLoops = false; // will be used to add the last object instance to the selectedViewModels List
-
-            foreach (var dbQuery in dbQueries)
-            {
-                if (runnerId != dbQuery.RunnerId) // will not execute on first loop. runnerId was populated using dbQueriesFirstOrDefault().RunnerId.
+                foreach (var dbQuery in dbQueries)
                 {
-                    selectedViewModels.Add(selectedViewModel);
-                    multipleLoops = true; 
-                    selectedViewModel = new SelectedViewModel();
+                    if (firstLoop)
+                    {
+                        viewModelHelper.RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}";
+                        viewModelHelper.RunnerId = dbQuery.RunnerId;
+                        viewModelHelper.PracticeId = dbQuery.PracticeId;
+                    }
+
+                    if (currentRunnerId != dbQuery.RunnerId && firstLoop == false)
+                    {
+                        selectedViewModel.SelectedViewModelHelpers?.Add(viewModelHelper);
+
+                        viewModelHelper = new SelectedViewModelHelper
+                        {
+                            RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}",
+                            RunnerId = dbQuery.RunnerId,
+                            PracticeId = dbQuery.PracticeId,
+                        };
+                    }
+
+                    viewModelHelper.Workouts?.Add(dbQuery.WorkoutName);
+
+                    firstLoop = false;
+                    currentRunnerId = dbQuery.RunnerId;
+
+                    if (currentRow == dbQueriesRecordCount)
+                    {
+                        selectedViewModel.SelectedViewModelHelpers?.Add(viewModelHelper);
+                    }
+
+                    currentRow++;
                 }
-
-                selectedViewModel.PracticeId = dbQuery.PracticeId;
-                selectedViewModel.RunnerId = dbQuery.RunnerId;
-                selectedViewModel.RunnersName = $"{dbQuery.FirstName} {dbQuery.LastName}";
-                if (dbQuery.WorkoutName != null)
-                {
-                    selectedViewModel.PracticeWorkouts.Add(dbQuery.WorkoutName);
-                } 
-                selectedViewModel.PracticeStartTime = TimeOnly.FromDateTime(dbQuery.PracticeStartTimeAndDate);
-                selectedViewModel.PracticeEndingTime = TimeOnly.FromDateTime(dbQuery.PracticeEndTimeAndDate);
-                selectedViewModel.PracticeLocation = dbQuery.PracticeLocation == null ? " " : dbQuery.PracticeLocation;
-                runnerId = dbQuery.RunnerId;
-
             }
 
-            if (multipleLoops)
-            {
-                selectedViewModels.Add(selectedViewModel);
-            }
              
-            return View(selectedViewModels); 
+            return View(selectedViewModel); 
             
         }
 

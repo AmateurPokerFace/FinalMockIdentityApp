@@ -464,27 +464,31 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
 
             foreach (var waitingForApprovalVm in waitingForApprovalListViewModels)
             {
-                foreach (var selectedCheckboxOption in waitingForApprovalVm.SelectedApproveUserCheckboxOptions.Where(i => i.IsSelected))
+                if (waitingForApprovalVm.SelectedApproveUserCheckboxOptions != null)
                 {
-                    var user = await _userManager.FindByIdAsync(selectedCheckboxOption.UserId);
-
-                    if (user != null)
+                    foreach (var selectedCheckboxOption in waitingForApprovalVm.SelectedApproveUserCheckboxOptions.Where(i => i.IsSelected))
                     {
-                        bool userFoundInRoleNotAssigned = false;
+                        var user = await _userManager.FindByIdAsync(selectedCheckboxOption.UserId);
 
-                        if (await _userManager.IsInRoleAsync(user, StaticDetails.Role_Not_Assigned)) // remove the user from the role "Waiting for approval" if true
+                        if (user != null)
                         {
-                            await _userManager.RemoveFromRoleAsync(user, StaticDetails.Role_Not_Assigned);
-                            userFoundInRoleNotAssigned = true;
-                        }
+                            bool userFoundInRoleNotAssigned = false;
 
-                        if (userFoundInRoleNotAssigned)
-                        {
-                            await _userManager.AddToRoleAsync(user, "Runner");
-                            approvedRunners++;
+                            if (await _userManager.IsInRoleAsync(user, StaticDetails.Role_Not_Assigned)) // remove the user from the role "Waiting for approval" if true
+                            {
+                                await _userManager.RemoveFromRoleAsync(user, StaticDetails.Role_Not_Assigned);
+                                userFoundInRoleNotAssigned = true;
+                            }
+
+                            if (userFoundInRoleNotAssigned)
+                            {
+                                await _userManager.AddToRoleAsync(user, "Runner");
+                                approvedRunners++;
+                            }
                         }
                     }
-                } 
+                }
+                 
             }
 
             if (approvedRunners == 0)

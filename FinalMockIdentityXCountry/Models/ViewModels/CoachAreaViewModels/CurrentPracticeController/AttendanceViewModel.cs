@@ -10,5 +10,6 @@
         public string? PracticeLocation { get; set; }
         public DateTime PracticeStartTimeAndDate { get; set; }
         public List<AttendanceViewModelHelper>? AttendanceViewModelHelpers { get; set; }
+        public int PracticeId { get; set; }
     }
 }
