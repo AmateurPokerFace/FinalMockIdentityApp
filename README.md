@@ -7,8 +7,13 @@ This application is intended to help the Cross Country team keep track of their 
 - The Coach users have access to most areas of the app, excluding the Master Admin panel.
 - The Runner users have limited access to only the pages associated with their own data, and limited access to the forum.
 - The Waiting For Approval and Banned users cannot access the application.
+## Get Started
+To get started, log in to the Master Admin account using your given credentials. Once you're logged in, there are several options in the navigation bar or menu to choose from. For this Getting Started guide, you will walk through the process of starting a new practice and recording the attendance of runners, scheduling a practice for later, and assigning a workout to a practice.   
+  To start a new practice, first click the Practices option in the navigation bar to pull up the Practice options, and click Start Practice Now. Once you are on the Start a New Practice Session page, you can enter a location name for the practice, as well as mark any Runners as present if desired. Once you have entered the approporiate data, click the Start Practice button. If the practice was started successfully, you will see an alert confirming the entry.    
+  Next we will schedule a practice session for later. From the navigation bar, click the Practices option, then Schedule Practice for Later. Once you are on the Schedule a Practice Session for Later page, you can enter a location name, a start and end time, and mark Runners as attending if desired. Once you have entered the approporiate data, click the Start Practice button. If the practice was started successfully, you will see an alert confirming the entry.    
+All new registered users will automatically be assigned to the Waiting For Approval category. 
 ## Forums
-The Forums page allows Coach
+The Forums page allows Coach and Master Admin accounts to create and delete threads as well as respond to threads via comments. Runner accounts may only comment on threads. 
 ## Calculators
 The application comes with three different pace calculators:
 1. Simple Pace Calculator
