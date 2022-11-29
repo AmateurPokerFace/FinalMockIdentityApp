@@ -13,8 +13,8 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 
         public List<ApplicationUser> RunnerUsers { get; set; }
 
-        [StringLength(100, MinimumLength = 2)]
         [Required]
+        [StringLength(100, MinimumLength = 2)]
         public string PracticeLocation { get; set; }
     }
 }
