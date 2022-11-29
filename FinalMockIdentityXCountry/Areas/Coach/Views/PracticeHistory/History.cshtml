@@ -29,7 +29,12 @@
                             <td>@attendance.PracticeDateTime</td>
                             <td>@attendance.PracticeLocation</td>
                             <td>@attendance.TotalRunners</td>
-                            <td><a asp-action="Selected" asp-route-practiceId="@attendance.PracticeId" class="btn btn-primary">View</a></td>
+                            @if (attendance.TotalRunners > 0)
+                            {
+                                <td><a asp-action="Selected" asp-route-practiceId="@attendance.PracticeId" class="btn btn-primary">View</a></td>
+                            }
+                            else
+                            {<td></td>}
                             <td>
                                 
                                 <form method="post" asp-controller="ExportData" asp-action="ExportCurrentPracticeHistoryToCSV">

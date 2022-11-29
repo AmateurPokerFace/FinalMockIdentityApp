@@ -1,4 +1,6 @@
-﻿namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.DataController
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
+namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.DataController
 {
     public class EditWorkoutDataViewModel
     {
@@ -13,5 +15,7 @@
         public DateTime PracticeStartTime { get; set; }
         public string? PracticeLocation { get; set; }
         public List<string>? Workouts { get; set; }
+        [ValidateNever]
+        public bool ShowReadDeleteButtons { get; set; } // show delete workout and view/edit data entered hyperlinks
     }
 }

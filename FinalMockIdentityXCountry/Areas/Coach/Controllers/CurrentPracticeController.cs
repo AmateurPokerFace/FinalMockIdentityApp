@@ -307,6 +307,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (practiceId == 0)
             {
+                TempData["error"] = "Invalid practice id provided";
                 return RedirectToAction("Index"); // send to an error page in the future
             } 
 
@@ -328,6 +329,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (dbQuery == null)
             {
+                TempData["error"] = "No runner was found with the provided data";
                 return RedirectToAction("Index"); // send to an error page in the future
             }
 

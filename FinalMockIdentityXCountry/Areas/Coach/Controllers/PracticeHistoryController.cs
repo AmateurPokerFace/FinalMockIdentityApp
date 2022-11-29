@@ -56,6 +56,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                       TotalRunners = matchesFound.Count(),
                                   });
 
+            List<int> practiceIdsWithMoreThanOneAttendance = new List<int>();
+
             if (dbQueries != null && dbQueries.Count() > 0)
             {
                 foreach (var dbQuery in dbQueries)
@@ -68,8 +70,38 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                         TotalRunners = dbQuery.TotalRunners
                     };
 
-                    historyViewModels.Add(historyViewModel);
+                    if (historyViewModel != null)
+                    {
+                        historyViewModels.Add(historyViewModel);
+                        practiceIdsWithMoreThanOneAttendance.Add(historyViewModel.PracticeId);
+                    }
+                    
                 } 
+            }
+
+            var practicesWithNoAttendance = (from p in _context.Practices
+                             join a in _context.Attendances
+                             on p.Id equals a.PracticeId
+                             where practiceIdsWithMoreThanOneAttendance.Contains(p.Id) == false && p.PracticeIsInProgress == false && a.IsPresent
+                             select p).Distinct().ToList();
+
+            if (practicesWithNoAttendance != null && practicesWithNoAttendance.Count > 0)
+            {
+                foreach (var practiceWithNoAttendance in practicesWithNoAttendance)
+                {
+                    HistoryViewModel historyViewModel = new HistoryViewModel
+                    {
+                        PracticeId = practiceWithNoAttendance.Id,
+                        PracticeDateTime = practiceWithNoAttendance.PracticeStartTimeAndDate,
+                        PracticeLocation = practiceWithNoAttendance.PracticeLocation,
+                        TotalRunners = 0
+                    };
+
+                    if (historyViewModel != null)
+                    {
+                        historyViewModels.Add(historyViewModel);
+                    }
+                }
             }
 
             if (historyViewModels.Count() > 0)
@@ -78,6 +110,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 return View(historyViewModels);
             }
 
+            TempData["error"] = "There was no practice history found";
             return RedirectToAction(nameof(Index)); // send to an error page in the future (no practice history found)
         }
         
@@ -182,7 +215,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (runnerId == null)
             {
-                return RedirectToAction(); // send to an error page in the future
+                TempData["error"] = "Invalid runner id provided";
+                return RedirectToAction("Index"); // send to an error page in the future
             }
 
             List<SelectedRunnerHistoryViewModel> selectedRunnerHistoryViewModels = new List<SelectedRunnerHistoryViewModel>();

@@ -45,6 +45,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (runnerUsers == null)
             {
+                TempData["error"] = "There are no runners in the database";
                 return RedirectToAction("Index"); // send to an error page in the future (no runners in the database).
             }
 
@@ -57,7 +58,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (runnerPracticeWorkoutDataViewModel.RunnerUsers.Count() < 1)
             {
-                return RedirectToAction(); // send to an error page in the future
+                TempData["error"] = "No runners were found";
+                return RedirectToAction("Index"); // send to an error page in the future
             }
 
             return View(runnerPracticeWorkoutDataViewModel); 
@@ -67,6 +69,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (runnerId == null)
             {
+                TempData["error"] = "Invalid runner id provided";
                 return RedirectToAction("Index"); // send to an error page in the future
             }
 
@@ -75,6 +78,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (applicationUser == null)
             {
+                TempData["error"] = "There was no runner found with the provided id";
                 return RedirectToAction("Index"); // send to an error page in the future
             }
 
@@ -87,7 +91,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                              on a.PracticeId equals p.Id
                              join workoutTypes in _context.WorkoutTypes
                              on w.WorkoutTypeId equals workoutTypes.Id
-                             where a.RunnerId == runnerId && a.PracticeId == w.PracticeId && a.RunnerId == w.RunnerId
+                             where a.RunnerId == runnerId && a.PracticeId == w.PracticeId && a.RunnerId == w.RunnerId && a.IsPresent
                              select new
                              {
                                  a.RunnerId,
@@ -99,47 +103,108 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                              });
 
             List<EditWorkoutDataViewModel> editWorkoutDataViewModels = new List<EditWorkoutDataViewModel>();
+            List<int> attendancesIdsWithWorkoutsFound = new List<int>();
+
+            
 
             if (dbQueries.Count() > 0 && dbQueries != null)
             {
-                int dbQueryPreviousPracticeId = dbQueries.FirstOrDefault().PracticeId;
-                bool multipleLoops = false;
+                int currentRow = 1;
+                bool firstLoop = true;
+                int currentPracticeId = -1;
+
+                int dbQueriesRecordCount = dbQueries.Count();
 
                 foreach (var dbQuery in dbQueries)
                 {
-                    if (dbQueryPreviousPracticeId != dbQuery.PracticeId) // will not execute on first loop. dbQueryPreviousPracticeId was populated using dbQueriesFirstOrDefault().PracticeId.
+                    if (firstLoop)
                     {
-                        editWorkoutDataViewModels.Add(editWorkoutDataViewModel);
-                        multipleLoops = true;
-                        editWorkoutDataViewModel = new EditWorkoutDataViewModel();
+                        editWorkoutDataViewModel.RunnerId = dbQuery.RunnerId;
+                        editWorkoutDataViewModel.PracticeId = dbQuery.PracticeId;
+                        editWorkoutDataViewModel.PracticeLocation = dbQuery.PracticeLocation;
+                        editWorkoutDataViewModel.PracticeStartTime = dbQuery.PracticeStartTimeAndDate;
+                        editWorkoutDataViewModel.ShowReadDeleteButtons = true;
+
+                        attendancesIdsWithWorkoutsFound.Add(dbQuery.PracticeId);
+
                     }
 
-                    editWorkoutDataViewModel.RunnerId = dbQuery.RunnerId;
-                    editWorkoutDataViewModel.PracticeId = dbQuery.PracticeId;
-                    editWorkoutDataViewModel.PracticeLocation = dbQuery.PracticeLocation;
-                    editWorkoutDataViewModel.RunnerName = $"{applicationUser.FirstName} {applicationUser.LastName}";
-                    editWorkoutDataViewModel.PracticeStartTime = dbQuery.PracticeStartTimeAndDate;
+                    if (currentPracticeId != dbQuery.PracticeId && firstLoop == false)
+                    {
+                        editWorkoutDataViewModels?.Add(editWorkoutDataViewModel);
+
+                        editWorkoutDataViewModel = new EditWorkoutDataViewModel
+                        {
+                            RunnerId = dbQuery.RunnerId,
+                            PracticeId = dbQuery.PracticeId,
+                            PracticeLocation = dbQuery.PracticeLocation,
+                            PracticeStartTime = dbQuery.PracticeStartTimeAndDate,
+                            ShowReadDeleteButtons = true
+                    };
+
+                        attendancesIdsWithWorkoutsFound.Add(dbQuery.PracticeId);
+                    }
+
                     editWorkoutDataViewModel.Workouts?.Add(dbQuery.WorkoutName);
 
-                    dbQueryPreviousPracticeId = dbQuery.PracticeId;
+                    firstLoop = false;
+                    currentPracticeId = dbQuery.PracticeId;
 
-                }
-
-                if (multipleLoops)
-                {
-                    editWorkoutDataViewModels.Add(editWorkoutDataViewModel);
-                }
-
-                return View(editWorkoutDataViewModels);
+                    if (currentRow == dbQueriesRecordCount)
+                    {
+                        editWorkoutDataViewModels?.Add(editWorkoutDataViewModel);
+                    } 
+                    currentRow++; 
+                }  
             }
 
+            var attendancesWithNoWorkoutsQueries = (from p in _context.Practices
+                                                    join a in _context.Attendances
+                                                    on p.Id equals a.PracticeId
+                                                    join aspnetusers in _context.ApplicationUsers
+                                                    on a.RunnerId equals aspnetusers.Id
+                                                    where attendancesIdsWithWorkoutsFound.Contains(p.Id) == false && a.RunnerId == runnerId && a.IsPresent
+                                                    select new
+                                                    {
+                                                        p.PracticeLocation,
+                                                        p.Id,
+                                                        a.RunnerId,
+                                                        p.PracticeStartTimeAndDate,
+                                                        aspnetusers.FirstName,
+                                                        aspnetusers.LastName
+                                                    }).Distinct().ToList();
+
+            if (attendancesWithNoWorkoutsQueries != null && attendancesWithNoWorkoutsQueries.Count > 0)
+            {
+                foreach (var attendancesWithNoWorkoutsQuery in attendancesWithNoWorkoutsQueries)
+                {
+                    editWorkoutDataViewModel = new EditWorkoutDataViewModel
+                    {
+                        RunnerId = attendancesWithNoWorkoutsQuery.RunnerId,
+                        PracticeId = attendancesWithNoWorkoutsQuery.Id,
+                        PracticeLocation = attendancesWithNoWorkoutsQuery.PracticeLocation,
+                        PracticeStartTime = attendancesWithNoWorkoutsQuery.PracticeStartTimeAndDate,
+                        RunnerName = $"{attendancesWithNoWorkoutsQuery.FirstName} {attendancesWithNoWorkoutsQuery.LastName}",
+                        ShowReadDeleteButtons = false
+                };
+
+                    if (editWorkoutDataViewModel != null)
+                    {
+                        editWorkoutDataViewModel.Workouts?.Add("N/A");
+                        editWorkoutDataViewModels.Add(editWorkoutDataViewModel);
+                    }
+                }
+            }
+
+            return View(editWorkoutDataViewModels);
             return RedirectToAction("Index"); // send to an error page in the future. Check to see if an empty workoutTypes.WorkoutName adds a blank string (var dbQueries = select new ({}); line).
         }
 
         public IActionResult ViewDataEntered(string runnerId, int practiceId)
         {
-            if (runnerId == null)
+            if (runnerId == null || practiceId == 0)
             {
+                TempData["error"] = "Invalid query provided";
                 return RedirectToAction("Index"); // send to an error page in the future
             }
 
@@ -204,6 +269,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (workoutInformationId == 0)
             {
+                TempData["error"] = "Invalid id provided";
                 return RedirectToAction("Index"); // send to an error page in the future
             }
 
