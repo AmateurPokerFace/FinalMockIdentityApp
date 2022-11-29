@@ -471,7 +471,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                  aspnetusers.LastName,
                                  p.PracticeLocation,
                                  p.PracticeStartTimeAndDate,
-                                 wi.PracticeId
+                                 wi.PracticeId,
+                                 wi.RunnerId
                              });
 
             if (dbQueries.Count() > 0)
@@ -481,7 +482,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     PracticeLocation = dbQueries.FirstOrDefault()?.PracticeLocation == null ? " " : dbQueries.FirstOrDefault()?.PracticeLocation,
                     PracticeStartDateTime = dbQueries.FirstOrDefault().PracticeStartTimeAndDate,
                     RunnerName = $"{dbQueries.FirstOrDefault()?.FirstName} {dbQueries.FirstOrDefault()?.LastName}",
-                    PracticeId = dbQueries.FirstOrDefault().PracticeId
+                    PracticeId = dbQueries.FirstOrDefault().PracticeId,
+                    RunnerId = dbQueries.FirstOrDefault()?.RunnerId
                 };
 
                 bool loopedOnce = false;

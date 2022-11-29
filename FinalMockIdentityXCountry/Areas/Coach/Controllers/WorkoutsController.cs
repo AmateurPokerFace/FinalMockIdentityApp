@@ -106,7 +106,5 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             TempData["error"] = "An error occured. The provided workouttype was not valid";
             return RedirectToAction(nameof(CurrentWorkouts)); //send to an error page in the future  
         }
-
-
     }
 }
