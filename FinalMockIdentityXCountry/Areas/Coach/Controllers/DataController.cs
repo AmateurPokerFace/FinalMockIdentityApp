@@ -195,8 +195,13 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     }
                 }
             }
+            if (editWorkoutDataViewModels != null && editWorkoutDataViewModels.Count > 0)
+            {
+                editWorkoutDataViewModels = editWorkoutDataViewModels.OrderByDescending(x => x.PracticeStartTime).ToList();
+                return View(editWorkoutDataViewModels);
+            }
 
-            return View(editWorkoutDataViewModels);
+            TempData["error"] = "There was no data found with the provided query";
             return RedirectToAction("Index"); // send to an error page in the future. Check to see if an empty workoutTypes.WorkoutName adds a blank string (var dbQueries = select new ({}); line).
         }
 

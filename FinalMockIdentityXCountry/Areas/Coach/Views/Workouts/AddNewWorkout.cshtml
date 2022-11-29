@@ -1,15 +1,13 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 @model AddNewWorkoutViewModel
 
-<div class="container mx-auto">
-    <h3>Add New Workout</h3>
-    <form method="post">
-        <div>
-            <label asp-for="@Model.WorkoutName">Workout Name:</label>
-            <input asp-for="@Model.WorkoutName" required />
-        </div>
-        <br />
-        <a class="btn btn-danger" asp-action="CurrentWorkouts">Cancel</a>
-        <button class="btn btn-primary">Save</button>
-    </form>
-</div>
+<h3>Add New Workout</h3>
+<form method="post">
+    <div>
+        <label asp-for="@Model.WorkoutName">Workout Name:</label>
+        <input asp-for="@Model.WorkoutName" />
+    </div>
+    <br />
+    <a class="btn btn-danger" asp-action="CurrentWorkouts">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

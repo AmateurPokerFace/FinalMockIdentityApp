@@ -33,7 +33,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
         public IActionResult AddNewWorkout()
         {
-            return View();
+            AddNewWorkoutViewModel addNewWorkoutViewModel = new AddNewWorkoutViewModel();
+            return View(addNewWorkoutViewModel);
         }
 
         [HttpPost]
@@ -48,16 +49,17 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (workoutType != null) // match found
             {
-                TempData["WorkoutExistsMessage"] = $"The workout: {workoutType.WorkoutName} was not added to the database because it already exists in the database.";
-                return RedirectToAction("WorkoutExists");
+                TempData["error"] = $"The workout: {workoutType.WorkoutName} was not added to the database because it already exists in the database.";
+                return RedirectToAction("CurrentWorkouts");
             }
              
             workoutType = new WorkoutType { WorkoutName = addNewWorkoutViewModel.WorkoutName };
-            TempData["WorkoutSavedMessage"] = $"The workout: {workoutType.WorkoutName} was added to the database successfully";
+            
             _context.WorkoutTypes.Add(workoutType);
             _context.SaveChanges();
 
-            return RedirectToAction("WorkoutSaved");
+            TempData["success"] = $"The workout: {workoutType.WorkoutName} was added to the database successfully";
+            return RedirectToAction("CurrentWorkouts");
         }
 
         public IActionResult WorkoutExists(string workoutName)
@@ -74,14 +76,16 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (workoutId == 0)
             {
-                return RedirectToAction(); //send to an error page in the future
+                TempData["error"] = "Invalid workout id provided";
+                return RedirectToAction(nameof(CurrentWorkouts)); //send to an error page in the future
             }
 
             WorkoutType workoutType = _context.WorkoutTypes.Where(w => w.Id == workoutId).FirstOrDefault();
             
             if (workoutType == null)
             {
-                return RedirectToAction(); //Send to an error page in the future
+                TempData["error"] = "Invalid id provided. Workout type not found";
+                return RedirectToAction("CurrentWorkouts"); //Send to an error page in the future
             }
 
             return View(workoutType); 
@@ -95,10 +99,12 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 _context.WorkoutTypes.Update(workoutType);
                 _context.SaveChanges();
 
+                TempData["success"] = "The workout edit saved successfully";
                 return RedirectToAction(nameof(CurrentWorkouts)); // SEND to a success page in the future
-            } 
-                
-            return RedirectToAction(); //send to an error page in the future  
+            }
+
+            TempData["error"] = "An error occured. The provided workouttype was not valid";
+            return RedirectToAction(nameof(CurrentWorkouts)); //send to an error page in the future  
         }
 
 
