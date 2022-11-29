@@ -2,7 +2,9 @@
 @model AttendanceViewModel
 
 <div class="container mx-auto">
-    <label class="form-label">@Model.PracticeStartTimeAndDate | @Model.PracticeLocation</label>
+    <h3>Practice at @Model.PracticeLocation</h3>
+    <p style="font-weight: lighter;">@Model.PracticeStartTimeAndDate</p>
+    <label class="form-label">Select a runner to sign in or out. </label>
     <br /><br />
     <a class="btn-link" asp-action="AddRunnerToCurrentPractice" asp-route-practiceId="@Model.PracticeId">Add a runner to the current practice</a>
     @if (Model.AttendanceViewModelHelpers != null && Model.AttendanceViewModelHelpers.Count > 0)
@@ -19,7 +21,7 @@
                 {
                     <tr>
                         <td>@runner.Runner</td>
-                        <td><a asp-action="SignRunnerOut" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId" class="btn btn-danger">Sign out of practice</a></td>
+                        <td><a asp-action="SignRunnerOut" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId" class="btn btn-danger">Sign Out</a></td>
                     </tr>
                 }
             </tbody>
