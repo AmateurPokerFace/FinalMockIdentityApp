@@ -4,7 +4,7 @@
 <div class="container mx-auto">
     <label class="form-label">@Model.PracticeStartTimeAndDate | @Model.PracticeLocation</label>
     <br /><br />
-    <a class="btn-link">Add a runner to the current practice</a>
+    <a class="btn-link" asp-action="AddRunnerToCurrentPractice" asp-route-practiceId="@Model.PracticeId">Add a runner to the current practice</a>
     @if (Model.AttendanceViewModelHelpers != null && Model.AttendanceViewModelHelpers.Count > 0)
     {
         <table class="table">
