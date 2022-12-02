@@ -4,7 +4,7 @@
 <div class="container mx-auto">
     @if (Model.FirstOrDefault().RunnersName != null)
     {
-        <label class="form-label">Model.FirstOrDefault().RunnersName Practice History</label>
+        <h3 class="form-label">Practice History @Model.FirstOrDefault().RunnersName </h3>
 
         <br />
 
@@ -13,6 +13,8 @@
 
     @if (Model.Count() > 0)
     {
+        <div class="table-responsive">
+
         <table class="table">
             <thead>
                 <tr>
@@ -45,6 +47,7 @@
                 }
             </tbody>
         </table>
+        </div>
     }
 </div>
     

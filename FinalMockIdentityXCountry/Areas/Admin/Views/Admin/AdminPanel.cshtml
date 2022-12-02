@@ -5,29 +5,32 @@
 
 @if (Model.AdminPanelViewModelHelpers != null && Model.AdminPanelViewModelHelpers.Count > 0)
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">UserName</th>
-                <th scope="col">Current Role</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in Model.AdminPanelViewModelHelpers)
-            {
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@user.Name</td>
-                    <td>@user.UserName</td>
-                    <td>@user.UserRole</td>
-                    <td>Change Role</td>
-                    <td>Edit User</td>
-                    <td>Delete User</td>
+                    <th scope="col">Name</th>
+                    <th scope="col">UserName</th>
+                    <th scope="col">Current Role</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.AdminPanelViewModelHelpers)
+                {
+                    <tr>
+                        <td>@user.Name</td>
+                        <td>@user.UserName</td>
+                        <td>@user.UserRole</td>
+                        <td>Change Role</td>
+                        <td>Edit User</td>
+                        <td>Delete User</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
 }

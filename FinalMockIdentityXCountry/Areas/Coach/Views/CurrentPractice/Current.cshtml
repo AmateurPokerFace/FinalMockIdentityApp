@@ -11,7 +11,7 @@
                 <label>@Model.PracticeLocation @Model.PracticeStartTimeAndDate</label>
             </div>
 
-            <div>
+            <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
@@ -31,8 +31,9 @@
 
                     </tbody>
                 </table>
-                <a asp-route-currentPracticeId="@Model.practiceId" asp-controller="EndCurrentPractice" asp-action="End" class="btn btn-danger">End Current Practice</a>
             </div>
+                <a asp-route-currentPracticeId="@Model.practiceId" asp-controller="EndCurrentPractice" asp-action="End" class="btn btn-danger">End Current Practice</a>
+            
         </div>
     }
     else

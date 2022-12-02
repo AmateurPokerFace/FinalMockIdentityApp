@@ -3,25 +3,28 @@
 
 @if(Model != null && Model.Count > 0)
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">UserName</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var runner in Model)
-            {
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@runner.Name</td>
-                    <td>@runner.UserName</td>
-                    <td><a class="btn btn-outline-danger" asp-action="EditRunnerData" asp-route-runnerId="@runner.UserId">Edit</a></td>
-                    <td>Delete Permanently</td>
+                    <th scope="col">Name</th>
+                    <th scope="col">UserName</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var runner in Model)
+                {
+                    <tr>
+                        <td>@runner.Name</td>
+                        <td>@runner.UserName</td>
+                        <td><a class="btn btn-outline-danger" asp-action="EditRunnerData" asp-route-runnerId="@runner.UserId">Edit</a></td>
+                        <td>Delete Permanently</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
 }
