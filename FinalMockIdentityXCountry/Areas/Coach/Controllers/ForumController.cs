@@ -14,7 +14,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
     public class ForumController : Controller
     {
         private readonly XCountryDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager; // the UserManager object in question
+        private readonly UserManager<IdentityUser> _userManager; 
 
         public ForumController(XCountryDbContext context, UserManager<IdentityUser> userManager)
         {

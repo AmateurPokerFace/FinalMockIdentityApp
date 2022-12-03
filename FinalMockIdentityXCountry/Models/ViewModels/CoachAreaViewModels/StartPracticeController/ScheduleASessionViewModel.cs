@@ -1,17 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.StartPracticeController
 {
     public class ScheduleASessionViewModel
     {
         public ScheduleASessionViewModel()
-        { 
-            RunnerUsers = new List<ApplicationUser>();
+        {
+            SelectedStartNowCheckBoxOptions = new List<StartNowCheckBoxOptions>();
         }
 
-        public List<ApplicationUser> RunnerUsers { get; set; }
+        public List<StartNowCheckBoxOptions>? SelectedStartNowCheckBoxOptions { get; set; }
         [Required]
         public DateTime PracticeStartTimeAndDate { get; set; }
         [Required]
@@ -19,6 +17,5 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
         [StringLength(100, MinimumLength = 2)]
         [Required]
         public string PracticeLocation { get; set; }
-
     }
 }

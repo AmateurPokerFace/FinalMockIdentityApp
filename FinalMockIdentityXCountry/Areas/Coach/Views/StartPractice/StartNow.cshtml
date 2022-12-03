@@ -1,38 +1,35 @@
-﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.StartPracticeController;
 @model StartNowViewModel
 
 <div class="container mx-auto">
+<h3>Start a New Practice Session</h3>
+<form method="post" class="form-control">
     <div>
-        <h3>Start a New Practice Session</h3>
+        <label asp-for="PracticeLocation" class="form-label">Practice Location</label>
+        <input asp-for="PracticeLocation" class="form-control">
+        <span asp-validation-for="PracticeLocation" class="text-danger"></span>
     </div>
-    <div class="form-control">
-        <form method="post">
-            @*@Html.AntiForgeryToken()*@
-            <div>
-                <label asp-for="PracticeLocation" class="form-label">Practice Location</label>
-                <input asp-for="PracticeLocation" class="form-control" />
-                <span asp-validation-for="PracticeLocation" class="text-danger"></span>
-            </div>
-            <div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Runner</th>
-                            <th scope="col">Present</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var runner in Model.RunnerUsers)
-                        {
-                            <tr>
-                                <td>@runner.FirstName @runner.LastName</td>
-                                <td><input type="checkbox" name="presentRunners" value="@runner.Id" class="form-check" /></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <button type="submit" class="btn btn-primary">Start Practice</button>
-        </form>
-    </div>
+    @if (Model.SelectedStartNowCheckBoxOptions != null && Model.SelectedStartNowCheckBoxOptions.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Runner</th>
+                    <th scope="col">Present</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.SelectedStartNowCheckBoxOptions.Count; i++)
+                {
+                    <tr>
+                        <td>@Model.SelectedStartNowCheckBoxOptions[i].RunnersName</td>
+                        <td><input asp-for="@Model.SelectedStartNowCheckBoxOptions[i].IsSelected" type="checkbox" /></td>
+                        <input type="hidden" asp-for="@Model.SelectedStartNowCheckBoxOptions[i].RunnersId">
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <button class="btn btn-primary">Start Practice</button>
+    }
+</form>
 </div>
