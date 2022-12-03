@@ -9,9 +9,9 @@ Created by Haley Rohe and Ricardo Price for CIST2932 Advanced Programming Topics
 ### Introduction
 This application is intended to help the Cross Country team keep track of their run data using their phones and computers. The app allows the team to record the attendance of runners at practices, record the runners' distance and run time for each practice, view run data for past practices, make and respond to announcements, and calculate run paces based on distance and run time. Users of the application fall into five categories: Main Admin, Coach, Runner, Waiting for approval, and Banned user. 
 - The Main Admin user(s) have full access priviledges to all areas of the app. 
-- The Coach users have access to most areas of the app, excluding the Main Admin panel.
+- The Coach users have full access priviledges, except being able to switch roles to Admin.
 - The Runner users have limited access to only the pages associated with their own data, and limited access to the forum.
-- The Waiting For Approval and Banned users cannot access the application.
+- The Waiting For Approval and Banned users cannot access the application.  
 All new registered users will automatically be assigned to the Waiting For Approval category, where they will need to be approved by an Admin or Coach account. 
 ## Getting Started
  - To get started, log in to the Main Admin account using your given credentials. (These instructions will also apply for Coach accounts.) Once you're logged in, there are several options in the navigation bar or menu to choose from. For this Getting Started guide, you will walk through the process of starting a new practice and recording the attendance of runners, scheduling a practice for later, assigning a workout to a practice, signing a Runner out of practice, and ending the practice. However before you can use these features, you will need to register and approve 2-3 sample Runner accounts to populate the fields and tables required for these activities.    
@@ -28,7 +28,7 @@ Runners can access three main areas of the application:
 ### Forums
 Runner accounts can comment on threads and reply to other comments, but may not create or delete threads.   
 ### Practices
-The Practices tab contains two options: My Practices and My Workouts.
+The Practices tab contains two options: My Practices and My Workouts.  
  - The My Practices page displays all of the practices that are currently in progress or scheduled for a future date / time. The Runner has the option to join an open practice, then sign out of a practice once the practice is complete.  
  - The My Workouts page displays the practices that the Runner is signed into, that also have workouts assign to them by a Coach or Admin. Once their workout is assigned, the Runner can enter their run data for that workout.  
     - To enter your run data, click the Log Data button in the row of the practice you want to record data for. You will be taken to a page with input fields for the distance you ran and your run time in the format of hours, minutes, seconds.  
@@ -39,7 +39,7 @@ The application comes with three different pace calculators:
  2. Jack Daniels VDOT running calculator  
  3. Omni Pace Calculator  
 ### Simple Pace Calculator
-The Simple Pace calculator takes in values for distance and time and calculates and displays the running pace. To use this calculator, enter a numerical value in the Distance field, then enter numerical values for the Time fields in the format of Hours, Minutes, Seconds. Click the 'Calculate' button to calculate the pace, which is displayed in the 'Your Pace:' field. To clear all values in the calculator, click the 'Clear' button.
+The Simple Pace calculator takes in values for distance and time and calculates and displays the running pace. To use this calculator, enter a numerical value in the Distance field, then enter numerical values for the Time fields in the format of Hours, Minutes, Seconds. Click the 'Calculate' button to calculate the pace, which is displayed in the 'Your Pace:' field. To clear all values in the calculator, click the 'Clear' button.   
 ### Jack Daniels VDOT Running Calculator
 The embedded Jack Daniels VDOT running calculator and its instructions are sourced from from the Run S.M.A.R.T. Project (https://runsmartproject.com). 
  > How To Use The Calculator  

@@ -11,41 +11,46 @@
     <div class="container mx-auto">
         <h3>Practice History</h3>
         <div class="form-control">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Location</th>
-                        <th scope="col">Total Runners</th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var attendance in Model)
-                    {
-                        practiceId = attendance.PracticeId;
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td>@attendance.PracticeDateTime</td>
-                            <td>@attendance.PracticeLocation</td>
-                            <td>@attendance.TotalRunners</td>
-                            @if (attendance.TotalRunners > 0)
-                            {
-                                <td><a asp-action="Selected" asp-route-practiceId="@attendance.PracticeId" class="btn btn-primary">View</a></td>
-                            }
-                            else
-                            {<td></td>}
-                            <td>
-                                
-                                <form method="post" asp-controller="ExportData" asp-action="ExportCurrentPracticeHistoryToCSV">
-                                    <input type="hidden" asp-for="@practiceId">
-                                    <button type="submit" class="btn btn-primary">Export</button>
-                                </form>
-                            </td>
+                            <th scope="col">Date</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Total Runners</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var attendance in Model)
+                        {
+                            practiceId = attendance.PracticeId;
+                            <tr>
+                                <td>@attendance.PracticeDateTime</td>
+                                <td>@attendance.PracticeLocation</td>
+                                <td>@attendance.TotalRunners</td>
+                                @if (attendance.TotalRunners > 0)
+                                {
+                                    <td><a asp-action="Selected" asp-route-practiceId="@attendance.PracticeId" class="btn btn-primary">View</a></td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                <td>
+
+                                    <form method="post" asp-controller="ExportData" asp-action="ExportCurrentPracticeHistoryToCSV">
+                                        <input type="hidden" asp-for="@practiceId">
+                                        <button type="submit" class="btn btn-primary">Export</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
         </div>
     </div>
 }

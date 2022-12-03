@@ -2,12 +2,12 @@
 
 <div class="container mx-auto">
     <h3>Delete this Thread?</h3>
+    <br />
     <form class="form" method="post">
         <div>
-            <label class="form-label">@Model.MessageTitle</label>
-            <br />
-            <br />
-            <textarea disabled="disabled">@Model.MessageBody</textarea>
+            <p>Title: @Model.MessageTitle</p>
+            
+            <p> Body: @Model.MessageBody</p>
             <br />
             <input hidden="hidden" asp-for="@Model.Id"/>
             <a class="btn btn-outline-danger" asp-action="Home">Cancel</a>
