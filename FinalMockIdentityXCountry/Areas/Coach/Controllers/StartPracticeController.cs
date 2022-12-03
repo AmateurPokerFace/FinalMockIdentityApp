@@ -84,7 +84,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     catch (Exception e)
                     {
                         TempData["error"] = e.Message;
-                        return RedirectToAction(nameof(Index));
+                        return RedirectToAction("Index", "Home", new { area = "Welcome" });
                     }
                     
 
@@ -116,12 +116,12 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     }
                     
                     TempData["success"] = "The practice was started successfully";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "Home", new { area = "Welcome" });
                 } 
             }
 
             TempData["error"] = "The practice was unable to be started because invalid data was submitted.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Home", new { area = "Welcome" });
         }
 
         public IActionResult ScheduleASession()
@@ -180,7 +180,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     catch (Exception e)
                     {
                         TempData["error"] = e.Message;
-                        return RedirectToAction(nameof(Index));
+                        return RedirectToAction("Index", "Home", new { area = "Welcome" });
                     }
 
                     if (scheduleASessionVm.SelectedStartNowCheckBoxOptions != null && scheduleASessionVm.SelectedStartNowCheckBoxOptions.Count > 0)
@@ -211,12 +211,12 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     }
 
                     TempData["success"] = "The practice was scheduled successfully";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "Home", new { area = "Welcome" });
                 }
             }
 
             TempData["error"] = "The practice was unable to be scheduled because invalid data was submitted.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index","Home", new {area="Welcome"});
         }
     }
 }
