@@ -27,28 +27,31 @@
                     <ul class="navbar-nav nav-tabs flex-grow-1">
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin") || User.IsInRole("Coach"))
                         {
-                            <div class="nav-item dropdown">
+                            @*<div class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    All Admin
+                                    Admin
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                                     <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Master Admin Panel</a>
+                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Admin Panel</a>
                                     </li>
-                                    <li class="dropdown-item">
+                                    @*<li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Admin" asp-controller="Coach" asp-action="CoachAdminPanel">Coach Admin Panel</a>
                                     </li>
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="AdminPanel">Admin Panel</a>
-                                    </li>
+                                    </li>*@
+                                    @*li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="WaitingForApprovalList">Approve New Users</a>
+                                    </*li>
                                     <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="WaitingForApprovalList">Pending Approvals</a>
-                                    </li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="RejectUsers">Rejected Users</a>
+                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="RejectUsers">Reject New Users</a>
                                     </li>
                                 </ul>
-                            </div>
+                            </div>*@
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Admin</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Coach" asp-controller="Forum" asp-action="Home">Forums</a>
                             </li>

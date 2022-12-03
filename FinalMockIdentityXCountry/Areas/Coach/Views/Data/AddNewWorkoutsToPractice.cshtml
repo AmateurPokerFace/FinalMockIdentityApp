@@ -20,8 +20,11 @@
                         for (int i = 0; i < Model.SelectedNewWorkoutCheckboxOptions.Count; i++)
                         {
                             <tr>
-                                <td class="form-check">
-                                    <input asp-for="@Model.SelectedNewWorkoutCheckboxOptions[i].IsSelected" type="checkbox" class="form-check-input" /> @Model.SelectedNewWorkoutCheckboxOptions[i].WorkoutName
+                                <td >
+                                    <div class="form-check">
+                                        <input asp-for="@Model.SelectedNewWorkoutCheckboxOptions[i].IsSelected" type="checkbox" class="form-check-input" /> @Model.SelectedNewWorkoutCheckboxOptions[i].WorkoutName
+                                    </div>
+                                    
                                     <input type="hidden" asp-for="@Model.PracticeId">
                                     <input type="hidden" asp-for="@Model.RunnerId">
                                     <input type="hidden" asp-for="@Model.SelectedNewWorkoutCheckboxOptions[i].RunnerId">

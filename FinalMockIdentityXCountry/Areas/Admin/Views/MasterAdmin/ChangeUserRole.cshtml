@@ -10,14 +10,17 @@
 
         <form method="post" asp-action="ChangeRole">
             <div class="mb-3">
-                <label class="form-label">Select Role</label>
-                <select class="form-select" asp-items="Model.RolesList" asp-for="SelectedRoleName" required>
-                </select>
+                <h3>Current Role: @Model.CurrentRoleName</h3>
+                <div class="input-group">
+                    <span class="input-group-text">Change Role To: </span>
+                    <select class="form-select" asp-items="Model.RolesList" asp-for="SelectedRoleName" required>
+                    </select>
+                </div>
             </div>
             <input type="hidden" asp-for="CurrentRoleName">
             <input type="hidden" asp-for="UserId">
             <a asp-action="MasterAdminPanel" class="btn btn-outline-danger">Cancel</a>
-            <button class="btn btn-danger">Confirm Role Change</button>
+            <button class="btn btn-danger">Confirm</button>
         </form>
 
     }
