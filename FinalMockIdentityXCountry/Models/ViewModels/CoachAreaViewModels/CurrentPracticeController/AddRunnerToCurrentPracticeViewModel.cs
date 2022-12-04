@@ -10,11 +10,8 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.Curren
         }
 
         [ValidateNever]
-        public string? Name { get; set; }
-        [ValidateNever]
-        public string? RunnerId { get; set; }
-        public int AttendanceId { get; set; }
         public string? PracticeLocation{ get; set; }
+        [ValidateNever]
         public DateTime PracticeStartTimeAndDate { get; set; }
         public List<AddRunnerToCurrentPracticeChkboxOptionViewModel>? SelectedCheckboxOptions { get; set; }
     }

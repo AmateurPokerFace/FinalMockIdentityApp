@@ -37,78 +37,78 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             List<HistoryViewModel> historyViewModels = new List<HistoryViewModel>();
  
+            // do two separate queries and make the method async
+            //var dbQueries = (from p in _context.Practices
+            //                      join a in _context.Attendances
+            //                      on p.Id equals a.PracticeId
+            //                      where a.IsPresent && p.PracticeIsInProgress == false
+            //                      group a by new
+            //                      {
+            //                          a.PracticeId,
+            //                          p.PracticeLocation,
+            //                          p.PracticeStartTimeAndDate
+            //                      } into matchesFound
+            //                      select new HistoryViewModel()
+            //                      {
+            //                          PracticeId = matchesFound.Key.PracticeId,
+            //                          PracticeDateTime = matchesFound.Key.PracticeStartTimeAndDate,
+            //                          PracticeLocation = matchesFound.Key.PracticeLocation,
+            //                          TotalRunners = matchesFound.Count(),
+            //                      });
 
-            var dbQueries = (from p in _context.Practices
-                                  join a in _context.Attendances
-                                  on p.Id equals a.PracticeId
-                                  where a.IsPresent && p.PracticeIsInProgress == false
-                                  group a by new
-                                  {
-                                      a.PracticeId,
-                                      p.PracticeLocation,
-                                      p.PracticeStartTimeAndDate
-                                  } into matchesFound
-                                  select new HistoryViewModel()
-                                  {
-                                      PracticeId = matchesFound.Key.PracticeId,
-                                      PracticeDateTime = matchesFound.Key.PracticeStartTimeAndDate,
-                                      PracticeLocation = matchesFound.Key.PracticeLocation,
-                                      TotalRunners = matchesFound.Count(),
-                                  });
+            //List<int> practiceIdsWithMoreThanOneAttendance = new List<int>();
 
-            List<int> practiceIdsWithMoreThanOneAttendance = new List<int>();
+            //if (dbQueries != null && dbQueries.Count() > 0)
+            //{
+            //    foreach (var dbQuery in dbQueries)
+            //    {
+            //        HistoryViewModel historyViewModel = new HistoryViewModel
+            //        {
+            //            PracticeId = dbQuery.PracticeId,
+            //            PracticeDateTime = dbQuery.PracticeDateTime,
+            //            PracticeLocation = dbQuery.PracticeLocation,
+            //            TotalRunners = dbQuery.TotalRunners
+            //        };
 
-            if (dbQueries != null && dbQueries.Count() > 0)
-            {
-                foreach (var dbQuery in dbQueries)
-                {
-                    HistoryViewModel historyViewModel = new HistoryViewModel
-                    {
-                        PracticeId = dbQuery.PracticeId,
-                        PracticeDateTime = dbQuery.PracticeDateTime,
-                        PracticeLocation = dbQuery.PracticeLocation,
-                        TotalRunners = dbQuery.TotalRunners
-                    };
-
-                    if (historyViewModel != null)
-                    {
-                        historyViewModels.Add(historyViewModel);
-                        practiceIdsWithMoreThanOneAttendance.Add(historyViewModel.PracticeId);
-                    }
+            //        if (historyViewModel != null)
+            //        {
+            //            historyViewModels.Add(historyViewModel);
+            //            practiceIdsWithMoreThanOneAttendance.Add(historyViewModel.PracticeId);
+            //        }
                     
-                } 
-            }
+            //    } 
+            //}
 
-            var practicesWithNoAttendance = (from p in _context.Practices
-                             join a in _context.Attendances
-                             on p.Id equals a.PracticeId
-                             where practiceIdsWithMoreThanOneAttendance.Contains(p.Id) == false && p.PracticeIsInProgress == false && a.IsPresent
-                             select p).Distinct().ToList();
+            //var practicesWithNoAttendance = (from p in _context.Practices
+            //                 join a in _context.Attendances
+            //                 on p.Id equals a.PracticeId
+            //                 where practiceIdsWithMoreThanOneAttendance.Contains(p.Id) == false && p.PracticeIsInProgress == false && a.IsPresent
+            //                 select p).Distinct().ToList();
 
-            if (practicesWithNoAttendance != null && practicesWithNoAttendance.Count > 0)
-            {
-                foreach (var practiceWithNoAttendance in practicesWithNoAttendance)
-                {
-                    HistoryViewModel historyViewModel = new HistoryViewModel
-                    {
-                        PracticeId = practiceWithNoAttendance.Id,
-                        PracticeDateTime = practiceWithNoAttendance.PracticeStartTimeAndDate,
-                        PracticeLocation = practiceWithNoAttendance.PracticeLocation,
-                        TotalRunners = 0
-                    };
+            //if (practicesWithNoAttendance != null && practicesWithNoAttendance.Count > 0)
+            //{
+            //    foreach (var practiceWithNoAttendance in practicesWithNoAttendance)
+            //    {
+            //        HistoryViewModel historyViewModel = new HistoryViewModel
+            //        {
+            //            PracticeId = practiceWithNoAttendance.Id,
+            //            PracticeDateTime = practiceWithNoAttendance.PracticeStartTimeAndDate,
+            //            PracticeLocation = practiceWithNoAttendance.PracticeLocation,
+            //            TotalRunners = 0
+            //        };
 
-                    if (historyViewModel != null)
-                    {
-                        historyViewModels.Add(historyViewModel);
-                    }
-                }
-            }
+            //        if (historyViewModel != null)
+            //        {
+            //            historyViewModels.Add(historyViewModel);
+            //        }
+            //    }
+            //}
 
-            if (historyViewModels.Count() > 0)
-            {
-                historyViewModels = historyViewModels.OrderByDescending(d => d.PracticeDateTime).ToList();
-                return View(historyViewModels);
-            }
+            //if (historyViewModels.Count() > 0)
+            //{
+            //    historyViewModels = historyViewModels.OrderByDescending(d => d.PracticeDateTime).ToList();
+            //    return View(historyViewModels);
+            //}
 
             TempData["error"] = "There was no practice history found";
             return RedirectToAction(nameof(Index)); // send to an error page in the future (no practice history found)

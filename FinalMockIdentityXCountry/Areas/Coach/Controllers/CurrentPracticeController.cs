@@ -37,6 +37,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                return View("NoPracticesInProgress");
             }
 
+            practices = practices.OrderByDescending(x => x.PracticeStartTimeAndDate).ToList();
+
             return View(practices);
         }
 
@@ -196,111 +198,122 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 return RedirectToAction("CurrentPractices");
             }
 
-            Practice practice = _context.Practices.Where(p => p.PracticeIsInProgress && p.Id == practiceId).FirstOrDefault();
-            
+            Practice practice = _context.Practices.Where(p => p.PracticeIsInProgress && p.Id == practiceId).FirstOrDefault(); 
+             
             if (practice == null)
             {
                 TempData["error"] = "Invalid practice id provided. Practice not found.";
                 return RedirectToAction("CurrentPractices");
             }
 
-            var dbQueries = (from a in _context.Attendances
-                             join p in _context.Practices
-                             on a.PracticeId equals p.Id
-                             join aspnetusers in _context.ApplicationUsers
-                             on a.RunnerId equals aspnetusers.Id
-                             where a.IsPresent == false && p.Id == practiceId
-                             select new
-                             {
-                                 p.PracticeStartTimeAndDate,
-                                 p.PracticeLocation,
-                                 aspnetusers.FirstName,
-                                 aspnetusers.LastName,
-                                 a.Id,
-                                 a.RunnerId
-                             });
+            var runnerUsers = _userManager.GetUsersInRoleAsync("Runner").Result;
+            List<ApplicationUser> users = new List<ApplicationUser>();
 
-            if (dbQueries == null || dbQueries.Count() < 1)
+            if (runnerUsers == null || runnerUsers.Count < 1)
             {
-                TempData["error"] = "There are no runners marked as absent.";
-                return RedirectToAction("Index");
+                TempData["error"] = "There were no runners found in the database.";
+                return RedirectToAction("Index", "Home", new { area = "Welcome" });
             }
 
-            List<AddRunnerToCurrentPracticeViewModel> models = new List<AddRunnerToCurrentPracticeViewModel>();
-            
-            foreach (var dbQuery in dbQueries)
+            foreach (var runner in runnerUsers)
             {
-                AddRunnerToCurrentPracticeViewModel model = new AddRunnerToCurrentPracticeViewModel
-                {
-                    Name = $"{dbQuery.FirstName} {dbQuery.LastName}",
-                    AttendanceId = dbQuery.Id,
-                    RunnerId = dbQuery.RunnerId,
-                    PracticeLocation = dbQuery.PracticeLocation,
-                    PracticeStartTimeAndDate = dbQuery.PracticeStartTimeAndDate
-                };
+                users.Add((ApplicationUser)runner);
+            }
 
-                if (model != null)
+            AddRunnerToCurrentPracticeViewModel model = new AddRunnerToCurrentPracticeViewModel
+            {
+                PracticeLocation = practice.PracticeLocation,
+                PracticeStartTimeAndDate = practice.PracticeStartTimeAndDate
+            };
+             
+            //runners that are already logged as present
+            var currentAttendanceRunnerIds = _context.Attendances.Where(a => a.IsPresent && a.PracticeId == practiceId).Select(x => x.RunnerId).ToList(); 
+
+            if (currentAttendanceRunnerIds != null && currentAttendanceRunnerIds.Count > 0)
+            {
+               // var distinctRunners = model.SelectedCheckboxOptions?.Where(x => x.RunnerId.Any(a => attendanceRunnerIds.Contains(x.RunnerId)) == false);
+                var distinctRunners = users.Where(x => x.Id.Any(a => currentAttendanceRunnerIds.Contains(x.Id)) == false);
+                foreach (var distinctRunner in distinctRunners)
                 {
-                    AddRunnerToCurrentPracticeChkboxOptionViewModel modelChkboxOption = new AddRunnerToCurrentPracticeChkboxOptionViewModel
-                    { 
-                        AttendanceId = model.AttendanceId,
-                        RunnerId = model.RunnerId
+                    AddRunnerToCurrentPracticeChkboxOptionViewModel chkboxOptionViewModel = new AddRunnerToCurrentPracticeChkboxOptionViewModel
+                    {
+                        RunnerId = distinctRunner.Id,
+                        RunnersName = $"{distinctRunner.FirstName} {distinctRunner.LastName}",
+                        PracticeId = practiceId
                     };
 
-                    model.SelectedCheckboxOptions?.Add(modelChkboxOption);
-                    models.Add(model);
+                    if (chkboxOptionViewModel != null)
+                    {
+                        model.SelectedCheckboxOptions?.Add(chkboxOptionViewModel);
+                    }
                 }
             }
-
-            if (models != null && models.Count > 0)
+            else
             {
-                return View(models);
-            }
-
-            TempData["error"] = "There are no runners marked as absent.";
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public async Task<IActionResult>AddRunnerToCurrentPractice(List<AddRunnerToCurrentPracticeViewModel> models) 
-        {
-            if (models == null)
-            {
-                TempData["error"] = "Invalid runners provided.";
-                return RedirectToAction("Index");
-            }
-
-            int updatedRunners = 0;
-
-            foreach (var model in models)
-            {
-                if (model.SelectedCheckboxOptions != null)
+                foreach (var user in users)
                 {
-                    foreach (var selectedCheckboxOption in model.SelectedCheckboxOptions.Where(i => i.IsSelected))
+                    AddRunnerToCurrentPracticeChkboxOptionViewModel chkboxOptionViewModel = new AddRunnerToCurrentPracticeChkboxOptionViewModel
                     {
-                        var runner = await _context.Attendances.FindAsync(selectedCheckboxOption.AttendanceId);
+                        RunnerId = user.Id,
+                        RunnersName = $"{user.FirstName} {user.LastName}",
+                        PracticeId = practiceId
+                    };
 
-                        if (runner != null)
-                        {
-                            runner.IsPresent = true;
-                            _context.Attendances.Update(runner);
-                            updatedRunners++;
-                        }
+                    if (chkboxOptionViewModel != null)
+                    {
+                        model.SelectedCheckboxOptions?.Add(chkboxOptionViewModel);
                     }
                 }
             }
 
-            if (updatedRunners == 0)
+            if (model.SelectedCheckboxOptions != null && model.SelectedCheckboxOptions.Count > 0)
             {
-                TempData["error"] = "An error occured. No runners were added to the attendance";
-                return RedirectToAction("Index");
+                return View(model);
             }
-            else
+
+            TempData["warning"] = "No runners were found with the provided data. Confirm that a runner exists in the database and the runner is not marked as present.";
+            return RedirectToAction("Index", "Home", new { area = "Welcome" });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult>AddRunnerToCurrentPractice(AddRunnerToCurrentPracticeViewModel model) 
+        {
+            if (ModelState.IsValid)
             {
-                await _context.SaveChangesAsync();
-                TempData["success"] = updatedRunners == 1 ? $"{updatedRunners} runner was added to the practice" : $"{updatedRunners} runners were added to the practice";
-                return RedirectToAction("Index");
+                if (model.SelectedCheckboxOptions != null && model.SelectedCheckboxOptions.Count > 0)
+                {
+                    int runnersAddedToAttendance = 0;
+                    foreach (var selectedOption in model.SelectedCheckboxOptions.Where(x => x.IsSelected))
+                    {
+                        Attendance attendance = new Attendance
+                        {
+                            IsPresent = selectedOption.IsSelected,
+                            HasBeenSignedOut = false,
+                            PracticeId = selectedOption.PracticeId,
+                            RunnerId = selectedOption.RunnerId,
+                        };
+
+                        if (attendance != null)
+                        {
+                            _context.Attendances.Add(attendance);   
+                            runnersAddedToAttendance++;
+                        }
+                    }
+
+                    if (runnersAddedToAttendance == 0)
+                    {
+                        TempData["error"] = "An error occured. No runners were added to the attendance";
+                        return RedirectToAction(nameof(CurrentPractices));
+                    }
+
+                    await _context.SaveChangesAsync();
+                    TempData["success"] = runnersAddedToAttendance == 1 ? $"{runnersAddedToAttendance} runner was added to the practice" : $"{runnersAddedToAttendance} runners were added to the practice";
+                    return RedirectToAction(nameof(CurrentPractices));
+                }
             }
+
+            TempData["error"] = "Invalid data was provided. There were no runners added to the attendance";
+            return RedirectToAction(nameof(CurrentPractices));
         }
 
         public IActionResult SignRunnerOut(string runnerId, int practiceId)

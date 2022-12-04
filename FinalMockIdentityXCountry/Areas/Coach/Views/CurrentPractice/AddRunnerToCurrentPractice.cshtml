@@ -1,12 +1,12 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.CurrentPracticeController
-@model List<AddRunnerToCurrentPracticeViewModel>
+@model AddRunnerToCurrentPracticeViewModel
 
-@if (Model != null && Model.Count() > 0)
+@if (Model != null)
 {
     <div class="container mx-auto">
-        <h3>Add runners to practice @Model.FirstOrDefault().PracticeStartTimeAndDate | @Model.FirstOrDefault().PracticeLocation</h3>
+        <h3>Add runners to practice @Model.PracticeStartTimeAndDate | @Model.PracticeLocation</h3>
         <form method="post" asp-action="AddRunnerToCurrentPractice" class="form-control">
-            @if (Model != null && Model.Count > 0)
+            @if (Model.SelectedCheckboxOptions != null && Model.SelectedCheckboxOptions.Count > 0)
             {
                 <table class="table">
                     <thead>
@@ -16,23 +16,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for (int i = 0; i < Model.Count(); i++)
+                        @for (int i = 0; i < Model.SelectedCheckboxOptions.Count(); i++)
                         {
                             <tr>
-                                <td scope="row">@Model[i].Name</td>
-                                @if (Model[i].SelectedCheckboxOptions != null && Model[i].SelectedCheckboxOptions.Count > 0)
-                                {
-                                    @for (int j = 0; j < Model[i].SelectedCheckboxOptions.Count(); j++)
-                                    {
-                                        <td>
-                                            <input asp-for="@Model[i].SelectedCheckboxOptions[j].IsSelected" type="checkbox" />
-                                            <input type="hidden" asp-for="@Model[i].RunnerId" />
-                                            <input type="hidden" asp-for="@Model[i].AttendanceId" />
-                                            <input type="hidden" asp-for="@Model[i].SelectedCheckboxOptions[j].RunnerId" />
-                                            <input type="hidden" asp-for="@Model[i].SelectedCheckboxOptions[j].AttendanceId" />
-                                        </td>
-                                    }
-                                }
+                                <td>@Model.SelectedCheckboxOptions[i].RunnersName</td>
+                                <td><input asp-for="@Model.SelectedCheckboxOptions[i].IsSelected" type="checkbox"/></td>
+                                <input type="hidden" asp-for="@Model.SelectedCheckboxOptions[i].RunnerId">
+                                <input type="hidden" asp-for="@Model.SelectedCheckboxOptions[i].PracticeId">
                             </tr>
                         }
                     </tbody>
@@ -44,7 +34,7 @@
 }
 else
 {
-    <label class="form-label">There are no runners marked as absent.</label>
+    <label class="form-label">No runners were found with the provided data. Confirm that a runner exists in the database and the runner is not marked as present.</label>
     <br />
     <a asp-action="Index" class="btn btn-primary">Okay</a>
 }
