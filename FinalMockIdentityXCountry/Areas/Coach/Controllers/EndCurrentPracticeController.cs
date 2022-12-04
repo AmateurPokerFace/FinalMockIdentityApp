@@ -56,6 +56,17 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 return RedirectToAction();  // send to an error page in the future.
             }
 
+            var runnersNotSignedOut = _context.Attendances.Where(a => a.PracticeId == id && a.IsPresent && a.HasBeenSignedOut == false).ToList();
+
+            if (runnersNotSignedOut != null && runnersNotSignedOut.Count > 0)
+            {
+                foreach (var runner in runnersNotSignedOut)
+                {
+                    runner.HasBeenSignedOut = true; 
+                    _context.Attendances.Update(runner);
+                }
+            }
+
             practice.PracticeEndTimeAndDate = DateTime.Now;
             practice.PracticeIsInProgress = false;
             _context.Practices.Update(practice);
@@ -63,7 +74,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             TempData["success"] = "Practice ended successfully.";
 
-            return RedirectToAction("CurrentPractices", "CurrentPractice"); // send to a page showing each runner who hasn't signed out.
+            return RedirectToAction("Index", "Home", new { area = "Welcome" });
         }
     }
 }

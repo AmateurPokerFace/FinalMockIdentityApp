@@ -567,7 +567,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                              });
 
 
-            if (dbQueries.Count() > 0)
+            if (dbQueries != null && dbQueries.Count() > 0)
             {
                 foreach (var dbQuery in dbQueries)
                 {
@@ -589,55 +589,111 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 return View(currentPracticeWorkoutDataViewModels);
             }
 
-            return RedirectToAction(nameof(Index)); // send to an error page in the future (no practice history found)
+            TempData["error"] = "There are no practices in progress that have a runner marked as present. Add one or" +
+                "more runners to a practice that is in progress before attempting to view/edit workout data";
+            return RedirectToAction("Index", "Home", new { area = "Welcome" }); // send to an error page in the future (no practice history found)
 
         }
 
         public IActionResult PracticesThatHaveEndedWorkoutData()
         {
-            List<CurrentPracticeWorkoutDataViewModel> currentPracticeWorkoutDataViewModels = new List<CurrentPracticeWorkoutDataViewModel>();
+            List<CurrentPracticeWorkoutDataViewModel> models = new List<CurrentPracticeWorkoutDataViewModel>();
 
-            var dbQueries = (from p in _context.Practices
-                             join a in _context.Attendances
-                             on p.Id equals a.PracticeId
-                             where a.IsPresent && p.PracticeIsInProgress == false
-                             group a by new
-                             {
-                                 a.PracticeId,
-                                 p.PracticeLocation,
-                                 p.PracticeStartTimeAndDate
-                             } into matchesFound
-                             select new CurrentPracticeWorkoutDataViewModel
-                             {
-                                 PracticeId = matchesFound.Key.PracticeId,
-                                 PracticeDateTime = matchesFound.Key.PracticeStartTimeAndDate,
-                                 PracticeLocation = matchesFound.Key.PracticeLocation,
-                                 TotalRunners = matchesFound.Count(),
-                             });
+            var practicesWithMoreThanOneAttendance = (from p in _context.Practices
+                                                      join a in _context.Attendances
+                                                      on p.Id equals a.PracticeId
+                                                      where a.IsPresent && p.PracticeIsInProgress == false
+                                                      group a by new
+                                                      {
+                                                          a.PracticeId,
+                                                          p.PracticeLocation,
+                                                          p.PracticeStartTimeAndDate
+                                                      } into matchesFound
+                                                      select new HistoryViewModel()
+                                                      {
+                                                          PracticeId = matchesFound.Key.PracticeId,
+                                                          PracticeDateTime = matchesFound.Key.PracticeStartTimeAndDate,
+                                                          PracticeLocation = matchesFound.Key.PracticeLocation,
+                                                          TotalRunners = matchesFound.Count(),
+                                                      }).ToList();
 
-            if (dbQueries.Count() > 0)
+            List<int> practiceIdsWithMoreThanOneAttendance = new List<int>();
+            
+            if (practicesWithMoreThanOneAttendance != null && practicesWithMoreThanOneAttendance.Count() > 0)
             {
-                foreach (var dbQuery in dbQueries)
+                foreach (var practiceWithMoreThanOneAttendance in practicesWithMoreThanOneAttendance)
                 {
-                    CurrentPracticeWorkoutDataViewModel currentPracticeVm = new CurrentPracticeWorkoutDataViewModel
+                    CurrentPracticeWorkoutDataViewModel currentViewModel = new CurrentPracticeWorkoutDataViewModel()
                     {
-                        PracticeId = dbQuery.PracticeId,
-                        PracticeDateTime = dbQuery.PracticeDateTime,
-                        PracticeLocation = dbQuery.PracticeLocation,
-                        TotalRunners = dbQuery.TotalRunners
+                        PracticeDateTime = practiceWithMoreThanOneAttendance.PracticeDateTime,
+                        PracticeLocation = practiceWithMoreThanOneAttendance.PracticeLocation,
+                        TotalRunners = practiceWithMoreThanOneAttendance.TotalRunners,
+                        PracticeId = practiceWithMoreThanOneAttendance.PracticeId
                     };
 
-                    currentPracticeWorkoutDataViewModels.Add(currentPracticeVm);
+                    if (currentViewModel != null)
+                    {
+                        practiceIdsWithMoreThanOneAttendance.Add(practiceWithMoreThanOneAttendance.PracticeId);
+                        models.Add(currentViewModel);
+                    }
+
                 }
             }
 
-            if (currentPracticeWorkoutDataViewModels.Count() > 0)
+            if (practiceIdsWithMoreThanOneAttendance != null && practiceIdsWithMoreThanOneAttendance.Count > 0)
             {
-                currentPracticeWorkoutDataViewModels = currentPracticeWorkoutDataViewModels.OrderByDescending(d => d.PracticeDateTime).ToList();
-                return View(currentPracticeWorkoutDataViewModels);
+                var practicesWithNoAttendances = _context.Practices.Where(x => !practiceIdsWithMoreThanOneAttendance.Contains(x.Id) && x.PracticeIsInProgress == false).ToList();
+
+                if (practicesWithNoAttendances != null && practicesWithNoAttendances.Count > 0)
+                {
+                    foreach (var practiceWithNoAttendance in practicesWithNoAttendances)
+                    {
+                        CurrentPracticeWorkoutDataViewModel currentViewModel = new CurrentPracticeWorkoutDataViewModel
+                        {
+                            PracticeDateTime = practiceWithNoAttendance.PracticeStartTimeAndDate,
+                            PracticeLocation = practiceWithNoAttendance.PracticeLocation,
+                            PracticeId = practiceWithNoAttendance.Id,
+                            TotalRunners = 0
+                        };
+
+                        if (currentViewModel != null)
+                        {
+                            models.Add(currentViewModel);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var practicesWithNoAttendances = _context.Practices.Where(x => x.PracticeIsInProgress == false).ToList();
+                if (practicesWithNoAttendances != null && practicesWithNoAttendances.Count > 0)
+                {
+                    foreach (var practiceWithNoAttendance in practicesWithNoAttendances)
+                    {
+                        CurrentPracticeWorkoutDataViewModel currentViewModel = new CurrentPracticeWorkoutDataViewModel
+                        {
+                            PracticeDateTime = practiceWithNoAttendance.PracticeStartTimeAndDate,
+                            PracticeLocation = practiceWithNoAttendance.PracticeLocation,
+                            PracticeId = practiceWithNoAttendance.Id,
+                            TotalRunners = 0
+                        };
+
+                        if (currentViewModel != null)
+                        {
+                            models.Add(currentViewModel);
+                        }
+                    }
+                }
+            }
+            
+            if (models != null && models.Count > 0)
+            {
+                models = models.OrderByDescending(x => x.PracticeDateTime).ToList();
+                return View(models);
             }
 
-            return RedirectToAction(nameof(Index)); // send to an error page in the future (no practice history found)
+            TempData["error"] = "There was no practice history found";
+            return RedirectToAction("Index", "Home", new { area = "Welcome" }); 
         }
 
         public IActionResult SelectRunnerFromPractice(int practiceId)
@@ -752,6 +808,11 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
 
             return View(editRunnerCurrentPracticeDataViewModel);
+        }
+
+        public IActionResult EditRunnerPreviousPracticeData(string runnerId, int practiceId)
+        {
+            return View();
         }
     }
 }
