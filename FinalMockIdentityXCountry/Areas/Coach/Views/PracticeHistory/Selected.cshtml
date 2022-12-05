@@ -1,21 +1,13 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.PracticeHistoryController
-@model SelectedViewModel
+@model List<SelectedViewModel>
 
 @{
     int practiceId;
     string runnerId;
 }
 
-@if (Model.SelectedViewModelHelpers == null)
+@if (Model != null && Model.Count > 0)
 {
-    //Export the practice information only (location, start time, end time)
-}
-else
-{
-    <form method="post" asp-controller="ExportData" asp-action="ExportPracticeDataToCSV">
-        <input type="hidden" asp-for="PracticeId">
-        <button type="submit" class="btn btn-primary">Export all practice data</button>
-    </form>
     <table class="table">
         <thead>
             <tr>
@@ -23,46 +15,24 @@ else
                 <th scope="col">Location</th>
                 <th scope="col">Start Time</th>
                 <th scope="col">End Time</th>
-                <th scope="col">Workouts</th>
-                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
-            @if (Model.SelectedViewModelHelpers != null && Model.SelectedViewModelHelpers.Count > 0)
+            @foreach (var runner in Model)
             {
-                @for (var i = 0; i < Model.SelectedViewModelHelpers.Count; i++)
-                {
-                    runnerId = Model.SelectedViewModelHelpers[i].RunnerId != null ? Model.SelectedViewModelHelpers[i].RunnerId : "";
-                    practiceId = Model.SelectedViewModelHelpers[i].PracticeId;
-                    <form method="post" asp-controller="ExportData" asp-action="ExportRunnerPracticeDataToCSV">
-                    <tr>
-                        <td>@Model.SelectedViewModelHelpers[i].RunnerName</td>
-                        <td>@Model.PracticeLocation</td>
-                        <td>@Model.PracticeStartTime</td>
-                        <td>@Model.PracticeEndTime</td>
-                            @if (Model.SelectedViewModelHelpers[i].Workouts != null)
-                            {
-                            <td>
-                                    @if (Model.SelectedViewModelHelpers[i].Workouts != null && Model.SelectedViewModelHelpers[i].Workouts.Count > 0)
-                                    {
-                                        @for (int j = 0; j < Model.SelectedViewModelHelpers[i].Workouts.Count; j++)
-                                        {
-                                            @Model.SelectedViewModelHelpers[i].Workouts[j]
-
-                                            <br />
-                                        }
-                                    }
-                            </td>
-                            }
-                        <td>
-                            <input type="hidden" asp-for="@runnerId">
-                            <input type="hidden" asp-for="@practiceId">
-                            <button type="submit" class="btn btn-primary">Export Data</button>
-                        </td>
-                    </tr>
-                    </form>
-                }
-            } 
+                <tr>
+                    <td>@runner.RunnersName</td>
+                    <td>@runner.PracticeLocation</td>
+                    <td>@runner.PracticeStartTime</td>
+                    <td>@runner.PracticeEndTime</td>
+                </tr>
+            }
         </tbody>
-    </table> 
+    </table>
+}
+else
+{
+    <label class="form-label">Invalid data provided</label>
+    <br />
+    <a asp-action="Index">Ok</a>
 }

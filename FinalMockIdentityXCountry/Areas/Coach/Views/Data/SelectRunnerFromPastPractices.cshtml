@@ -1,0 +1,28 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.DataController
+@model SelectRunnerFromPracticeViewModel
+
+<div class="container mx-auto">
+    <h3>Select a Runner To View and Edit Workout Data</h3>
+    <p style="font-weight: lighter;">@Model.PracticeStartTimeAndDate | @Model.PracticeLocation</p>
+
+    @if (Model.SelectRunnerFromPracticeViewModelHelpers != null && Model.SelectRunnerFromPracticeViewModelHelpers.Count() > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Runner</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var runner in Model.SelectRunnerFromPracticeViewModelHelpers)
+                {
+                    <tr>
+                        <td>@runner.RunnerName</td>
+                        <td><a class="btn btn-primary" asp-action="EditRunnerPreviousPracticeData" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId">Edit Workout Data</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

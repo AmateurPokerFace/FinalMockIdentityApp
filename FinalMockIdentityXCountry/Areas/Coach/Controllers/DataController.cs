@@ -708,7 +708,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                              on a.PracticeId equals p.Id
                              join aspnetusers in _context.ApplicationUsers
                              on a.RunnerId equals aspnetusers.Id
-                             where a.PracticeId == practiceId && a.IsPresent
+                             where a.PracticeId == practiceId && a.IsPresent && p.PracticeIsInProgress
                              select new
                              {
                                  p.PracticeStartTimeAndDate,
@@ -751,6 +751,60 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             return RedirectToAction("Index"); // send to an error page in the future
         }
 
+        public IActionResult SelectRunnerFromPastPractices(int practiceId)
+        {
+            if (practiceId == 0)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future
+            }
+
+            var dbQueries = (from a in _context.Attendances
+                             join p in _context.Practices
+                             on a.PracticeId equals p.Id
+                             join aspnetusers in _context.ApplicationUsers
+                             on a.RunnerId equals aspnetusers.Id
+                             where a.PracticeId == practiceId && a.IsPresent && p.PracticeIsInProgress == false
+                             select new
+                             {
+                                 p.PracticeStartTimeAndDate,
+                                 p.PracticeLocation,
+                                 p.Id,
+                                 aspnetusers.FirstName,
+                                 aspnetusers.LastName,
+                                 a.RunnerId
+                             });
+
+            if (dbQueries != null && dbQueries.Count() > 0)
+            {
+                SelectRunnerFromPracticeViewModel selectRunnerFromPracticeViewModel = new SelectRunnerFromPracticeViewModel
+                {
+                    PracticeLocation = dbQueries.FirstOrDefault()?.PracticeLocation == null ? " " : dbQueries.FirstOrDefault()?.PracticeLocation,
+                    PracticeStartTimeAndDate = dbQueries.FirstOrDefault().PracticeStartTimeAndDate
+                };
+
+                foreach (var dbQuery in dbQueries)
+                {
+                    SelectRunnerFromPracticeViewModelHelper viewModelHelper = new SelectRunnerFromPracticeViewModelHelper
+                    {
+                        PracticeId = dbQuery.Id,
+                        RunnerId = dbQuery.RunnerId,
+                        RunnerName = $"{dbQuery.FirstName} {dbQuery.LastName}"
+                    };
+
+                    selectRunnerFromPracticeViewModel.SelectRunnerFromPracticeViewModelHelpers?.Add(viewModelHelper);
+                }
+
+                if (selectRunnerFromPracticeViewModel.SelectRunnerFromPracticeViewModelHelpers != null && selectRunnerFromPracticeViewModel.SelectRunnerFromPracticeViewModelHelpers.Count() > 0)
+                {
+                    selectRunnerFromPracticeViewModel.SelectRunnerFromPracticeViewModelHelpers = selectRunnerFromPracticeViewModel.SelectRunnerFromPracticeViewModelHelpers.OrderByDescending(r => r.RunnerName).Reverse().ToList();
+                    return View(selectRunnerFromPracticeViewModel);
+                }
+
+                return RedirectToAction("Index"); // send to an error page in the future (no runners were found in the provided practice).
+            }
+
+            return RedirectToAction("Index"); // send to an error page in the future
+        }
         public IActionResult EditRunnerCurrentPracticeData(string runnerId, int practiceId)
         {
             if (runnerId == null || practiceId == 0)
@@ -812,7 +866,61 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
         public IActionResult EditRunnerPreviousPracticeData(string runnerId, int practiceId)
         {
-            return View();
+            if (runnerId == null || practiceId == 0)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future (invalid Id(s) provided)
+            }
+
+            EditRunnerCurrentPracticeDataViewModel editRunnerCurrentPracticeDataViewModel = new EditRunnerCurrentPracticeDataViewModel();
+
+            var workoutsQuery = (from w in _context.WorkoutInformation
+                                 join wt in _context.WorkoutTypes
+                                 on w.WorkoutTypeId equals wt.Id
+                                 where w.PracticeId == practiceId && w.RunnerId == runnerId
+                                 select new EditRunnerCurrentPracticeDataViewModel()
+                                 {
+                                     Workout = wt.WorkoutName
+                                 }).ToList();
+
+            foreach (var workout in workoutsQuery.Where(w => w.Workout != null))
+            {
+                editRunnerCurrentPracticeDataViewModel.Workouts?.Add(workout.Workout);
+            }
+
+            var dbQuery = (from a in _context.Attendances
+                           join p in _context.Practices
+                           on a.PracticeId equals p.Id
+                           join aspnetusers in _context.ApplicationUsers
+                           on a.RunnerId equals aspnetusers.Id
+                           where a.IsPresent && a.PracticeId == practiceId && a.RunnerId == runnerId && p.PracticeIsInProgress == false
+                           select new
+                           {
+                               p.PracticeLocation,
+                               p.PracticeStartTimeAndDate,
+                               p.Id,
+                               a.RunnerId,
+                               aspnetusers.FirstName,
+                               aspnetusers.LastName
+                           }).FirstOrDefault();
+
+
+            if (dbQuery == null)
+            {
+                return RedirectToAction("Index"); // send to an error page in the future
+            }
+
+            editRunnerCurrentPracticeDataViewModel.RunnersName = $"{dbQuery.FirstName} {dbQuery.LastName}";
+            editRunnerCurrentPracticeDataViewModel.PracticeLocation = dbQuery.PracticeLocation;
+            editRunnerCurrentPracticeDataViewModel.PracticeStartDateTime = dbQuery.PracticeStartTimeAndDate;
+            editRunnerCurrentPracticeDataViewModel.RunnerId = dbQuery.RunnerId;
+            editRunnerCurrentPracticeDataViewModel.PracticeId = dbQuery.Id;
+
+            IQueryable<WorkoutType> records = _context.WorkoutTypes;
+            editRunnerCurrentPracticeDataViewModel.WorkoutTypeRecordCount = records.Count();
+
+
+
+            return View(editRunnerCurrentPracticeDataViewModel);
         }
     }
 }

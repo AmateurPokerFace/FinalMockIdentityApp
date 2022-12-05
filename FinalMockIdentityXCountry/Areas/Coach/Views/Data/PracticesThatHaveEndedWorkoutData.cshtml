@@ -25,7 +25,7 @@
                         <td>@practice.TotalRunners</td>
                         @if (practice.TotalRunners > 0)
                         {
-                            <td><a asp-action="SelectRunnerFromPractice" asp-route-practiceId="@practice.PracticeId" class="btn btn-primary">Select Practice</a></td>
+                            <td><a asp-action="SelectRunnerFromPastPractices" asp-route-practiceId="@practice.PracticeId" class="btn btn-primary">Select Practice</a></td>
                         }
                         <td></td>
                     </tr>
