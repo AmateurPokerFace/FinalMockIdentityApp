@@ -30,7 +30,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         public IActionResult Home()
         {
             List<MessageBoard> messageBoards = new List<MessageBoard>();
-            messageBoards = _context.MessageBoards.OrderByDescending(d => d.PublishedDateTime.Date).ThenBy(d => d.PublishedDateTime.TimeOfDay).ToList();    
+            //messageBoards = _context.MessageBoards.OrderByDescending(d => d.PublishedDateTime.Date).ThenBy(d => d.PublishedDateTime.TimeOfDay).ToList();
+            messageBoards = _context.MessageBoards.OrderByDescending(d => d.PublishedDateTime).ToList();
             
             return View(messageBoards);
         }
@@ -65,7 +66,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     return RedirectToAction(nameof(Home));
                 }
             }
-            return View();
+            return View(newAnnouncementViewModel);
         }
 
         public IActionResult ViewThread(int messageBoardId)
@@ -113,54 +114,88 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         public IActionResult AddThreadComment(int messageBoardId)
         {
             var userClaimsIdentity = (ClaimsIdentity?)User.Identity;
-            var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userClaim = userClaimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
             
             if (userClaim != null) 
-            {
+            { 
+                var dbQuery = (from m in _context.MessageBoards
+                               where m.Id == messageBoardId
+                               select new 
+                               {
+                                   m.Id,
+                                   m.MessageTitle,
+                                   m.MessageBody,
+                                   m.PublishedDateTime
+                               }).FirstOrDefault();
                 AddThreadCommentViewModel addThreadCommentViewModel = new AddThreadCommentViewModel();
-                addThreadCommentViewModel.MessageBoard = _context.MessageBoards.Find(messageBoardId);
-
-                if (addThreadCommentViewModel.MessageBoard == null)
+                if (dbQuery != null)
                 {
-                    return View(); // redirect to not found page
+                    
+                    addThreadCommentViewModel.MessageBoardId = dbQuery.Id;
+                    addThreadCommentViewModel.MessageBoardMessageBody= dbQuery.MessageBody;
+                    addThreadCommentViewModel.MessageBoardMessageTitle= dbQuery.MessageTitle;
+                    addThreadCommentViewModel.MessageBoardPublishedDateTime= dbQuery.PublishedDateTime;
+                    addThreadCommentViewModel.NewMessageBoardCommentResponderId = userClaim.Value;
+                }
+                else
+                {
+                    TempData["error"] = "Invalid message board id provided";
+                    return RedirectToAction(nameof(Home));
                 }
 
-                addThreadCommentViewModel.NewMessageBoardComment = new MessageBoardResponse
+                if (addThreadCommentViewModel != null)
                 {
-                    MessageBoardId = messageBoardId,
-                    ResponderId = userClaim.Value,
-                };
-
-                return View(addThreadCommentViewModel);
+                    return View(addThreadCommentViewModel);
+                }
+                else
+                {
+                    TempData["error"] = "Invalid message board provided";
+                    return RedirectToAction(nameof(Home));
+                }
             }
 
+            TempData["error"] = "Invalid user claim. You cannot add a comment to this thread";
             return RedirectToAction(nameof(Home)); // throw error in the future
             
         }
 
         [HttpPost]
-        public IActionResult AddThreadComment(MessageBoardResponse NewMessageBoardComment)
+        public IActionResult AddThreadComment(AddThreadCommentViewModel addThreadCommentViewModel)
         {
-            if (NewMessageBoardComment.MessageBoardId == 0)
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Home)); // Add an error in the future
+                MessageBoardResponse messageBoardResponse = new MessageBoardResponse
+                {
+                    MessageBoardId = addThreadCommentViewModel.MessageBoardId,
+                    ResponderId = addThreadCommentViewModel.NewMessageBoardCommentResponderId,
+                    Response = addThreadCommentViewModel.NewNessageBoardCommentResponse,
+                    ResponseDateTime = DateTime.Now
+                };
+
+                bool messageBoardResponseSaved = false;
+
+                if (messageBoardResponse != null)
+                {
+                    _context.MessageBoardResponses.Add(messageBoardResponse);
+                    _context.SaveChanges();
+                    messageBoardResponseSaved = true;
+                }
+                
+                if (messageBoardResponseSaved)
+                {
+                    TempData["success"] = "The response was added successfully.";
+                }
+
+                else
+                {
+                    TempData["error"] = "The response did not save successfully. Please try again.";
+                }
+
+                return RedirectToAction(nameof(Home));
             }
 
-            var messageBoard = _context.MessageBoards.Find(NewMessageBoardComment.MessageBoardId);
-            if (messageBoard == null)
-            {
-                return RedirectToAction(nameof(Home)); // Add an error in the future
-            }
-
-            if (ModelState.IsValid) 
-            {
-                NewMessageBoardComment.ResponseDateTime = DateTime.Now;
-                _context.MessageBoardResponses.Add(NewMessageBoardComment);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Home)); // create a success page in the future
-            }
-             
-            return RedirectToAction(nameof(Home)); // create an error page in the future
+            //loop through modelstate errors and attach it to tempdata[error]
+            return View(addThreadCommentViewModel); 
         }
 
         public IActionResult ThreadCommentReplies(int messageBoardResponseId)

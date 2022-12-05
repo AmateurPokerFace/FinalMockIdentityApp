@@ -3,20 +3,20 @@
 
 <div class="container mx-auto">
     <div>
-        <label>Thread created on @Model.MessageBoard.PublishedDateTime</label>
+        <label>Thread created on @Model.MessageBoardPublishedDateTime</label>
         <br />
         <br />
-        <h3>@Model.MessageBoard.MessageTitle</h3>
+        <h3>@Model.MessageBoardMessageTitle</h3>
         <br />
-        <p>@Model.MessageBoard.MessageBody</p>
+        <p>@Model.MessageBoardMessageBody</p>
         <br />
     </div>
     <br />
     <form method="post">
-        <label asp-for="@Model.NewMessageBoardComment.Response" class="form-label" for="replyThread">Reply to this thread: </label>
-        <input asp-for="@Model.NewMessageBoardComment.Response" class="form-control" id="replyThread" rows="2" required />
-        <input hidden asp-for="@Model.NewMessageBoardComment.MessageBoardId" />
-        <input hidden asp-for="@Model.NewMessageBoardComment.ResponderId" />
+        <label asp-for="@Model.NewNessageBoardCommentResponse" class="form-label" for="replyThread">Reply to this thread: </label>
+        <input asp-for="@Model.NewNessageBoardCommentResponse" class="form-control" id="replyThread" rows="2" required />
+        <input hidden asp-for="@Model.MessageBoardId" />
+        <input hidden asp-for="@Model.NewMessageBoardCommentResponderId" />
         <br />
         <a asp-action="Home" class="btn btn-danger">Cancel</a>
         <button type="submit" class="btn btn-primary">Add comment</button>

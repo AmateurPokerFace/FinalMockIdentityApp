@@ -1,12 +1,12 @@
-﻿using Microsoft.Build.Framework;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels
 {
     public class NewForumThreadViewModel
     {
-        [Required]
+        [Required(AllowEmptyStrings =false,ErrorMessage ="This field is required")] 
         public string? ThreadTitle { get; set; }
-        [Required]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "This field is required")] 
         public string? ThreadBody { get; set; }
     }
 }
