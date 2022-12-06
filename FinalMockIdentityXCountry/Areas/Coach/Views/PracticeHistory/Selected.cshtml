@@ -1,14 +1,9 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.PracticeHistoryController
 @model List<SelectedViewModel>
 
-@{
-    int practiceId;
-    string runnerId;
-}
-
 @if (Model != null && Model.Count > 0)
 {
-  <div class="table-responsive">
+    <div class="table-responsive">
     <table class="table">
         <thead>
             <tr>
@@ -37,5 +32,4 @@ else
     <label class="form-label">Invalid data provided</label>
     <br />
     <a asp-action="Index">Ok</a>
-
 }
