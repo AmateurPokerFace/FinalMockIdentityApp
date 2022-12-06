@@ -1,22 +1,23 @@
 # Data Tracking Application for Evans HS Cross Country Team
-Created by Haley Rohe and Ricardo Price for CIST2932 Advanced Programming Topics
+Created for CIST2932 Advanced Programming Topics, Augusta Technical College, Fall 2022
 ---
 ## Contents  
  1. [Introduction](#introduction)  
  2. [Getting Started as a Main Admin](#getting-started)
  3. [Runner Accounts](#runner-accounts)
  4. [Coach Accounts](#coaches)  
+ 5. [Main Admin Accounts](#main-admin)
 ### Introduction
 This application is intended to help the Cross Country team keep track of their run data using their phones and computers. The app allows the team to record the attendance of runners at practices, record the runners' distance and run time for each practice, view run data for past practices, make and respond to announcements, and calculate run paces based on distance and run time. Users of the application fall into five categories: Main Admin, Coach, Runner, Waiting for approval, and Banned user. 
 - The Main Admin user(s) have full access priviledges to all areas of the app. 
-- The Coach users have full access priviledges, except being able to switch roles to Admin.
+- The Coach users have full access priviledges, except being able to switch other users' roles to Admin.
 - The Runner users have limited access to only the pages associated with their own data, and limited access to the forum.
 - The Waiting For Approval and Banned users cannot access the application.  
 All new registered users will automatically be assigned to the Waiting For Approval category, where they will need to be approved by an Admin or Coach account. 
 ## Getting Started
- - To get started, log in to the Main Admin account using your given credentials. (These instructions will also apply for Coach accounts.) Once you're logged in, there are several options in the navigation bar or menu to choose from. For this Getting Started guide, you will walk through the process of starting a new practice and recording the attendance of runners, scheduling a practice for later, assigning a workout to a practice, signing a Runner out of practice, and ending the practice. However before you can use these features, you will need to register and approve 2-3 sample Runner accounts to populate the fields and tables required for these activities.    
- - To start a new practice, first click the Practices tab in the navigation bar to pull up the Practice options, and click Start Practice Now. Once you are on the Start a New Practice Session page, you can enter a location name for the practice, as well as mark Runners as present (for this tutorial, mark at least one Runner as present/attending). Once you have entered the approporiate data, click the Start Practice button. If the practice was started successfully, you will see an alert confirming the entry.    
- - Next, you will schedule a practice session for later. From the navigation bar, click the Practices option, then Schedule Practice for Later. Once you are on the Schedule a Practice Session for Later page, you can enter a location name, a start and end time, and mark Runners as attending if desired. Once you have entered the approporiate data, click the Start Practice button. If the practice was started successfully, you will see an alert confirming the entry.    
+ - To get started, log in to the Main Admin account using your given credentials. (These instructions will also apply for Coach accounts.) Once you're logged in, there are several options in the navigation bar or menu to choose from. For this Getting Started guide, you will walk through the process of starting a new practice and recording the attendance of runners, scheduling a practice for later, assigning a workout to a Runner, signing a Runner out of practice, and ending the practice. However before you can use these features, you will need to register and approve 2-3 sample Runner accounts to populate the fields and tables required for these activities.    
+ - To start a new practice, first click the Practices tab in the navigation bar to pull up the Practice options, and click Start Practice Now. Once you are on the Start a New Practice Session page, you can enter a location name for the practice, as well as mark Runners as present (for this tutorial, mark at least one Runner as present/attending). Once you have entered the approporiate data, click the Start Practice button. If the practice was started successfully, you will see an alert confirming the entry, and you will see the practice session in the list of current practices on the Practices In Progress page.    
+ - Next, you will schedule a practice session for later. From the navigation bar, click the Practices option, then Schedule Practice for Later. Once you are on the Schedule a Practice Session for Later page, you can enter a location name, a start and end time, and mark Runners as attending if desired. Once you have entered the approporiate data, click the Start Practice button. If the practice was started successfully, you will see an alert confirming the entry, and you will see the practice session in the list of current practices on the Practices In Progress page.    
  - Now you will assign a new workout to the practice session you just started. From the navigation bar, click the Workouts tab in the navigation bar, then choose the Assign Workouts option. On that page, you will see a table with the practice sessions you previously created. In this table, select the most current practice and click the Assign Workouts button. This will take you to the page where you can see the Runners attending the practice and assign workout types to their individual practice sessions. Once you are finished assigning workouts, click the submit button. After submitting, the application will take you back to the Assign Workouts page. To view the workouts you assigned the each Runner, click the Workouts tab in the navigation bar, then choose Athelete Workout History. This will take you to the page where you can select a Runner to view their workout history. Click the View button in the Past Practices column to select the Athelete whose history you want to see, and this will take you to the page where you can view all the past practices and workout types for that athelete.
  - Next, you will sign a Runner out of practice. Click the Practices tab in the navigation bar and choose the Practices In Progress option. You should see the practices you started / scheduled listed. To sign a Runner out of practice, click the button in the View Current Attendance column in the row of the practice you started. You will be taken to a page where you can see the Runners signed into the practice and a button to sign each Runner out of the practice. Click the Sign Out button in the row of the Runner you want to sign out. Once the Runner has been signed out you will be taken back to the Practices In Progress page.
  - Finally, you will end the practice you just signed a Runner out of. On the same Practice In Progress page, click the button under the End Practice row. The application will ask you to confirm that you want to end that specific practice. Click the button to confirm your choice. An alert will pop up confirm the successful end of that practice.   
@@ -29,8 +30,8 @@ Runners can access three main areas of the application:
 Runner accounts can comment on threads and reply to other comments, but may not create or delete threads.   
 ### Practices
 The Practices tab contains two options: My Practices and My Workouts.  
- - The My Practices page displays all of the practices that are currently in progress or scheduled for a future date / time. The Runner has the option to join an open practice, then sign out of a practice once the practice is complete.  
- - The My Workouts page displays the practices that the Runner is signed into, that also have workouts assign to them by a Coach or Admin. Once their workout is assigned, the Runner can enter their run data for that workout.  
+ - The My Practices page displays all of the practices that are currently in progress or scheduled for a future date / time. The Runner has the option to join an open practice, then sign out of a practice once they are finished with practice.  
+ - The My Workouts page displays the practices that the Runner is signed into, that also have workouts assigned to them by a Coach or Admin. Once their workout is assigned, the Runner can enter their run data for that workout.  
     - To enter your run data, click the Log Data button in the row of the practice you want to record data for. You will be taken to a page with input fields for the distance you ran and your run time in the format of hours, minutes, seconds.  
     - You can also edit your data after you log it, but only until while the practice is in session. If a Coach or Admin closes the practice, you will not be able to change your data.  
 ## Calculators  
@@ -83,4 +84,33 @@ Coaches can create and delete threads in the forum, as well as viewing, creating
  - To create a new thread, click the 'Create new thread' button at the top of the page. The app will display a page with a form with fields for the title and body of the thread. Once you are satisfied with your new thread, click the Submit button to save your entry. The application will redirect to the Forum home page, where you will see your new thread at the top of the list.  
  - To delete a thread, click the Delete button under the body of the the thread you want to delete. You will be asked to confirm the thread you want to delete. The thread will be deleted permanently.
  - Viewing the main thread allows the user to view the replies to the thread. Click the Delete button under the reply to permanently delete it.   
-   - Main thread replies can have their own replies. These replies are all deleted if the main reply is deleted.
+   - Main thread replies can have their own replies. These replies are all deleted if the main reply is deleted.  
+### Data
+The pages in Data tab allow you to add, edit and delete workout data for Runners, as well as view statistics for Runners, and export data to a external spreadsheet. The tab contains the following options:  
+  1. Practice Data  
+  2. Runner Data  
+  3. Statistics  
+  4. Data Exportaion  
+- The Practice Data page shows you the current practices that are in progress, with the option to switch views to practices that have ended. Select a practice to view the Runners who were present at that practice. Once you select a Runner, you can chose to Add, Delete, or Edit workout data for that Runner.  
+- The Runner Data page shows a list of all Runner accounts, from which the user can select a Runner to view a list of all practices the Runner has attended. From there the user can Add, Delete or Edit workout data for the Runner's selected practice session.  
+### Practices  
+The pages in the Practices tab allows you to start practices immediately, schedule practices for later, and view and edit attendance records for practice sessions. The tab contains the following options:  
+  1. Start Practice Now  
+  2. Schedule Practice for Later  
+  3. Practices In Progress  
+  4. Closed Practices
+  5. Athlete Practice History
+ - The Start Practice Now and Schedule Practice for Later pages allow you to create practice sessions. The process to do so is covered in the [Getting Started guide](#getting-started).  
+ - The Practice In Progress page displays a list of all the open practice sessions, as well as options to see the current attendance list and end each practice. 
+  - To edit the attendance records for a practice session, click the button under View Current Attendance in the row of the practice you want to select. If there are no runners signed in to the practice session, you will have the option to add Runners to the practice manually by following the link displayed on the page. Otherwise, you will see a list of all Runners signed in to this practice session. You have the option to add a Runner to this practice session or sign out a Runner who is currently in the practice.
+  - To end a practice session, click the button under End Practice in the row of the practice you want to select. You will be asked to confirm your choice. You cannot reopen a practice session once it has ended.  
+ - The Closed Practices page displays a list of all practice sessions that have ended. To view the attendance and workout records for that practice, click the Select button in the row of the practice you want to view. You will be taken to a page where you can see the Runner Name, Location, Start and End times, and Workouts of each Runner present at that practice session.  
+ - The Athlete Practice History page displays a list of all Runners with the option to view a list of the selected Runner's past practice sessions. Simply click the View button in the row of the Runner whose history you want to view.  
+### Workouts  
+The pages in the Workouts tab allow you to assign workouts to a Runner in an open practice and add/edit the workout types.  
+ - To assign one or more workouts to a Runner, the Runner must first be signed into an open practic session. The Assign Workouts page displays a list of open practices with Runner who do not have workouts assigned to them. Select the practice you want to assign workouts to by clicking the button under Assign Workouts in the row of the practice session. You will be taken to a page where you can assign workout types to individual Runners who are signed into the selected practice session.  
+ - To add a new workout type or edit the existing types, go to the Edit Workout Types page under the Workouts tab. On this page is displayed a list of workout types. You can select an existing workout type to change the name of the workout by clicking the button under Edit Workout Name in the appropriate row, or add an entirely new workout type by clicking the New workout button at the top of the page.  
+### Calculators  
+Refer to the [Calculators section](#calculators) under Runner accounts for instructions on how to use the provided calculators. 
+## Main Admin  
+The Main Admin account has all of the abilities and priviledges of a Coach account. In addition, Main Admin accounts can change other accounts into Main Admin accounts. To do this, navigate to the Administrator Panel by clicking the Admin tab, then click the Change Role button in the row of the user whose account you want to modify. On the following page you can then choose to change the role to Master Admin and click confirm. An alert will pop up confirming the successful role change. 
