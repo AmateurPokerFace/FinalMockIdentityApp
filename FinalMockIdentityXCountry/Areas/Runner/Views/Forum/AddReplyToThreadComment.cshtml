@@ -3,12 +3,11 @@
 
 <div class="container mx-auto">
     <div>
-
-        <p>Reply to: @Model.MessageBoardResponse.Response </p>
-        <p style="font-weight: lighter;">@Model.MessageBoardResponse.ResponseDateTime</p>
-
+        <p>Reply to: @Model.OriginalMessageBoardResponse by @Model.OriginalMessageBoardResponseAuthorName at @Model.OriginalMessageBoardResponseDateTime</p>
+        <br />
         <br />
     </div>
+
     <form method="post">
         <label asp-for="@Model.NewReplyToMessageBoardResponse" class="form-label" for="threadReply">Your Response: </label>
         <input asp-for="@Model.NewReplyToMessageBoardResponse" class="form-control" id="threadReply" />

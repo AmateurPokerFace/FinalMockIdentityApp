@@ -30,7 +30,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         public IActionResult Home()
         {
             List<MessageBoard> messageBoards = new List<MessageBoard>();
-            messageBoards = _context.MessageBoards.OrderByDescending(d => d.PublishedDateTime.Date).ThenBy(d => d.PublishedDateTime.TimeOfDay).ToList();    
+            //messageBoards = _context.MessageBoards.OrderByDescending(d => d.PublishedDateTime.Date).ThenBy(d => d.PublishedDateTime.TimeOfDay).ToList();
+            messageBoards = _context.MessageBoards.OrderByDescending(d => d.PublishedDateTime).ToList();
             
             return View(messageBoards);
         }
@@ -47,7 +48,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             if (ModelState.IsValid)
             {
                 var userClaimsIdentity = (ClaimsIdentity?)User.Identity;
-                var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                var userClaim = userClaimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
                 if (userClaim != null)
                 {
@@ -59,29 +60,107 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                         PublishedDateTime = DateTime.Now, 
                     };
 
-                    _context.MessageBoards.Add(messageBoard);
-                    _context.SaveChanges();
+                    if (messageBoard != null)
+                    {
+                        _context.MessageBoards.Add(messageBoard);
+                        _context.SaveChanges();
+                        TempData["success"] = "The thread was created successfully";
 
+                        return RedirectToAction(nameof(Home));
+                    }
+
+                    TempData["error"] = "An error occured while trying to save the record to the database. Please try again or contact an administrator for assistance.";
                     return RedirectToAction(nameof(Home));
                 }
             }
-            return View();
+            
+            TempData["error"] = "The thread was not created successfully. Invalid data was provided";
+
+            return View(newAnnouncementViewModel);
         }
 
         public IActionResult ViewThread(int messageBoardId)
         {
-            ViewThreadViewModel viewThreadViewModel = new ViewThreadViewModel();
-            viewThreadViewModel.MessageBoard = _context.MessageBoards.Find(messageBoardId);
-            if (viewThreadViewModel.MessageBoard == null)
+            if (messageBoardId == 0)
             {
-                return RedirectToAction(nameof(Home)); // return a invalid id provided page => Make this a partial view
+                TempData["error"] = "Invalid message board id provided";
+                return RedirectToAction(nameof(Home));
             }
 
-            viewThreadViewModel.DatabaseMessageBoardResponses = (IEnumerable<MessageBoardResponse>?)_context.MessageBoardResponses
-                .OrderByDescending(d => d.ResponseDateTime.Date)
-                .Where(m => m.MessageBoardId == messageBoardId);
+            var messageBoard = (from m in _context.MessageBoards
+                                join aspnetusers in _context.ApplicationUsers
+                                on m.CoachId equals aspnetusers.Id
+                                where m.Id == messageBoardId
+                                select new
+                                {
+                                    m.MessageBody,
+                                    m.PublishedDateTime,
+                                    m.MessageTitle,
+                                    m.Id,
+                                    aspnetusers.FirstName,
+                                    aspnetusers.LastName 
+                                }).FirstOrDefault();
 
-            return View(viewThreadViewModel);
+            if (messageBoard == null)
+            {
+                TempData["error"] = "Invalid message board id provided. The message was not found in the database.";
+                return RedirectToAction(nameof(Home));
+            }
+            
+            ViewThreadViewModel viewThreadViewModel = new ViewThreadViewModel 
+            {
+                MessageBoardBody = messageBoard.MessageBody,
+                MessageBoardPublishedDateTime = messageBoard.PublishedDateTime,
+                MessageBoardTitle = messageBoard.MessageTitle,
+                MessageBoardId = messageBoard.Id,
+                MessageBoardsAuthorName = $"{messageBoard.FirstName} {messageBoard.LastName}"
+            };
+
+            var messageBoardResponsesQueries = (from m in _context.MessageBoardResponses
+                                                join aspnetusers in _context.ApplicationUsers
+                                                on m.ResponderId equals aspnetusers.Id
+                                                where m.MessageBoardId == messageBoardId
+                                                select new
+                                                {
+                                                    m.Id,
+                                                    m.ResponseDateTime,
+                                                    m.Response,
+                                                    aspnetusers.FirstName,
+                                                    aspnetusers.LastName
+                                                });
+
+            if (messageBoardResponsesQueries != null && messageBoardResponsesQueries.Count() > 0)
+            {
+                foreach (var messageBoardResponse in messageBoardResponsesQueries)
+                {
+                    ViewThreadModelHelper vmHelper = new ViewThreadModelHelper
+                    { 
+                        MessageBoardResponseId = messageBoardResponse.Id,
+                        MessageBoardResponse = messageBoardResponse.Response,
+                        MessageBoardResponseDateTime = messageBoardResponse.ResponseDateTime,
+                        MessageBoardRespondersName = $"{messageBoardResponse.FirstName} {messageBoardResponse.LastName}"
+                    };
+
+                    if (vmHelper != null)
+                    {
+                        viewThreadViewModel.DatabaseMessageBoardResponses.Add(vmHelper);
+                    }
+                }
+            }
+
+            if (viewThreadViewModel.DatabaseMessageBoardResponses != null && viewThreadViewModel.DatabaseMessageBoardResponses.Count > 0)
+            {
+                viewThreadViewModel.DatabaseMessageBoardResponses = viewThreadViewModel.DatabaseMessageBoardResponses
+                                                                    .OrderByDescending(d => d.MessageBoardResponseDateTime).ToList();
+            }
+
+            if (viewThreadViewModel != null)
+            {
+                return View(viewThreadViewModel);
+            }
+
+            TempData["error"] = "Invalid data submitted. The message board wasn't found in the database.";
+            return RedirectToAction(nameof(Home));
         }
 
         public IActionResult DeleteThread(int messageBoardId)
@@ -90,7 +169,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             
             if (messageBoard == null)
             {
-                return RedirectToAction(nameof(Home)); // throw an error in the future
+                TempData["error"] = "Invalid data provided. The provided message board id is invalid.";
+                return RedirectToAction(nameof(Home));
             }
 
             return View(messageBoard);
@@ -99,148 +179,300 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         [HttpPost] // You will probably need a viewmodel for the httppost method below
         public IActionResult DeleteThread(int messageBoardId, string dummyString)
         {
+            if (messageBoardId == 0)
+            {
+                TempData["error"] = "Invalid message board id provided";
+                return RedirectToAction(nameof(Home));
+            }
+
             var messageBoard = _context.MessageBoards.Find(messageBoardId);
+
             if (messageBoard == null)
             {
-                return RedirectToAction(nameof(Home)); // throw an error in the future
+                TempData["error"] = "Invalid message board id provided. The message was not found in the database";
+                return RedirectToAction(nameof(Home)); 
             }
 
             _context.MessageBoards.Remove(messageBoard);
-            _context.SaveChanges(); 
-            return RedirectToAction(nameof(Home)); // add a deleted successfully page in the future
+            _context.SaveChanges();
+            TempData["success"] = "The thread was deleted successfully";
+
+            return RedirectToAction(nameof(Home)); 
         }
 
         public IActionResult AddThreadComment(int messageBoardId)
         {
             var userClaimsIdentity = (ClaimsIdentity?)User.Identity;
-            var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userClaim = userClaimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
             
             if (userClaim != null) 
-            {
-                AddThreadCommentViewModel addThreadCommentViewModel = new AddThreadCommentViewModel();
-                addThreadCommentViewModel.MessageBoard = _context.MessageBoards.Find(messageBoardId);
+            { 
+                var dbQuery = (from m in _context.MessageBoards
+                               where m.Id == messageBoardId
+                               select new 
+                               {
+                                   m.Id,
+                                   m.MessageTitle,
+                                   m.MessageBody,
+                                   m.PublishedDateTime
+                               }).FirstOrDefault();
 
-                if (addThreadCommentViewModel.MessageBoard == null)
+                AddThreadCommentViewModel addThreadCommentViewModel = new AddThreadCommentViewModel();
+                
+                if (dbQuery != null)
                 {
-                    return View(); // redirect to not found page
+                    
+                    addThreadCommentViewModel.MessageBoardId = dbQuery.Id;
+                    addThreadCommentViewModel.MessageBoardMessageBody= dbQuery.MessageBody;
+                    addThreadCommentViewModel.MessageBoardMessageTitle= dbQuery.MessageTitle;
+                    addThreadCommentViewModel.MessageBoardPublishedDateTime= dbQuery.PublishedDateTime;
+                    addThreadCommentViewModel.NewMessageBoardCommentResponderId = userClaim.Value;
+                }
+                else
+                {
+                    TempData["error"] = "Invalid message board id provided";
+                    return RedirectToAction(nameof(Home));
                 }
 
-                addThreadCommentViewModel.NewMessageBoardComment = new MessageBoardResponse
+                if (addThreadCommentViewModel != null)
                 {
-                    MessageBoardId = messageBoardId,
-                    ResponderId = userClaim.Value,
-                };
-
-                return View(addThreadCommentViewModel);
+                    return View(addThreadCommentViewModel);
+                }
+                else
+                {
+                    TempData["error"] = "Invalid message board provided";
+                    return RedirectToAction(nameof(Home));
+                }
             }
 
+            TempData["error"] = "Invalid user claim. You cannot add a comment to this thread";
             return RedirectToAction(nameof(Home)); // throw error in the future
             
         }
 
         [HttpPost]
-        public IActionResult AddThreadComment(MessageBoardResponse NewMessageBoardComment)
+        public IActionResult AddThreadComment(AddThreadCommentViewModel addThreadCommentViewModel)
         {
-            if (NewMessageBoardComment.MessageBoardId == 0)
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Home)); // Add an error in the future
+                MessageBoardResponse messageBoardResponse = new MessageBoardResponse
+                {
+                    MessageBoardId = addThreadCommentViewModel.MessageBoardId,
+                    ResponderId = addThreadCommentViewModel.NewMessageBoardCommentResponderId,
+                    Response = addThreadCommentViewModel.NewNessageBoardCommentResponse,
+                    ResponseDateTime = DateTime.Now
+                };
+
+                bool messageBoardResponseSaved = false;
+
+                if (messageBoardResponse != null)
+                {
+                    _context.MessageBoardResponses.Add(messageBoardResponse);
+                    _context.SaveChanges();
+                    messageBoardResponseSaved = true;
+                }
+                
+                if (messageBoardResponseSaved)
+                {
+                    TempData["success"] = "The response was added successfully.";
+                }
+
+                else
+                {
+                    TempData["error"] = "The response did not save successfully. Please try again.";
+                }
+
+                return RedirectToAction(nameof(Home));
             }
 
-            var messageBoard = _context.MessageBoards.Find(NewMessageBoardComment.MessageBoardId);
-            if (messageBoard == null)
-            {
-                return RedirectToAction(nameof(Home)); // Add an error in the future
-            }
+            TempData["error"] = "The data wasn't submitted because it is invalid.";
 
-            if (ModelState.IsValid) 
-            {
-                NewMessageBoardComment.ResponseDateTime = DateTime.Now;
-                _context.MessageBoardResponses.Add(NewMessageBoardComment);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Home)); // create a success page in the future
-            }
-             
-            return RedirectToAction(nameof(Home)); // create an error page in the future
+            return View(addThreadCommentViewModel); 
         }
 
         public IActionResult ThreadCommentReplies(int messageBoardResponseId)
         {
-
-            ThreadCommentViewModel threadCommentViewModel = new ThreadCommentViewModel();
-            threadCommentViewModel.MessageBoardResponse = _context.MessageBoardResponses.Find(messageBoardResponseId);
-
-            if (threadCommentViewModel.MessageBoardResponse == null)
+            if (messageBoardResponseId == 0)
             {
-                return RedirectToAction(nameof(Home)); // redirect to not found page in the future.
+                TempData["error"] = "Invalid message board response id provided";
+                return RedirectToAction(nameof(Home));
             }
 
-            threadCommentViewModel.RepliesToMessageBoardResponse = _context.RepliesToMessageBoardResponse
-                .Where(r => r.MessageBoardResponseId == threadCommentViewModel.MessageBoardResponse.Id); 
+            
+             
+            var originalMessageBoardResponseQuery = (from m in _context.MessageBoardResponses
+                                                     join aspnetusers in _context.ApplicationUsers
+                                                     on m.ResponderId equals aspnetusers.Id
+                                                     where m.Id == messageBoardResponseId
+                                                     select new
+                                                     {
+                                                         m.Response,
+                                                         m.MessageBoardId,
+                                                         m.ResponseDateTime,
+                                                         aspnetusers.FirstName,
+                                                         aspnetusers.LastName
+                                                     }).FirstOrDefault();
 
-            return View(threadCommentViewModel); 
+            if (originalMessageBoardResponseQuery == null)
+            {
+                TempData["error"] = "Invalid message board response id provided.\n" +
+                    "The message board response doesn't exist in the database.";
+                return RedirectToAction(nameof(Home));
+            }
+
+            ThreadCommentViewModel threadCommentViewModel = new ThreadCommentViewModel 
+            {
+                OriginalAuthorResponse = originalMessageBoardResponseQuery.Response,
+                MessageBoardResponseId = originalMessageBoardResponseQuery.MessageBoardId,
+                OriginalAuthorResponseDateTime = originalMessageBoardResponseQuery.ResponseDateTime,
+                OriginalAuthorName = $"{originalMessageBoardResponseQuery.FirstName} {originalMessageBoardResponseQuery.LastName}"
+            };
+
+            var repliesToMessageBoardResponseQuery = (from r in _context.RepliesToMessageBoardResponse
+                                                      join aspnetusers in _context.ApplicationUsers
+                                                      on r.ReplyerId equals aspnetusers.Id
+                                                      where r.MessageBoardResponseId == messageBoardResponseId
+                                                      select new
+                                                      {
+                                                          r.Reply,
+                                                          r.Id,
+                                                          r.ReplyDateTime,
+                                                          aspnetusers.FirstName,
+                                                          aspnetusers.LastName
+                                                      });
+
+            if (repliesToMessageBoardResponseQuery != null && repliesToMessageBoardResponseQuery.Count() > 0)
+            {
+                foreach (var replyToMessageBoardResponse in repliesToMessageBoardResponseQuery)
+                {
+                    ThreadCommentViewModelHelper ReplyToMessageBoardResponse = new ThreadCommentViewModelHelper
+                    {
+                        ReplyDateTime= replyToMessageBoardResponse.ReplyDateTime,
+                        ReplyToMessageBoardResponse = replyToMessageBoardResponse.Reply,
+                        ReplyToMessageBoardResponseId = replyToMessageBoardResponse.Id,
+                        ReplyerName = $"{replyToMessageBoardResponse.FirstName} {replyToMessageBoardResponse.LastName}"
+                    };
+
+                    if (ReplyToMessageBoardResponse != null)
+                    {
+                        threadCommentViewModel.RepliesToMessageBoardResponses.Add(ReplyToMessageBoardResponse);
+                    }
+                }
+            }
+
+            if (threadCommentViewModel != null)
+            {
+                if (threadCommentViewModel.RepliesToMessageBoardResponses != null)
+                {
+                    threadCommentViewModel.RepliesToMessageBoardResponses = threadCommentViewModel.RepliesToMessageBoardResponses
+                                                                            .OrderByDescending(d => d.ReplyDateTime).ToList();
+                }
+
+                return View(threadCommentViewModel);
+            }
+
+            TempData["error"] = "There were no thread comment replies found";
+            return RedirectToAction(nameof(Home));
         }
 
         public IActionResult AddReplyToThreadComment(int messageBoardResponseId) 
         {
-
+            if (messageBoardResponseId == 0)
+            {
+                TempData["error"] = "Invalid message board response id provided";
+                return RedirectToAction(nameof(Home));
+            }
             var userClaimsIdentity = (ClaimsIdentity?)User.Identity;
-            var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userClaim = userClaimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
             if (userClaim != null)
             {
-                AddReplyToThreadCommentViewModel addReplyToThreadCommentVm = new AddReplyToThreadCommentViewModel();
-                addReplyToThreadCommentVm.MessageBoardResponse = _context.MessageBoardResponses.Find(messageBoardResponseId);
+                var messageBoardResponsesQuery = (from m in _context.MessageBoardResponses
+                                                  join aspnetusers in _context.ApplicationUsers
+                                                  on m.ResponderId equals aspnetusers.Id
+                                                  where m.Id == messageBoardResponseId
+                                                  select new
+                                                  {
+                                                      m.Response,
+                                                      m.ResponseDateTime,
+                                                      m.Id,
+                                                      aspnetusers.FirstName,
+                                                      aspnetusers.LastName,
+                                                  }).FirstOrDefault();
 
-                if (addReplyToThreadCommentVm.MessageBoardResponse == null)
+                if (messageBoardResponsesQuery == null)
                 {
-                    return RedirectToAction(nameof(Home)); // redirect to not found page in the future.
+                    TempData["error"] = "Invalid message board response id provided";
+                    return RedirectToAction(nameof(Home));
+                }
+                
+                AddReplyToThreadCommentViewModel addReplyToThreadCommentViewModel = new AddReplyToThreadCommentViewModel
+                {
+                    NewReplyerId = userClaim.Value,
+                    OriginalMessageBoardResponse = messageBoardResponsesQuery.Response,
+                    OriginalMessageBoardResponseDateTime = messageBoardResponsesQuery.ResponseDateTime,
+                    OriginalMessageBoardResponseId = messageBoardResponsesQuery.Id,
+                    OriginalMessageBoardResponseAuthorName = $"{messageBoardResponsesQuery.FirstName} {messageBoardResponsesQuery.LastName}"
+                };
+
+                if (addReplyToThreadCommentViewModel == null)
+                {
+                    TempData["error"] = "Invalid message board response provided. The message board response " +
+                        "could not be found in the database.";
+                    return RedirectToAction(nameof(Home));
                 }
 
-                addReplyToThreadCommentVm.NewReplyToMessageBoardResponse = new ReplyToMessageBoardResponse
-                {
-                    MessageBoardResponseId = messageBoardResponseId,
-                    ReplyerId = userClaim.Value, 
-                }; 
-
-                return View(addReplyToThreadCommentVm);
+                return View(addReplyToThreadCommentViewModel);
             }
 
             return RedirectToAction(nameof(Home)); // throw error in the future
         }
 
         [HttpPost]
-        public IActionResult AddReplyToThreadComment(ReplyToMessageBoardResponse NewReplyToMessageBoardResponse)
+        public IActionResult AddReplyToThreadComment(AddReplyToThreadCommentViewModel addReplyToThreadCommentViewModel)
         {
-            if (NewReplyToMessageBoardResponse.MessageBoardResponseId == 0)
-            {
-                return RedirectToAction(nameof(Home)); // Add an error in the future
-            }
-
-            var messageBoardResponse = _context.MessageBoardResponses.Find(NewReplyToMessageBoardResponse.MessageBoardResponseId);
-            if (messageBoardResponse == null)
-            {
-                return RedirectToAction(nameof(Home)); // Add an error in the future
-            }
-
             if (ModelState.IsValid)
             {
-                NewReplyToMessageBoardResponse.ReplyDateTime = DateTime.Now;
-                _context.RepliesToMessageBoardResponse.Add(NewReplyToMessageBoardResponse);
-                _context.SaveChanges();
+                ReplyToMessageBoardResponse replyToMessageBoardResponse = new ReplyToMessageBoardResponse
+                {
+                    ReplyDateTime = DateTime.Now,
+                    Reply = addReplyToThreadCommentViewModel.NewReplyToMessageBoardResponse,
+                    MessageBoardResponseId = addReplyToThreadCommentViewModel.OriginalMessageBoardResponseId,
+                    ReplyerId = addReplyToThreadCommentViewModel.NewReplyerId
+                };
 
-                return RedirectToAction(nameof(ThreadCommentReplies));
+                if (replyToMessageBoardResponse != null)
+                {
+                    _context.RepliesToMessageBoardResponse.Add(replyToMessageBoardResponse);
+                    _context.SaveChanges();
+                    TempData["success"] = "Your reply was added successfully";
+                    return RedirectToAction(nameof(Home));
+                }
             }
 
+            var errors = ModelState.Select(x => x.Value?.Errors)
+                          .Where(y => y?.Count > 0)
+                          .ToList();
 
-            return RedirectToAction(nameof(Home)); // add error in the future
+
+            TempData["error"] = "The data wasn't submitted because it is invalid.";
+
+            return View(addReplyToThreadCommentViewModel); // add error in the future
         }
 
         public IActionResult DeleteThreadComment(int messageBoardResponseId)
         {
+            if (messageBoardResponseId == 0)
+            {
+                TempData["error"] = "Invalid message board response id provided.";
+                return RedirectToAction("Home");
+            }
             var messageBoardResponse = _context.MessageBoardResponses.Find(messageBoardResponseId);
 
             if (messageBoardResponse == null)
             {
+                TempData["error"] = "Invalid message board response id provided. The message board response" +
+                    "was not found in the database";
                 return RedirectToAction("Home"); //throw an error in the future
             }
             
@@ -250,20 +482,34 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         [HttpPost]
         public IActionResult DeleteThreadComment(int messageBoardResponseId, string dummyString)
         {
+            if (messageBoardResponseId == 0)
+            {
+                TempData["error"] = "Invalid message board response id provided.";
+                return RedirectToAction("Home");
+            }
             var messageBoardResponse = _context.MessageBoardResponses.Find(messageBoardResponseId);
+
             if (messageBoardResponse == null)
             {
-                return RedirectToAction("Home"); //throw an error in the future
+                TempData["error"] = "Invalid message board response id provided. The message board response" +
+                    "was not found in the database";
+                return RedirectToAction("Home");  //throw an error in the future
             }
 
             _context.MessageBoardResponses.Remove(messageBoardResponse);
             _context.SaveChanges();
+            TempData["success"] = "The comment was deleted successfully";
 
             return RedirectToAction("Home"); // redirect to a success page in the future.
         }
 
         public IActionResult DeleteThreadReply(int replyToMessageBoardResponseId)
         {
+            if (replyToMessageBoardResponseId == 0)
+            {
+                TempData["error"] = "Invalid message board reply id provided";
+                return RedirectToAction(nameof(Home)); 
+            }
             var dbQuery = (from r in _context.RepliesToMessageBoardResponse
                            join aspnetusers in _context.ApplicationUsers
                            on r.ReplyerId equals aspnetusers.Id
@@ -279,7 +525,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (dbQuery == null)
             {
-                return RedirectToAction(); // send to an error page in the future
+                TempData["error"] = "Invalid message board reply id provided. The reply could was not found in the database"; 
+                return RedirectToAction(nameof(Home)); 
             }
 
             DeleteThreadReplyViewModel deleteThreadReplyViewModel = new DeleteThreadReplyViewModel
@@ -296,22 +543,25 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         [HttpPost]
         public IActionResult DeleteThreadReply(int ReplyToMessageBoardId, string dummyString)
         {
-            if (ReplyToMessageBoardId == 0 || ReplyToMessageBoardId == null)
+            if (ReplyToMessageBoardId == 0)
             {
-                return RedirectToAction(); // send to an invalid page in the future
+                TempData["error"] = "Invalid message board reply id provided";
+                return RedirectToAction(nameof(Home));
             }
 
             ReplyToMessageBoardResponse replyToMessageBoardResponse = _context.RepliesToMessageBoardResponse.Find(ReplyToMessageBoardId);
 
             if (replyToMessageBoardResponse == null)
             {
-                return RedirectToAction(); // send to an invalid page in the future
+                TempData["error"] = "Invalid message board reply id provided. The reply was not found in the database";
+                return RedirectToAction(nameof(Home)); 
             }
 
             _context.RepliesToMessageBoardResponse.Remove(replyToMessageBoardResponse);
             _context.SaveChanges();
+            TempData["success"] = "The reply was deleted successfully";
 
-            return RedirectToAction("Home"); // send to a delete successful page in the future 
+            return RedirectToAction("Home");
         }
     }
 }

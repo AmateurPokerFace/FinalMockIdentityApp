@@ -13,12 +13,12 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime? InitialDate { get; set; }
+        public DateTime InitialDate { get; set; }
         public string? RunnerId { get; set; } = null;
          
-        public string? SelectedQueryFilter { get; set; }
+        public string SelectedQueryFilter { get; set; }
 
         [ValidateNever]
-        public List<SelectListItem>? QueryFilters { get; set; }
+        public List<SelectListItem> QueryFilters { get; set; }
     }
 }

@@ -1,0 +1,68 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.DataController
+@model EditRunnerCurrentPracticeDataViewModel
+
+@{
+    bool workoutFound = false;
+}
+<div class="container mx-auto">
+    <h3>Previous Practice Workout Data For @Model.RunnersName</h3>
+    <br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Location</th>
+                <th scope="col">Workouts</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @*Column 1*@
+                <td>@Model.PracticeStartDateTime</td>
+                @*Column 2*@
+                <td>@Model.PracticeLocation</td>
+                @if (Model.Workouts != null && Model.Workouts.Count() > 0)
+                {
+                    @*Column 3*@
+                    <td>
+                        @foreach (var workout in Model.Workouts)
+                        {
+                            @workout <br />
+                        }
+                    </td>
+                    workoutFound = true;
+                }
+                else
+                {  @*Column 3*@
+                    <td>N/A</td>
+                }
+                @if (Model.Workouts != null && Model.Workouts.Count() == Model.WorkoutTypeRecordCount)
+                {
+                    <td></td>
+                }
+                else
+                {
+                    @*Column 4*@
+                    <td><a asp-action="AddNewWorkoutsToPractice" asp-route-runnerId="@Model.RunnerId" asp-route-practiceId="@Model.PracticeId" class="btn btn-primary">Add Workout</a></td>
+                }
+                @if (workoutFound)
+                {
+                    @*Column 5*@
+                    <td><a asp-action="DeleteWorkoutsFromPractice" asp-route-runnerId="@Model.RunnerId" asp-route-practiceId="@Model.PracticeId" class="btn btn-primary">Delete Workout</a></td>
+                    @*Column 6*@
+                    <td><a asp-action="ViewDataEntered" asp-route-runnerId="@Model.RunnerId" asp-route-practiceId="@Model.PracticeId" class="btn btn-primary">Edit Workout</a></td>
+                }
+                else
+                {
+                    @*Column 5*@
+                    <td></td>
+                    @*Column 6*@
+                    <td></td>
+                }
+            </tr>
+        </tbody>
+    </table>
+</div>

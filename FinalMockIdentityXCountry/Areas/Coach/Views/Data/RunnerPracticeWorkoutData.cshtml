@@ -3,16 +3,20 @@
 
 <div class="container mx-auto">
     <h3>Select a runner to view and/or edit their data.</h3>
+
     <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <td scope="col">Runner</td>
-                    <td scope="col"></td>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.RunnerUsers.Count() > 0)
+    <table class="table">
+        <thead>
+            <tr>
+                <td scope="col">Runner</td>
+                <td scope="col"></td>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.RunnerUsers != null && Model.RunnerUsers.Count() > 0)
+            {
+                @foreach (var runner in Model.RunnerUsers)
+
                 {
                     @foreach (var runner in Model.RunnerUsers)
                     {
