@@ -24,27 +24,29 @@
                 <input asp-for="PracticeEndTimeAndDate" class="form-control" />
             </div>
             <br />
+
             @if (Model.SelectedStartNowCheckBoxOptions != null && Model.SelectedStartNowCheckBoxOptions.Count > 0)
             {
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Runner</th>
-                            <th scope="col">Present</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < Model.SelectedStartNowCheckBoxOptions.Count; i++)
-                        {
-                            <tr>
-                                <td>@Model.SelectedStartNowCheckBoxOptions[i].RunnersName</td>
-                                <td><input asp-for="@Model.SelectedStartNowCheckBoxOptions[i].IsSelected" type="checkbox" /></td>
-                                <input type="hidden" asp-for="@Model.SelectedStartNowCheckBoxOptions[i].RunnersId">
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-
+                <div class="table-responsive">
+                  <table class="table">
+                      <thead>
+                          <tr>
+                              <th scope="col">Runner</th>
+                              <th scope="col">Present</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          @for (int i = 0; i < Model.SelectedStartNowCheckBoxOptions.Count; i++)
+                          {
+                              <tr>
+                                  <td>@Model.SelectedStartNowCheckBoxOptions[i].RunnersName</td>
+                                  <td><input asp-for="@Model.SelectedStartNowCheckBoxOptions[i].IsSelected" type="checkbox" /></td>
+                                  <input type="hidden" asp-for="@Model.SelectedStartNowCheckBoxOptions[i].RunnersId">
+                              </tr>
+                          }
+                      </tbody>
+                  </table>
+                </div>
                 <button type="submit" class="btn btn-primary">Schedule Practice</button>
             }
         </form>

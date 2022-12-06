@@ -10,34 +10,37 @@
     <br />
 
     <form method="post">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Current Practice Workouts</t>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.SelectedCheckboxOptions != null && Model.SelectedCheckboxOptions.Count() > 0)
-                {
-                    for (int i = 0; i < Model.SelectedCheckboxOptions.Count; i++)
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Current Practice Workouts</t>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.SelectedCheckboxOptions != null && Model.SelectedCheckboxOptions.Count() > 0)
                     {
-                        <tr>
-                            <td>
-                                <input asp-for="@Model.SelectedCheckboxOptions[i].IsSelected" type="checkbox"> @Model.SelectedCheckboxOptions[i].WorkoutName
-                                <input type="hidden" asp-for="@Model.SelectedCheckboxOptions[i].WorkoutInformationId">
-                                <input type="hidden" asp-for="@Model.SelectedCheckboxOptions[i].WorkoutName">
-                                <input type="hidden" asp-for="@Model.PracticeLocation">
-                                <input type="hidden" asp-for="@Model.PracticeStartDateTime">
-                                <input type="hidden" asp-for="@Model.RunnerName">
-                                <input type="hidden" asp-for="@Model.PracticeId">
-                                <input type="hidden" asp-for="@Model.RunnerId">
-                                <input type="hidden" asp-for="@Model.WorkoutInformationId">
-                            </td>
-                        </tr>
+                        for (int i = 0; i < Model.SelectedCheckboxOptions.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <input asp-for="@Model.SelectedCheckboxOptions[i].IsSelected" type="checkbox"> @Model.SelectedCheckboxOptions[i].WorkoutName
+                                    <input type="hidden" asp-for="@Model.SelectedCheckboxOptions[i].WorkoutInformationId">
+                                    <input type="hidden" asp-for="@Model.SelectedCheckboxOptions[i].WorkoutName">
+                                    <input type="hidden" asp-for="@Model.PracticeLocation">
+                                    <input type="hidden" asp-for="@Model.PracticeStartDateTime">
+                                    <input type="hidden" asp-for="@Model.RunnerName">
+                                    <input type="hidden" asp-for="@Model.PracticeId">
+                                    <input type="hidden" asp-for="@Model.RunnerId">
+                                    <input type="hidden" asp-for="@Model.WorkoutInformationId">
+                                </td>
+                            </tr>
+                        }
                     }
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+        
         <a class="btn btn-outline-danger" asp-action="EditWorkoutData" asp-route-runnerId="@Model.RunnerId">Cancel</a>
         <button type="submit" class="btn btn-danger">Confirm Removal</button>
     </form>

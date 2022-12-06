@@ -7,6 +7,8 @@
     <br />
 
     <form method="post">
+
+    <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
@@ -33,6 +35,8 @@
                 }
             </tbody>
         </table>
+        <div>
+
         <a class="btn btn-danger" asp-action="EditWorkoutData" asp-route-runnerId="@Model.RunnerId">Cancel</a>
         <button class="btn btn-primary">Save Changes</button>
     </form>

@@ -8,6 +8,7 @@
 
 @if (Model != null && Model.Count > 0)
 {
+  <div class="table-responsive">
     <table class="table">
         <thead>
             <tr>
@@ -29,10 +30,12 @@
             }
         </tbody>
     </table>
+    </div>
 }
 else
 {
     <label class="form-label">Invalid data provided</label>
     <br />
     <a asp-action="Index">Ok</a>
+
 }

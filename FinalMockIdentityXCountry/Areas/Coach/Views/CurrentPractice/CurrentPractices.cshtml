@@ -1,9 +1,11 @@
 ﻿@model IEnumerable<Practice>
 
+
 @if (Model != null && Model.Count() > 0)
 {
     <div class="container mx-auto">
         <h2>Select an open practice to view or mark closed.</h2>
+    <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
@@ -14,6 +16,7 @@
                 </tr>
             </thead>
             <tbody>
+
                 @foreach (var practice in Model)
                 {
                     <tr>
@@ -38,6 +41,7 @@
                 } 
             </tbody>
         </table>
+        </div>
     </div>
 }
 else

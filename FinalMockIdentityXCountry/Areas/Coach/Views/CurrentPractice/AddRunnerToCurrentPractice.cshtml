@@ -8,6 +8,9 @@
         <form method="post" asp-action="AddRunnerToCurrentPractice" class="form-control">
             @if (Model.SelectedCheckboxOptions != null && Model.SelectedCheckboxOptions.Count > 0)
             {
+
+          <div class="table-responsive">
+                
                 <table class="table">
                     <thead>
                         <tr>
@@ -27,6 +30,8 @@
                         }
                     </tbody>
                 </table>
+                </div>
+
                 <button class="btn btn-primary" type="submit">Submit</button> 
             } 
         </form>

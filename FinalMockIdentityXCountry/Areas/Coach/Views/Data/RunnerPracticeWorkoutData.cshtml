@@ -3,6 +3,8 @@
 
 <div class="container mx-auto">
     <h3>Select a runner to view and/or edit their data.</h3>
+
+    <div class="table-responsive">
     <table class="table">
         <thead>
             <tr>
@@ -14,13 +16,18 @@
             @if (Model.RunnerUsers != null && Model.RunnerUsers.Count() > 0)
             {
                 @foreach (var runner in Model.RunnerUsers)
+
                 {
-                    <tr>
-                        <td>@runner.FirstName @runner.LastName</td>
-                        <td><a class="btn btn-primary" asp-route-runnerId="@runner.Id" asp-action="EditWorkoutData">Edit Workout Data</a></td>
-                    </tr>
+                    @foreach (var runner in Model.RunnerUsers)
+                    {
+                        <tr>
+                            <td>@runner.FirstName @runner.LastName</td>
+                            <td><a class="btn btn-primary" asp-route-runnerId="@runner.Id" asp-action="EditWorkoutData">Edit Workout Data</a></td>
+                        </tr>
+                    }
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+    
 </div>
