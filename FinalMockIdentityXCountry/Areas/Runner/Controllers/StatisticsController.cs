@@ -150,14 +150,21 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                             if (modelHelper != null)
                             {
-                                modelHelper.PaceDisplayString = modelHelper.Pace.Item1 < 10
-                                                            ? $"00:0{modelHelper.Pace.Item1}:"
-                                                            : $"00:{modelHelper.Pace.Item1}:";
+
+                                //modelHelper.PaceDisplayString = modelHelper.Pace.Item1 < 10
+                                //                            ? $"00:0{modelHelper.Pace.Item1}:"
+                                //                            : $"00:{modelHelper.Pace.Item1}:"; // this needs to be fixed to avoid ts error
 
 
-                                                            modelHelper.PaceDisplayString += modelHelper.Pace.Item2 < 10
-                                                            ? $"0{modelHelper.Pace.Item2}"
-                                                            : $"{modelHelper.Pace.Item2}";
+                                TimeSpan testTimeSpan = TimeSpan.FromMinutes(modelHelper.Pace.Item1);
+                                testTimeSpan += TimeSpan.FromSeconds(modelHelper.Pace.Item2);
+
+                                modelHelper.PaceDisplayString = testTimeSpan.ToString();
+
+
+                                                            //modelHelper.PaceDisplayString += modelHelper.Pace.Item2 < 10
+                                                            //? $"0{modelHelper.Pace.Item2}"
+                                                            //: $"{modelHelper.Pace.Item2}"; // this also needs to be fixed to avoid ts error
 
                                 model.WorkoutStatisticsViewModelHelpers?.Add(modelHelper);
                             }
