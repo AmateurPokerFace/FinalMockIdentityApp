@@ -129,7 +129,7 @@
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Runner"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark disabled" asp-area="Runner" asp-controller="Forum" asp-action="Home">Forums</a>
+                                <a class="nav-link text-dark" asp-area="Runner" asp-controller="Forum" asp-action="Home">Forums</a>
                             </li>
                             <div class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="practiceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

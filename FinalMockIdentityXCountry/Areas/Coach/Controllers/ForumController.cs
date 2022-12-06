@@ -362,6 +362,12 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (threadCommentViewModel != null)
             {
+                if (threadCommentViewModel.RepliesToMessageBoardResponses != null)
+                {
+                    threadCommentViewModel.RepliesToMessageBoardResponses = threadCommentViewModel.RepliesToMessageBoardResponses
+                                                                            .OrderByDescending(d => d.ReplyDateTime).ToList();
+                }
+
                 return View(threadCommentViewModel);
             }
 
@@ -520,7 +526,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             if (dbQuery == null)
             {
                 TempData["error"] = "Invalid message board reply id provided. The reply could was not found in the database"; 
-                return RedirectToAction(nameof(Home)); // send to an error page in the future
+                return RedirectToAction(nameof(Home)); 
             }
 
             DeleteThreadReplyViewModel deleteThreadReplyViewModel = new DeleteThreadReplyViewModel
@@ -548,14 +554,14 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             if (replyToMessageBoardResponse == null)
             {
                 TempData["error"] = "Invalid message board reply id provided. The reply was not found in the database";
-                return RedirectToAction(nameof(Home)); // send to an invalid page in the future
+                return RedirectToAction(nameof(Home)); 
             }
 
             _context.RepliesToMessageBoardResponse.Remove(replyToMessageBoardResponse);
             _context.SaveChanges();
             TempData["success"] = "The reply was deleted successfully";
 
-            return RedirectToAction("Home"); // send to a delete successful page in the future 
+            return RedirectToAction("Home");
         }
     }
 }

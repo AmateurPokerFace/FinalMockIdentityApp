@@ -302,7 +302,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
                     if (runnersAddedToAttendance == 0)
                     {
-                        TempData["error"] = "An error occured. No runners were added to the attendance";
+                        TempData["warning"] = "No runners were added to the attendance";
                         return RedirectToAction(nameof(CurrentPractices));
                     }
 
