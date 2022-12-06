@@ -24,7 +24,6 @@
                 <p>@response.MessageBoardResponse</p>
                 <p style="font-weight: lighter;">By @response.MessageBoardRespondersName at @response.MessageBoardResponseDateTime</p>
                 <br>
-                <a class="btn btn-danger" asp-action="DeleteThreadComment" asp-route-messageBoardResponseId="@response.MessageBoardResponseId">Delete</a>
                 <a class="btn btn-primary" asp-action="ThreadCommentReplies" asp-route-messageBoardResponseId="@response.MessageBoardResponseId">View Thread</a>
                 <br>
 
@@ -34,4 +33,3 @@
     }
 </div>
 
- 

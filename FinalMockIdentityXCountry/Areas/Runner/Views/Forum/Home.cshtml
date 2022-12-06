@@ -2,11 +2,10 @@
 
 <div class="container mx-auto">
     <div class="clearfix">
-        <div class="col-md-6 float-md-end mb-3 ms-md-3" >
+        <div class="col-md-6 float-md-end mb-3 ms-md-3">
             <section>
                 <h2>Cross Country Forum</h2>
                 <p>This forum is strictly moderated. All posts and replies must follow guidelines according to the Evans High School communications policy.</p>
-                <a class="btn btn-primary float-end" asp-action="CreateThread">Create new thread</a>
 
             </section>
         </div>
@@ -17,7 +16,7 @@
             <section>
                 @if (Model != null && Model.Count > 0)
                 {
-                    @foreach(var thread in Model)
+                    @foreach (var thread in Model)
                     {
                         <br />
                         <br />
@@ -27,9 +26,8 @@
                             <p>@thread.MessageBody</p>
                             <p style="font-weight: lighter;">Created on @thread.PublishedDateTime</p>
                             <br>
-                
+
                             <a class="btn btn-primary" asp-action="ViewThread" asp-route-messageBoardId="@thread.Id">View Thread</a>
-                            <a class="btn btn-danger float-end" asp-action="DeleteThread" asp-route-messageBoardId="@thread.Id">Delete Thread</a>
                         </div>
                         <hr />
                         <br />
@@ -37,6 +35,6 @@
                 }
             </section>
         </div>
-        
+
     </div>
-    </div>
+</div>

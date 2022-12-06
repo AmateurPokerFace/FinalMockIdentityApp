@@ -24,16 +24,27 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             _userManager = userManager;
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
         public IActionResult SelectPractice()
         {
             
             IEnumerable<Practice> practices = _context.Practices.Where(p => p.PracticeIsInProgress == true && p.WorkoutsAddedToPractice == false);
+
+            if (practices == null)
+            {
+                TempData["error"] = "There are no current practices with zero workouts assigned.";
+                return RedirectToAction("Index");
+            }
+
             return View(practices);
         }
          
         public IActionResult AddPracticeWorkouts(int practiceId)
         {
-            // Make this controller async in the future
 
             List<AddPracticeWorkoutsViewModel> addPracticeWorkoutsViewModels = new List<AddPracticeWorkoutsViewModel>();
 

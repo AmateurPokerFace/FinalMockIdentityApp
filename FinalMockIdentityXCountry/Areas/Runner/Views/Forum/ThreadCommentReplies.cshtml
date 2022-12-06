@@ -16,14 +16,13 @@
     {
         foreach (var reply in Model.RepliesToMessageBoardResponses)
         {
-            <div> 
-                <br>
-                <p>@reply.ReplyerName replied: @reply.ReplyToMessageBoardResponse</p>
-                <p style="font-weight: lighter;">@reply.ReplyDateTime</p>
-                <br>
-                <a asp-action="DeleteThreadReply" asp-route-replyToMessageBoardResponseId="@reply.ReplyToMessageBoardResponseId" class="btn btn-danger">Delete Reply</a>
-            </div>
-            <hr />
+                    <div> 
+                        <br>
+                        <p>@reply.ReplyerName replied: @reply.ReplyToMessageBoardResponse</p>
+                        <p style="font-weight: lighter;">@reply.ReplyDateTime</p>
+                        <br>
+                    </div>
+                    <hr />
         }
     }
 </div>
