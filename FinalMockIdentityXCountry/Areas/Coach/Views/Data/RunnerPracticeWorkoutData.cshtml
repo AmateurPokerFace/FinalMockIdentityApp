@@ -11,7 +11,7 @@
             </tr>
         </thead>
         <tbody>
-            @if (Model.RunnerUsers.Count() > 0)
+            @if (Model.RunnerUsers != null && Model.RunnerUsers.Count() > 0)
             {
                 @foreach (var runner in Model.RunnerUsers)
                 {

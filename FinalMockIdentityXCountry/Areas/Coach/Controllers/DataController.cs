@@ -325,10 +325,11 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (ModelState.IsValid && editEnteredDataViewModel != null)
             {
-                WorkoutInformation workoutInformation = _context.WorkoutInformation.Find(editEnteredDataViewModel.WorkoutInformationId);
+                WorkoutInformation workoutInformation = _context.WorkoutInformation?.Find(editEnteredDataViewModel.WorkoutInformationId);
 
                 if (workoutInformation == null)
                 {
+                    TempData["error"] = "Invalid data entered. The provided data doesn't exist in the database.";
                    return RedirectToAction("Index"); // send to an error page in the future
                 }
 
@@ -337,11 +338,15 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 workoutInformation.Minutes = editEnteredDataViewModel.Minutes;
                 workoutInformation.Seconds = editEnteredDataViewModel.Seconds;
                 workoutInformation.DataWasLogged = true;
-                _context.WorkoutInformation.Update(workoutInformation);
+                
+                _context.WorkoutInformation?.Update(workoutInformation);
                 _context.SaveChanges();
 
+                TempData["success"] = "The edit was saved successfully";
                 return RedirectToAction("RunnerPracticeWorkoutData", "Data"); // send to a success page in the future
             }
+
+            TempData["error"] = "The edit data was not saved successfully. Invalid data was entered";
             return RedirectToAction("Index"); // send to an error page in the future
         }
 
@@ -349,12 +354,15 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (runnerId == null || practiceId == 0)
             {
+                TempData["error"] = "Invalid ID(s) provided";
                 return RedirectToAction("Index"); // send to an error page in the future
             }
 
             Practice practice = _context.Practices.Find(practiceId);
+
             if (practice == null)
             {
+                TempData["error"] = "Invalid practice id provided. The practice was not found in the database";
                 return RedirectToAction("Index"); // send to an error page in the future
             }
 
@@ -362,6 +370,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (applicationUser == null)
             {
+                TempData["error"] = "Invalid runner id provided. The runner was not found in the database";
                 return RedirectToAction("Index"); // send to an error page in the future
             }
 
@@ -370,7 +379,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                             && i.RunnerId == runnerId && i.PracticeId == practiceId)
                             select wt;
 
-            if (dbQueries.Count() < 0)
+            if (dbQueries == null || dbQueries.Count() < 0)
             {
                 return RedirectToAction("Index"); // send to an error page in the future
             }
@@ -917,8 +926,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             IQueryable<WorkoutType> records = _context.WorkoutTypes;
             editRunnerCurrentPracticeDataViewModel.WorkoutTypeRecordCount = records.Count();
-
-
 
             return View(editRunnerCurrentPracticeDataViewModel);
         }

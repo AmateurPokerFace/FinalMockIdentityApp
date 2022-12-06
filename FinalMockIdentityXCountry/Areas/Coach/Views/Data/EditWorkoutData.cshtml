@@ -7,7 +7,7 @@
         <label>@Model.FirstOrDefault()?.RunnerName Practice Workout Data</label>
     }
 
-    @if (Model.Count() > 0)
+    @if (Model != null && Model.Count() > 0)
     {
         <table class="table">
             <thead>

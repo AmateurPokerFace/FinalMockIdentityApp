@@ -6,7 +6,7 @@
     <p style="font-weight: lighter;">@Model.PracticeStartDateTime</p>
     <p>Location: @Model.PracticeLocation</p>
 
-    @if (Model.ViewDataEnteredViewModelHelpers.Count() > 0)
+    @if (Model.ViewDataEnteredViewModelHelpers != null && Model.ViewDataEnteredViewModelHelpers.Count() > 0)
     {
         <table class="table">
             <thead>
