@@ -4,16 +4,16 @@
 <div class="container mx-auto">
     <div>
         <p style="font-weight: lighter;">
-            Created on @Model.MessageBoard.PublishedDateTime
+            Created on @Model.MessageBoardPublishedDateTime by @Model.MessageBoardsAuthorName
         </p>
         <br />
-        <h3>@Model.MessageBoard.MessageTitle</h3>
+        <h3>@Model.MessageBoardTitle</h3>
         <br />
-        <p>@Model.MessageBoard.MessageBody</p>
-        <a asp-action="AddThreadComment" asp-route-messageBoardId="@Model.MessageBoard.Id" class="btn btn-primary">Comment</a>
+        <p>@Model.MessageBoardBody</p>
+        <a asp-action="AddThreadComment" asp-route-messageBoardId="@Model.MessageBoardId" class="btn btn-primary">Comment</a>
     </div>
 
-    @if (Model.DatabaseMessageBoardResponses.Count() > 0)
+    @if (Model.DatabaseMessageBoardResponses != null && Model.DatabaseMessageBoardResponses.Count() > 0)
     {
         <br />
         <hr />
@@ -21,11 +21,11 @@
         {
             <div>
 
-                <p>@response.Response</p>
-                <p style="font-weight: lighter;">By <!--Add comment author--> at @response.ResponseDateTime</p>
+                <p>@response.MessageBoardResponse</p>
+                <p style="font-weight: lighter;">By @response.MessageBoardRespondersName at @response.MessageBoardResponseDateTime</p>
                 <br>
-                <a class="btn btn-danger" asp-action="DeleteThreadComment" asp-route-messageBoardResponseId="@response.Id">Delete</a>
-                <a class="btn btn-primary" asp-action="ThreadCommentReplies" asp-route-messageBoardResponseId="@response.Id">View Thread</a>
+                <a class="btn btn-danger" asp-action="DeleteThreadComment" asp-route-messageBoardResponseId="@response.MessageBoardResponseId">Delete</a>
+                <a class="btn btn-primary" asp-action="ThreadCommentReplies" asp-route-messageBoardResponseId="@response.MessageBoardResponseId">View Thread</a>
                 <br>
 
             </div>

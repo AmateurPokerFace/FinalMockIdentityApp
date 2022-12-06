@@ -2,7 +2,15 @@
 {
     public class ThreadCommentViewModel
     {
-        public MessageBoardResponse? MessageBoardResponse { get; set; }
-        public IEnumerable<ReplyToMessageBoardResponse>? RepliesToMessageBoardResponse { get; set; }
+        public ThreadCommentViewModel()
+        {
+            RepliesToMessageBoardResponses = new List<ThreadCommentViewModelHelper>();
+        }
+
+        public int MessageBoardResponseId { get; set; }
+        public string OriginalAuthorResponse { get; set; }
+        public DateTime OriginalAuthorResponseDateTime { get; set; }
+        public string OriginalAuthorName { get; set; }
+        public List<ThreadCommentViewModelHelper> RepliesToMessageBoardResponses { get; set; }
     }
 }

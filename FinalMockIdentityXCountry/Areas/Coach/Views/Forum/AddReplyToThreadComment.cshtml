@@ -3,16 +3,17 @@
 
 <div class="container mx-auto">
     <div>
-        <p>Reply to: @Model.MessageBoardResponse.Response by Author at @Model.MessageBoardResponse.ResponseDateTime</p>
+        <p>Reply to: @Model.OriginalMessageBoardResponse by @Model.OriginalMessageBoardResponseAuthorName at @Model.OriginalMessageBoardResponseDateTime</p>
         <br />
         <br />
     </div>
 
     <form method="post">
-        <label asp-for="@Model.NewReplyToMessageBoardResponse.Reply" class="form-label" for="threadReply">Your Response: </label>
-        <input asp-for="@Model.NewReplyToMessageBoardResponse.Reply" class="form-control" id="threadReply" />
-        <input type="hidden" asp-for="@Model.NewReplyToMessageBoardResponse.MessageBoardResponseId" />
-        <input type="hidden" asp-for="@Model.NewReplyToMessageBoardResponse.ReplyerId" />
+        <label asp-for="@Model.NewReplyToMessageBoardResponse" class="form-label" for="threadReply">Your Response: </label>
+        <input asp-for="@Model.NewReplyToMessageBoardResponse" class="form-control" id="threadReply" />
+        <span asp-validation-for="@Model.NewReplyToMessageBoardResponse" class="text-danger"></span>
+        <input type="hidden" asp-for="@Model.OriginalMessageBoardResponseId" />
+        <input type="hidden" asp-for="@Model.NewReplyerId" />
         <br />
         <a asp-action="Home" class="btn btn-danger">Cancel</a>
         <button type="submit" class="btn btn-primary">Add Reply</button>

@@ -15,23 +15,26 @@
         <br>
         <div class="">
             <section>
-        @foreach(var thread in Model)
-        {
-            <br />
-            <br />
-            <br />
-            <div>
-                <h5>@thread.MessageTitle</h5>
-                <p>@thread.MessageBody</p>
-                <p style="font-weight: lighter;">Created on @thread.PublishedDateTime</p>
-                <br>
+                @if (Model != null && Model.Count > 0)
+                {
+                    @foreach(var thread in Model)
+                    {
+                        <br />
+                        <br />
+                        <br />
+                        <div>
+                            <h5>@thread.MessageTitle</h5>
+                            <p>@thread.MessageBody</p>
+                            <p style="font-weight: lighter;">Created on @thread.PublishedDateTime</p>
+                            <br>
                 
-                <a class="btn btn-primary" asp-action="ViewThread" asp-route-messageBoardId="@thread.Id">View Thread</a>
-                <a class="btn btn-danger float-end" asp-action="DeleteThread" asp-route-messageBoardId="@thread.Id">Delete Thread</a>
-            </div>
-            <hr />
-            <br />
-            }
+                            <a class="btn btn-primary" asp-action="ViewThread" asp-route-messageBoardId="@thread.Id">View Thread</a>
+                            <a class="btn btn-danger float-end" asp-action="DeleteThread" asp-route-messageBoardId="@thread.Id">Delete Thread</a>
+                        </div>
+                        <hr />
+                        <br />
+                    }
+                }
             </section>
         </div>
         

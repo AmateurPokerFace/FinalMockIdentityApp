@@ -5,23 +5,23 @@
     <div>
         <h3>Add a reply.</h3>
         <br />
-        <p>Author said: @Model.MessageBoardResponse.Response </p>
-        <p style="font-weight: lighter;">@Model.MessageBoardResponse.ResponseDateTime</p>
+        <p>@Model.OriginalAuthorName said: @Model.OriginalAuthorResponse </p>
+        <p style="font-weight: lighter;">@Model.OriginalAuthorResponseDateTime</p>
         <br />
-        <a asp-action="AddReplyToThreadComment" asp-route-messageBoardResponseId="@Model.MessageBoardResponse.Id" class="btn btn-primary">Reply</a>
+        <a asp-action="AddReplyToThreadComment" asp-route-messageBoardResponseId="@Model.MessageBoardResponseId" class="btn btn-primary">Reply</a>
     </div>
 
 
-    @if (Model.RepliesToMessageBoardResponse.Count() > 0)
+    @if (Model.RepliesToMessageBoardResponses != null && Model.RepliesToMessageBoardResponses.Count() > 0)
     {
-        foreach (var reply in Model.RepliesToMessageBoardResponse)
+        foreach (var reply in Model.RepliesToMessageBoardResponses)
         {
             <div> 
                 <br>
-                <p>@reply.Reply</p>
+                <p>@reply.ReplyerName replied: @reply.ReplyToMessageBoardResponse</p>
                 <p style="font-weight: lighter;">@reply.ReplyDateTime</p>
                 <br>
-                <a asp-action="DeleteThreadReply" asp-route-replyToMessageBoardResponseId="@reply.Id" class="btn btn-danger">Delete Reply</a>
+                <a asp-action="DeleteThreadReply" asp-route-replyToMessageBoardResponseId="@reply.ReplyToMessageBoardResponseId" class="btn btn-danger">Delete Reply</a>
             </div>
             <hr />
         }
