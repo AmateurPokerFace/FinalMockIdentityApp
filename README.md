@@ -30,8 +30,8 @@ Runners can access three main areas of the application:
 Runner accounts can comment on threads and reply to other comments, but may not create or delete threads.   
 ### Practices
 The Practices tab contains two options: My Practices and My Workouts.  
- - The My Practices page displays all of the practices that are currently in progress or scheduled for a future date / time. The Runner has the option to join an open practice, then sign out of a practice once the practice is complete.  
- - The My Workouts page displays the practices that the Runner is signed into, that also have workouts assign to them by a Coach or Admin. Once their workout is assigned, the Runner can enter their run data for that workout.  
+ - The My Practices page displays all of the practices that are currently in progress or scheduled for a future date / time. The Runner has the option to join an open practice, then sign out of a practice once they are finished with practice.  
+ - The My Workouts page displays the practices that the Runner is signed into, that also have workouts assigned to them by a Coach or Admin. Once their workout is assigned, the Runner can enter their run data for that workout.  
     - To enter your run data, click the Log Data button in the row of the practice you want to record data for. You will be taken to a page with input fields for the distance you ran and your run time in the format of hours, minutes, seconds.  
     - You can also edit your data after you log it, but only until while the practice is in session. If a Coach or Admin closes the practice, you will not be able to change your data.  
 ## Calculators  
