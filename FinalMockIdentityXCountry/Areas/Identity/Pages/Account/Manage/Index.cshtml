@@ -5,7 +5,8 @@
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
-<div class="container mx-auto">
+@*Microsoft provided code*@
+@*<div class="container mx-auto">
     <h3>@ViewData["Title"]</h3>
     <partial name="_StatusMessage" for="StatusMessage" />
     <div class="row">
@@ -28,6 +29,12 @@
             </form>
         </div>
     </div>
+</div>*@
+
+<h4>Your personal information</h4>
+<div class="form-floating">
+    <input asp-for="Username" class="form-control" disabled />
+    <label asp-for="Username" class="form-label"></label>
 </div>
 
 @section Scripts {
