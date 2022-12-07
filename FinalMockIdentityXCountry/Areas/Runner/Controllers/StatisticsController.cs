@@ -34,8 +34,8 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
         {
             // query workoutinformation for this user.
             // If the count == 0: redirect to Index page. User has no statistical data.
-            var userClaimsIdentity = (ClaimsIdentity)User.Identity;
-            var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userClaimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userClaim = userClaimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
 
             CurrentPracticesViewModel currentPracticesViewModel = new CurrentPracticesViewModel();
@@ -43,6 +43,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
             if (userClaim != null)
             {
                 WorkoutInformation workoutInformation = _context.WorkoutInformation.FirstOrDefault(r => r.RunnerId == userClaim.Value);
+
                 if (workoutInformation == null)
                 {
                     TempData["error"] = "You do not have any statistical workout data to query.";
@@ -70,19 +71,13 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                 return RedirectToAction("SelectRangeForStatistics");
             }
 
-            if (selectRangeForStatisticsViewModel.InitialDate == null && selectRangeForStatisticsViewModel.SelectedQueryFilter.ToLower() != "all time") 
-            {
-                TempData["error"] = "Select a date before attempting to query";
-                return RedirectToAction("SelectRangeForStatistics");
-            }
-
             if (selectRangeForStatisticsViewModel.SelectedQueryFilter != null)
             {
                 DateTime dateFromSelectedFilter = DateTime.Now;
                 bool dateRangeSelected = true;
 
-                var userClaimsIdentity = (ClaimsIdentity)User.Identity;
-                var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                var userClaimsIdentity = (ClaimsIdentity?)User.Identity;
+                var userClaim = userClaimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
                 if (userClaim == null) 
                 {
                     TempData["error"] = "User not found";
@@ -134,6 +129,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                     {
                         List<WorkoutStatisticsViewModel> workoutStatisticsViewModels = new List<WorkoutStatisticsViewModel>();
                         WorkoutStatisticsViewModel model = new WorkoutStatisticsViewModel();
+                        model.SelectedDateFilter = selectRangeForStatisticsViewModel.SelectedQueryFilter;
 
                         foreach (var dbQuery in dbQueries.OrderByDescending(p => p.PracticeStartTimeAndDate))
                         {
@@ -150,21 +146,10 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                             if (modelHelper != null)
                             {
-
-                                //modelHelper.PaceDisplayString = modelHelper.Pace.Item1 < 10
-                                //                            ? $"00:0{modelHelper.Pace.Item1}:"
-                                //                            : $"00:{modelHelper.Pace.Item1}:"; // this needs to be fixed to avoid ts error
-
-
                                 TimeSpan testTimeSpan = TimeSpan.FromMinutes(modelHelper.Pace.Item1);
                                 testTimeSpan += TimeSpan.FromSeconds(modelHelper.Pace.Item2);
 
                                 modelHelper.PaceDisplayString = testTimeSpan.ToString();
-
-
-                                                            //modelHelper.PaceDisplayString += modelHelper.Pace.Item2 < 10
-                                                            //? $"0{modelHelper.Pace.Item2}"
-                                                            //: $"{modelHelper.Pace.Item2}"; // this also needs to be fixed to avoid ts error
 
                                 model.WorkoutStatisticsViewModelHelpers?.Add(modelHelper);
                             }
@@ -174,6 +159,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                         TimeSpan fastestPaceTimeSpan = TimeSpan.Parse("00:00:00");
                         TimeSpan ts;
                         double longestDistance = 0;
+                        List<double> recordedDistances = new List<double>();
                         model.AveragePace = TimeSpan.Parse("00:00:00");
 
                         List<TimeSpan> paceTimeSpanList = new List<TimeSpan>(); // will be used to compute the average pace time 
@@ -182,37 +168,48 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                         {
                             foreach (var vmHelper in model.WorkoutStatisticsViewModelHelpers)
                             {
-                                ts = TimeSpan.Parse(vmHelper.PaceDisplayString);
-                                paceTimeSpanList.Add(ts);
-
-                                if (ts.CompareTo(fastestPaceTimeSpan) == 1)
+                                if (vmHelper.PaceDisplayString != null)
                                 {
-                                    fastestPaceTimeSpan = ts;
-                                }
-                                if (vmHelper.Distance > longestDistance)
-                                {
-                                    longestDistance = vmHelper.Distance;
-                                }
-                                ts = TimeSpan.Parse(vmHelper.PaceDisplayString);
+                                    ts = TimeSpan.Parse(vmHelper.PaceDisplayString);
+                                    paceTimeSpanList.Add(ts);
+                                    recordedDistances.Add(vmHelper.Distance);
+                                    ts = TimeSpan.Parse(vmHelper.PaceDisplayString);
+                                } 
                             }
 
-                            if (model.WorkoutStatisticsViewModelHelpers != null && model.WorkoutStatisticsViewModelHelpers.Count > 0)
+                            
+                            if (paceTimeSpanList != null && paceTimeSpanList.Count > 0)
                             {
                                 double doubleAverageTicks = paceTimeSpanList.Average(TimeSpan => TimeSpan.Ticks);
-                                long longAverageTicks = Convert.ToInt64(doubleAverageTicks); 
+                                long longAverageTicks = Convert.ToInt64(doubleAverageTicks);
                                 model.AveragePace = new TimeSpan(longAverageTicks);
-                                
+
                                 model.AveragePace = RoundTimeSpanSeconds.RoundSeconds(model.AveragePace);
-                            } 
+
+                                fastestPaceTimeSpan = paceTimeSpanList.Where(x => x.TotalSeconds > 0).Min();
+                                model.FastestPace = RoundTimeSpanSeconds.RoundSeconds(fastestPaceTimeSpan);
+                            }
+                            else
+                            {
+                                model.FastestPace = TimeSpan.Parse("00:00:00");
+                            }
+
+                            if (recordedDistances != null && recordedDistances.Count > 0)
+                            {
+                                model.LongestDistance = recordedDistances.Max();
+                            }
+                            else
+                            {
+                                model.LongestDistance = longestDistance;
+                            }
+                            return View(model);
                         }
-
-                        model.FastestPace = RoundTimeSpanSeconds.RoundSeconds(fastestPaceTimeSpan);
-                        model.LongestDistance = longestDistance;
-
-                        return View(model);
+                        else
+                        {
+                            TempData["error"] = "The database search returned no results.";
+                            return RedirectToAction("Index");
+                        }
                     }
-
-                    
                 }
                 else
                 {
@@ -237,10 +234,10 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                     {
                         List<WorkoutStatisticsViewModel> workoutStatisticsViewModels = new List<WorkoutStatisticsViewModel>();
                         WorkoutStatisticsViewModel model = new WorkoutStatisticsViewModel();
+                        model.SelectedDateFilter = selectRangeForStatisticsViewModel.SelectedQueryFilter;
 
                         foreach (var dbQuery in dbQueries.OrderByDescending(p => p.PracticeStartTimeAndDate))
                         {
-
                             WorkoutStatisticsViewModelHelper modelHelper = new WorkoutStatisticsViewModelHelper
                             {
                                 Distance = dbQuery.Distance,
@@ -253,14 +250,10 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                             if (modelHelper != null)
                             {
-                                modelHelper.PaceDisplayString = modelHelper.Pace.Item1 < 10
-                                                            ? $"00:0{modelHelper.Pace.Item1}:"
-                                                            : $"00:{modelHelper.Pace.Item1}:";
+                                TimeSpan testTimeSpan = TimeSpan.FromMinutes(modelHelper.Pace.Item1);
+                                testTimeSpan += TimeSpan.FromSeconds(modelHelper.Pace.Item2);
 
-
-                                modelHelper.PaceDisplayString += modelHelper.Pace.Item2 < 10
-                                ? $"0{modelHelper.Pace.Item2}"
-                                : $"{modelHelper.Pace.Item2}";
+                                modelHelper.PaceDisplayString = testTimeSpan.ToString();
 
                                 model.WorkoutStatisticsViewModelHelpers?.Add(modelHelper);
                             }
@@ -270,6 +263,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                         TimeSpan fastestPaceTimeSpan = TimeSpan.Parse("00:00:00");
                         TimeSpan ts;
                         double longestDistance = 0;
+                        List<double> recordedDistances = new List<double>();
                         model.AveragePace = TimeSpan.Parse("00:00:00");
 
                         List<TimeSpan> paceTimeSpanList = new List<TimeSpan>(); // will be used to compute the average pace time 
@@ -278,34 +272,46 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                         {
                             foreach (var vmHelper in model.WorkoutStatisticsViewModelHelpers)
                             {
-                                ts = TimeSpan.Parse(vmHelper.PaceDisplayString);
-                                paceTimeSpanList.Add(ts);
-
-                                if (ts.CompareTo(fastestPaceTimeSpan) == 1)
+                                if (vmHelper.PaceDisplayString != null)
                                 {
-                                    fastestPaceTimeSpan = ts;
+                                    ts = TimeSpan.Parse(vmHelper.PaceDisplayString);
+                                    paceTimeSpanList.Add(ts);
+                                    recordedDistances.Add(vmHelper.Distance);
+                                    ts = TimeSpan.Parse(vmHelper.PaceDisplayString);
                                 }
-                                if (vmHelper.Distance > longestDistance)
-                                {
-                                    longestDistance = vmHelper.Distance;
-                                }
-                                ts = TimeSpan.Parse(vmHelper.PaceDisplayString);
                             }
 
-                            if (model.WorkoutStatisticsViewModelHelpers != null && model.WorkoutStatisticsViewModelHelpers.Count > 0)
+                            if (paceTimeSpanList != null && paceTimeSpanList.Count > 0)
                             {
                                 double doubleAverageTicks = paceTimeSpanList.Average(TimeSpan => TimeSpan.Ticks);
                                 long longAverageTicks = Convert.ToInt64(doubleAverageTicks);
                                 model.AveragePace = new TimeSpan(longAverageTicks);
 
                                 model.AveragePace = RoundTimeSpanSeconds.RoundSeconds(model.AveragePace);
+
+                                fastestPaceTimeSpan = paceTimeSpanList.Where(x => x.TotalSeconds > 0).Min();
+                                model.FastestPace = RoundTimeSpanSeconds.RoundSeconds(fastestPaceTimeSpan);
                             }
+                            else
+                            {
+                                model.FastestPace = TimeSpan.Parse("00:00:00");
+                            }
+
+                            if (recordedDistances != null && recordedDistances.Count > 0)
+                            {
+                                model.LongestDistance = recordedDistances.Max();
+                            }
+                            else
+                            {
+                                model.LongestDistance = longestDistance;
+                            }
+                            return View(model);
                         }
-
-                        model.FastestPace = RoundTimeSpanSeconds.RoundSeconds(fastestPaceTimeSpan);
-                        model.LongestDistance = longestDistance;
-
-                        return View(model);
+                        else
+                        {
+                            TempData["error"] = "The database search returned no results.";
+                            return RedirectToAction("Index");
+                        }
                     }
 
                 }

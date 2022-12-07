@@ -3,6 +3,10 @@
 
 @if(Model.WorkoutStatisticsViewModelHelpers != null && Model.WorkoutStatisticsViewModelHelpers.Count > 0)
 {
+    <div class="alert alert-secondary" role="alert">
+        Selected date filter: @Model.SelectedDateFilter
+    </div>
+
     <table class="table">
         <thead>
             <tr>
