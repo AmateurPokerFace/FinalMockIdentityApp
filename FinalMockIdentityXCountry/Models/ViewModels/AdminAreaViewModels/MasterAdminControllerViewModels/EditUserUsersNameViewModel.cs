@@ -1,11 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels.MasterAdminControllerViewModels
 {
     public class EditUserUsersNameViewModel
     {
-        public string? UserName { get; set; }
-        public string? UserId { get; set; }
+        
+        [RegularExpression(@"^[a-zA-Z''-'\s]{1,40}$",
+         ErrorMessage = "Characters are not allowed.")]
+        public string UserName { get; set; }
+        [Required]
+        public string UserId { get; set; }
         [ValidateNever]
         public string? OldUserName { get; set; }
     }

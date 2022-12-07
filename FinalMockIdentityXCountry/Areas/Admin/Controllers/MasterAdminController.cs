@@ -51,6 +51,13 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
 
             ApplicationUser adminUser = _context.ApplicationUsers.Find(_userManager.GetUserId(User));
 
+
+            if (adminUser == null)
+            {
+                TempData["error"] = "An error occured. You were not found in the database. Please contact an administrator for more assistance.";
+                return RedirectToAction("Index");
+            }
+
             masterAdminPanelViewModel.MasterAdminPanelRole = _userManager.IsInRoleAsync(adminUser, StaticDetails.Role_Master_Admin).Result == true ? StaticDetails.Role_Master_Admin : StaticDetails.Role_Coach;
 
             foreach (var dbQuery in dbQueries)
@@ -232,9 +239,11 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult EditUsersName(EditUsersNameViewModel editUserViewModel) 
         {
+            ApplicationUser applicationUser;
+
             if (ModelState.IsValid)
             {
-                ApplicationUser applicationUser = _context.ApplicationUsers.Find(editUserViewModel.UserId);
+                applicationUser = _context.ApplicationUsers.Find(editUserViewModel.UserId);
                 if (applicationUser == null)
                 {
                     TempData["error"] = "Invalid User Provided";
@@ -252,8 +261,20 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                 return RedirectToAction(nameof(MasterAdminPanel));
             }
 
-            TempData["error"] = "Invalid User Provided";
-            return RedirectToAction("Index");
+            TempData["error"] = "Invalid Data Provided";
+
+            applicationUser = _context.ApplicationUsers.Find(editUserViewModel.UserId);
+            if (applicationUser == null)
+            {
+                TempData["error"] = "Invalid User Provided";
+                return RedirectToAction("Index");
+            }
+
+            editUserViewModel.FirstName = applicationUser.FirstName == null ? " " : applicationUser.FirstName;
+            editUserViewModel.LastName = applicationUser.LastName == null ? " " : applicationUser.LastName;
+            editUserViewModel.OldName = $"{(applicationUser.FirstName == null ? " " : applicationUser.FirstName)} {(applicationUser.LastName == null ? " " : applicationUser.LastName)}";
+
+            return View(editUserViewModel);
         }
 
         public IActionResult EditUserUsersName(string userId) 
