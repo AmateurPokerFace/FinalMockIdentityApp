@@ -25,33 +25,21 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     
                     <ul class="navbar-nav nav-tabs flex-grow-1">
-                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin") || User.IsInRole("Coach"))
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin"))
                         {
-                            @*<div class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Admin
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                                    <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Admin Panel</a>
-                                    </li>
-                                    @*<li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Coach" asp-action="CoachAdminPanel">Coach Admin Panel</a>
-                                    </li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="AdminPanel">Admin Panel</a>
-                                    </li>*@
-                                    @*li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="WaitingForApprovalList">Approve New Users</a>
-                                    </*li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="RejectUsers">Reject New Users</a>
-                                    </li>
-                                </ul>
-                            </div>*@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Admin</a>
                             </li>
+                        }
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Coach"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="Coach" asp-action="CoachAdminPanel">Admin</a>
+                            </li>
+                        }
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin") || User.IsInRole("Coach"))
+                        {
+                            
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Coach" asp-controller="Forum" asp-action="Home">Forums</a>
                             </li>
@@ -65,12 +53,6 @@
                                     </li>
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Coach" asp-controller="Data" asp-action="RunnerPracticeWorkoutData">Runner Data</a>
-                                    </li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Coach" >Statistics</a>
-                                    </li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Coach">Data Exportation</a>
                                     </li>
                                 </ul>
                             </div>
@@ -93,6 +75,9 @@
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Coach" asp-controller="PracticeHistory" asp-action="History">Practice History</a>
                                     </li>
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Coach" asp-controller="AthleteHistory" asp-action="All">Athlete Practice History</a>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="nav-item dropdown">
@@ -105,9 +90,6 @@
                                     </li>
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Coach" asp-controller="Workouts" asp-action="CurrentWorkouts">Edit Workout Types</a>
-                                    </li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Coach" asp-controller="AthleteHistory" asp-action="All">Athlete Workout History</a>
                                     </li>
                                 </ul>
                             </div>
@@ -144,6 +126,9 @@
                                     </li>
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Runner" asp-controller="LogWorkoutData" asp-action="SelectAPractice">My Workouts</a>
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Runner" asp-controller="Statistics" asp-action="SelectRangeForStatistics">My Statistics</a>
                                     </li>
                                 </ul>
                             </div>

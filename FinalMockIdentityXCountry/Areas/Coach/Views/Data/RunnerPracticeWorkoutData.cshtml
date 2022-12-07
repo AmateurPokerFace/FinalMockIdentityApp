@@ -7,12 +7,12 @@
         <table class="table">
             <thead>
                 <tr>
-                    <td scope="col">Runner</td>
-                    <td scope="col"></td>
+                    <th scope="col">Runner</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
-                @if (Model.RunnerUsers != null && Model.RunnerUsers.Count() > 0)
+                @if (Model.RunnerUsers.Count() > 0)
                 {
                     @foreach (var runner in Model.RunnerUsers)
                     {
