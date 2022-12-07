@@ -4,6 +4,7 @@
 <div class="container mx-auto">
     <h3>Edit Username for @Model.OldUserName</h3>
     <form method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
         <div class="input-group">
             <span class="input-group-text">Edit Username</span>
             <input asp-for="UserName" class="form-control" required/>

@@ -5,9 +5,12 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels.Master
 {
     public class EditUserUsersNameViewModel
     {
-        
-        [RegularExpression(@"^[a-zA-Z''-'\s]{1,40}$",
-         ErrorMessage = "Characters are not allowed.")]
+
+        [Required]
+        //[RegularExpression(@"^[a-zA-Z0-9_'\s]{1,40}$",
+        [RegularExpression(@"([a-zA-Z\d]+[\w\d]*|)[a-zA-Z]+[\w\d.]*",
+            ErrorMessage = "The Username field only accepts letters, numbers, and underscores and must start with a letter.")]
+        [StringLength(40, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 4)]
         public string UserName { get; set; }
         [Required]
         public string UserId { get; set; }

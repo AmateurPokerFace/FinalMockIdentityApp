@@ -86,6 +86,8 @@ namespace FinalMockIdentityXCountry.Areas.Identity.Pages.Account
             //[Display(Name = "Email")]
             //public string Email { get; set; }
             [Required]
+            [RegularExpression(@"([a-zA-Z\d]+[\w\d]*|)[a-zA-Z]+[\w\d.]*",
+            ErrorMessage = "The Username field only accepts letters, numbers, and underscores and must start with a letter.")]
             [StringLength(40, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 4)]
             [Display(Name = "UserName")]
             public string UserName { get; set; }
@@ -95,7 +97,7 @@ namespace FinalMockIdentityXCountry.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Password")]
             public string Password { get; set; }

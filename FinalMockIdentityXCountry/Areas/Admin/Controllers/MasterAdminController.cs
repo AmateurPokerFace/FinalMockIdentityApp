@@ -319,13 +319,25 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult EditUserUsersName(EditUserUsersNameViewModel editUserUsersNameViewModel)
         {
+            ApplicationUser applicationUser;
+
             if (ModelState.IsValid && editUserUsersNameViewModel.UserName != null)
             {
-                ApplicationUser applicationUser = _context.ApplicationUsers.Find(editUserUsersNameViewModel.UserId);
+
+                applicationUser = _context.ApplicationUsers.Find(editUserUsersNameViewModel.UserId);
                 if (applicationUser == null)
                 {
                     TempData["error"] = "Invalid User Provided.";
                     return RedirectToAction("Index");
+                }
+
+                var userNameAlreadyExistsInDb = _context.ApplicationUsers.Any(x => x.UserName == editUserUsersNameViewModel.UserName);
+                if (userNameAlreadyExistsInDb)
+                {
+                    TempData["error"] = "Duplicate username found";
+                    ModelState.AddModelError("UserName", $"A user already exists with the provided username {editUserUsersNameViewModel.UserName}. Please enter a different username");
+                    editUserUsersNameViewModel.OldUserName = applicationUser.UserName;
+                    return View(editUserUsersNameViewModel);
                 }
 
                 applicationUser.UserName = editUserUsersNameViewModel.UserName;
@@ -339,8 +351,18 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                 return RedirectToAction(nameof(MasterAdminPanel));
             }
 
-            TempData["error"] = "Invalid User Provided.";
-            return RedirectToAction(nameof(MasterAdminPanel));
+            TempData["error"] = "Invalid data provided.";
+            applicationUser = _context.ApplicationUsers.Find(editUserUsersNameViewModel.UserId);
+            if (applicationUser == null)
+            {
+                TempData["error"] = "Invalid User Provided.";
+                return RedirectToAction("Index");
+            }
+
+            editUserUsersNameViewModel.OldUserName = applicationUser.UserName;
+            editUserUsersNameViewModel.UserName = applicationUser.UserName; 
+
+            return View(editUserUsersNameViewModel); 
         }
 
 
@@ -391,20 +413,21 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                 return RedirectToAction(nameof(MasterAdminPanel));
             }
 
-            if (changeUserPasswordViewModel.NewPassword == null)
+            if (ModelState.IsValid)
             {
-                TempData["error"] = "Invalid password provided";
+                var newPassword = _userManager.PasswordHasher.HashPassword(user, changeUserPasswordViewModel.NewPassword);
+                user.PasswordHash = newPassword;
+
+                _context.ApplicationUsers.Update(user);
+                _context.SaveChanges();
+
+                TempData["success"] = "Password updated successfully";
                 return RedirectToAction(nameof(MasterAdminPanel));
             }
 
-            var newPassword = _userManager.PasswordHasher.HashPassword(user, changeUserPasswordViewModel.NewPassword);
-            user.PasswordHash = newPassword;
+            changeUserPasswordViewModel.UsersName = $"{user.FirstName} {user.LastName}";
 
-            _context.ApplicationUsers.Update(user);
-            _context.SaveChanges();
-
-            TempData["success"] = "Password updated successfully";
-            return RedirectToAction(nameof(MasterAdminPanel));
+            return View(changeUserPasswordViewModel);
         }
 
         public IActionResult DeleteUser(string userId) 
@@ -453,26 +476,40 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                 return RedirectToAction(nameof(MasterAdminPanel));
             }
 
-            var user = await _userManager.FindByIdAsync(deleteUserViewModel.UserId);
-            if (user == null)
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(deleteUserViewModel.UserId);
+                if (user == null)
+                {
+                    TempData["error"] = "Invalid User Provided.";
+                    return RedirectToAction(nameof(MasterAdminPanel));
+                }
+                else
+                {
+                    var result = await _userManager.DeleteAsync(user);
+
+                    if (result.Succeeded)
+                    {
+                        TempData["success"] = $"The user {deleteUserViewModel.UsersName} was deleted from the database successfully";
+                        return RedirectToAction(nameof(MasterAdminPanel));
+                    }
+
+                    TempData["error"] = $"An error occured during the delete process. The user {deleteUserViewModel.UsersName} was not deleted from the database successfully";
+                    return RedirectToAction(nameof(MasterAdminPanel));
+                }
+            }
+
+            ApplicationUser invalidUser = (ApplicationUser)await _userManager.FindByIdAsync(deleteUserViewModel.UserId);
+            if (invalidUser == null)
             {
                 TempData["error"] = "Invalid User Provided.";
                 return RedirectToAction(nameof(MasterAdminPanel));
             }
-            else
-            {
-                var result = await _userManager.DeleteAsync(user);
 
-                if (result.Succeeded)
-                {
-                    TempData["success"] = $"The user {deleteUserViewModel.UsersName} was deleted from the database successfully";
-                    return RedirectToAction(nameof(MasterAdminPanel));
-                }
+            deleteUserViewModel.UsersName = $"{invalidUser.FirstName} {invalidUser.LastName}";
 
-                TempData["error"] = $"An error occured during the delete process. The user {deleteUserViewModel.UsersName} was not deleted from the database successfully";
-                return RedirectToAction(nameof(MasterAdminPanel));
-            }
-            
+            TempData["error"] = "Invalid user provided.";
+            return RedirectToAction(nameof(MasterAdminPanel));
         }
 
     }
