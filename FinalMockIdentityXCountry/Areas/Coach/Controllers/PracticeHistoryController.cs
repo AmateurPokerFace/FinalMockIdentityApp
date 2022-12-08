@@ -229,14 +229,16 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (dbQueries.Count() < 1)
             {
-                return RedirectToAction(); // send to a page that states the runner has no practice history in the future
+                TempData["error"] = "The selected runner has no practice history";
+                return RedirectToAction("Index"); // send to a page that states the runner has no practice history in the future
             }
 
             int practiceId = dbQueries.FirstOrDefault().PracticeId;
 
             if (practiceId == null)
             {
-                return RedirectToAction(); // send to an invalid practice id page (null value)
+                TempData["error"] = "Invalid practice id provided";
+                return RedirectToAction("Index"); // send to an invalid practice id page (null value)
             }
 
             bool multipleLoops = false; // will be used to add the last object instance to the selectedViewModels List
@@ -272,7 +274,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 return View(selectedRunnerHistoryViewModels);
             }
 
-            return RedirectToAction(); // send to an error page in the future
+            TempData["error"] = "No data found";
+            return RedirectToAction("Index"); // send to an error page in the future
         }
     }
 }
