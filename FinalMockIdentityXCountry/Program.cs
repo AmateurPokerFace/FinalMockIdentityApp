@@ -30,7 +30,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = $"/Identity/Account/Logout";
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
+
 var app = builder.Build();
+Configure(app);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -53,3 +55,29 @@ app.MapControllerRoute(
     pattern: "{area=Welcome}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+
+void Configure(WebApplication host)
+{
+    using var scope = host.Services.CreateScope();
+    var services = scope.ServiceProvider;
+
+    try
+    {
+        var dbContext = services.GetRequiredService<XCountryDbContext>();
+
+        if (dbContext.Database.IsMySql())
+        {
+            dbContext.Database.Migrate();
+        }
+
+        var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        XCountryDbContext.SeedData(userManager, roleManager);
+    }
+    catch (Exception ex)
+    {
+        //Log some error
+        throw;
+    }
+}
