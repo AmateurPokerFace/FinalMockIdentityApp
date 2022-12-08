@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels.MasterAdminControllerViewModels
@@ -6,10 +7,18 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels.Master
     public class ChangeUserPasswordViewModel
     {
         [ValidateNever]
-        public string? UsersName { get; set; }
-        public string? UserId { get; set; }
+        public string UsersName { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+
+        [Required]
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        public string? NewPassword { get; set; }
-        public string? UserRole { get; set; }
+        [DisplayName("New Password")]
+        public string NewPassword { get; set; }
+
+        [ValidateNever]
+        public string UserRole { get; set; }
     }
 }

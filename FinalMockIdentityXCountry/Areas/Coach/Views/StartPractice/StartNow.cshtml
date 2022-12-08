@@ -6,7 +6,7 @@
 <form method="post" class="form-control">
     <div>
         <label asp-for="PracticeLocation" class="form-label">Practice Location</label>
-        <input asp-for="PracticeLocation" class="form-control">
+        <input asp-for="PracticeLocation" class="form-control" required>
         <span asp-validation-for="PracticeLocation" class="text-danger"></span>
     </div>
     @if (Model.SelectedStartNowCheckBoxOptions != null && Model.SelectedStartNowCheckBoxOptions.Count > 0)

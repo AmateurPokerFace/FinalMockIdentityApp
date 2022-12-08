@@ -20,8 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Banned\Controllers\" />
-    <Folder Include="Areas\Unapproved\Controllers\" />
     <Folder Include="Models\ViewModels\BannedAreaViewModels\" />
     <Folder Include="Models\ViewModels\WelcomeAreaViewModels\" />
     <Folder Include="Models\ViewModels\UnapprovedAreaViewModels\" />

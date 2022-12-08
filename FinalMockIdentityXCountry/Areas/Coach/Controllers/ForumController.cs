@@ -307,7 +307,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                                      select new
                                                      {
                                                          m.Response,
-                                                         m.MessageBoardId,
+                                                         m.Id,
                                                          m.ResponseDateTime,
                                                          aspnetusers.FirstName,
                                                          aspnetusers.LastName
@@ -323,7 +323,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             ThreadCommentViewModel threadCommentViewModel = new ThreadCommentViewModel 
             {
                 OriginalAuthorResponse = originalMessageBoardResponseQuery.Response,
-                MessageBoardResponseId = originalMessageBoardResponseQuery.MessageBoardId,
+                MessageBoardResponseId = originalMessageBoardResponseQuery.Id,
                 OriginalAuthorResponseDateTime = originalMessageBoardResponseQuery.ResponseDateTime,
                 OriginalAuthorName = $"{originalMessageBoardResponseQuery.FirstName} {originalMessageBoardResponseQuery.LastName}"
             };

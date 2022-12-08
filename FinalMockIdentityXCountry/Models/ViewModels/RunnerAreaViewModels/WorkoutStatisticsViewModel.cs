@@ -11,7 +11,7 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
             WorkoutStatisticsViewModelHelpers = new List<WorkoutStatisticsViewModelHelper>();
         }
 
-        
+        public string SelectedDateFilter { get; set; }
         public TimeSpan AveragePace { get; set; }
         public TimeSpan FastestPace { get; set; }
         public double LongestDistance { get; set; }
