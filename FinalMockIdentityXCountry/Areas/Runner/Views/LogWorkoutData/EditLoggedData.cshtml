@@ -12,14 +12,14 @@
         <br />
         <div class="input-group">
             <span class="input-group-text">Distance (in miles):</span>
-            <input asp-for="@Model.Distance" class="form-control" aria-label="distance" />
+            <input asp-for="@Model.Distance" class="form-control" aria-label="distance" required/>
         </div>
         <br />
         <div class="input-group">
             <span class="input-group-text">Time (Hours:Minutes:Seconds)</span>
-            <input asp-for="@Model.Hours" class="form-control" aria-label="hours" />
-            <input asp-for="@Model.Minutes" class="form-control" aria-label="minutes" />
-            <input asp-for="@Model.Seconds" class="form-control" aria-label="seconds" />
+            <input asp-for="@Model.Hours" class="form-control" aria-label="hours" required />
+            <input asp-for="@Model.Minutes" class="form-control" aria-label="minutes" required />
+            <input asp-for="@Model.Seconds" class="form-control" aria-label="seconds" required />
         </div>
         <input type="hidden" asp-for="@Model.WorkoutInformationId" />
         <input type="hidden" asp-for="@Model.PracticeId" />
