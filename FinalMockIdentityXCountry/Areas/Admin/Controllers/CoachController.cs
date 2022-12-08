@@ -101,7 +101,7 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
             if (dbQuery == null)
             {
                 TempData["error"] = "Invalid user provided.";
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(CoachAdminPanel));
             }
 
             ChangeUserRoleViewModel changeUserRoleViewModel = new ChangeUserRoleViewModel();

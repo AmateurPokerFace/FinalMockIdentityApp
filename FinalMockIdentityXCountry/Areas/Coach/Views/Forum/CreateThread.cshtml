@@ -9,7 +9,7 @@
             <div class="input-group">
                 @*            <label asp-for="ThreadTitle" class="form-label">Title: </label>
                 *@            <span class="input-group-text">Title:</span>
-                <input asp-for="ThreadTitle" class="form-control"/>
+                <input asp-for="ThreadTitle" class="form-control" required/>
                 <span asp-validation-for="ThreadTitle" class="text-danger"></span>
 
             </div>
@@ -17,7 +17,7 @@
             <div class="input-group">
                 @*            <label asp-for="ThreadBody" class="form-label"></label>
                 *@            <span class="input-group-text">Body:</span>
-                <textarea asp-for="ThreadBody" class="form-control"></textarea>
+                <textarea asp-for="ThreadBody" class="form-control" required></textarea>
                 <span asp-validation-for="ThreadBody" class="text-danger"></span>
             </div>
             <br />

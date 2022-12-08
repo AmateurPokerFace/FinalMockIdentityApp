@@ -89,6 +89,7 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                            join aspnetroles in _context.Roles
                            on userRole.RoleId equals aspnetroles.Id
                            where userRole.UserId == userId
+                           && aspnetroles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower()
                            select new 
                            {
                                aspnetroles.Name
@@ -97,7 +98,7 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
             if (dbQuery == null)
             {
                 TempData["error"] = "Invalid user provided.";
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(MasterAdminPanel));
             }
 
             ChangeUserRoleViewModel changeUserRoleViewModel = new ChangeUserRoleViewModel();

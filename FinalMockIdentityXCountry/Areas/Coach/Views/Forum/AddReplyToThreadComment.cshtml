@@ -11,7 +11,7 @@
     </div>
     <form method="post">
         <label asp-for="@Model.NewReplyToMessageBoardResponse" class="form-label" for="threadReply">Your Response: </label>
-        <input asp-for="@Model.NewReplyToMessageBoardResponse" class="form-control" id="threadReply" />
+        <input asp-for="@Model.NewReplyToMessageBoardResponse" class="form-control" id="threadReply" required/>
         <span asp-validation-for="@Model.NewReplyToMessageBoardResponse" class="text-danger"></span>
         <input type="hidden" asp-for="@Model.OriginalMessageBoardResponseId" />
         <input type="hidden" asp-for="@Model.NewReplyerId" />
