@@ -9,5 +9,6 @@
         public string? PaceDisplayString { get; set; }
         public DateTime PracticeDate { get; set; }
         public string? PracticeLocation { get; set; }
+        public string RunnersName { get; set; }
     }
 }
