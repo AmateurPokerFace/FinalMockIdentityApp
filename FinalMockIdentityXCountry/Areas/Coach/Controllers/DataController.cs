@@ -201,7 +201,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 return View(editWorkoutDataViewModels);
             }
 
-            TempData["error"] = "There was no data found with the provided query";
+            TempData["error"] = "There was no data practice data found for the provided runner";
             return RedirectToAction("Index"); // send to an error page in the future. Check to see if an empty workoutTypes.WorkoutName adds a blank string (var dbQueries = select new ({}); line).
         }
 
@@ -237,36 +237,48 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                  w.Id
                              });
 
-            if (dbQueries.Count() > 0 )
+            if (dbQueries != null && dbQueries.Count() > 0)
             {
-                ViewDataEnteredViewModel viewDataEnteredViewModel = new ViewDataEnteredViewModel
+                if (dbQueries.FirstOrDefault() != null)
                 {
-                    PracticeId = practiceId,
-                    PracticeLocation = dbQueries.FirstOrDefault()?.PracticeLocation,
-                    PracticeStartDateTime = dbQueries.FirstOrDefault().PracticeStartTimeAndDate,
-                    RunnerId = dbQueries.FirstOrDefault()?.RunnerId,
-                    RunnerName = $"{dbQueries.FirstOrDefault()?.FirstName} {dbQueries.FirstOrDefault()?.LastName}" 
-                };
+                    ViewDataEnteredViewModel viewDataEnteredViewModel = new ViewDataEnteredViewModel
+                    {
+                        PracticeId = practiceId,
+                        PracticeLocation = dbQueries.FirstOrDefault()?.PracticeLocation, 
+                        RunnerId = dbQueries.FirstOrDefault()?.RunnerId,
+                        RunnerName = $"{dbQueries.FirstOrDefault()?.FirstName} {dbQueries.FirstOrDefault()?.LastName}"
+                    };
 
-                ViewDataEnteredViewModelHelper vmHelper = new ViewDataEnteredViewModelHelper();
+                    try
+                    {
+                        viewDataEnteredViewModel.PracticeStartDateTime = dbQueries.FirstOrDefault().PracticeStartTimeAndDate;
+                    }
+                    catch (Exception e)
+                    {
+                        TempData["error"] = "Invalid practice date query found";
+                        return RedirectToAction(nameof(Index));
+                    }
+                    ViewDataEnteredViewModelHelper vmHelper = new ViewDataEnteredViewModelHelper();
 
-                foreach (var dbQuery in dbQueries)
-                {
-                    vmHelper.Distance = dbQuery.Distance;
-                    vmHelper.Hours = dbQuery.Hours;
-                    vmHelper.Minutes = dbQuery.Minutes;
-                    vmHelper.Seconds = dbQuery.Seconds;
-                    vmHelper.WorkoutName = dbQuery.WorkoutName;
-                    vmHelper.WorkoutId = dbQuery.Id;
+                    foreach (var dbQuery in dbQueries)
+                    {
+                        vmHelper.Distance = dbQuery.Distance;
+                        vmHelper.Hours = dbQuery.Hours;
+                        vmHelper.Minutes = dbQuery.Minutes;
+                        vmHelper.Seconds = dbQuery.Seconds;
+                        vmHelper.WorkoutName = dbQuery.WorkoutName;
+                        vmHelper.WorkoutId = dbQuery.Id;
 
-                    viewDataEnteredViewModel.ViewDataEnteredViewModelHelpers?.Add(vmHelper);
+                        viewDataEnteredViewModel.ViewDataEnteredViewModelHelpers?.Add(vmHelper);
 
-                    vmHelper = new ViewDataEnteredViewModelHelper();
-                }
+                        vmHelper = new ViewDataEnteredViewModelHelper();
+                    }
 
-                return View(viewDataEnteredViewModel);
+                    return View(viewDataEnteredViewModel);
+                } 
             }
-             
+
+            TempData["error"] = "There was no data found with the provided query";
             return RedirectToAction("Index"); // send to an error page in the future
         }
 
@@ -489,12 +501,22 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 DeleteWorkoutsFromPracticeViewModel deleteWorkoutsFromPracticeViewModel = new DeleteWorkoutsFromPracticeViewModel 
                 {
                     PracticeLocation = dbQueries.FirstOrDefault()?.PracticeLocation == null ? " " : dbQueries.FirstOrDefault()?.PracticeLocation,
-                    PracticeStartDateTime = dbQueries.FirstOrDefault().PracticeStartTimeAndDate,
+                    
                     RunnerName = $"{dbQueries.FirstOrDefault()?.FirstName} {dbQueries.FirstOrDefault()?.LastName}",
-                    PracticeId = dbQueries.FirstOrDefault().PracticeId,
+                    
                     RunnerId = dbQueries.FirstOrDefault()?.RunnerId
                 };
 
+                try
+                {
+                    deleteWorkoutsFromPracticeViewModel.PracticeStartDateTime = dbQueries.FirstOrDefault().PracticeStartTimeAndDate;
+                    deleteWorkoutsFromPracticeViewModel.PracticeId = dbQueries.FirstOrDefault().PracticeId;
+                }
+                catch (Exception e)
+                {
+                    TempData["error"] = $"Invalid query data found.\n{e.Message}";
+                    return RedirectToAction(nameof(Index));
+                }
                 bool loopedOnce = false;
 
                 foreach (var dbQuery in dbQueries)
@@ -545,10 +567,11 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             if (recordFound)
             {
                 _context.SaveChanges();
-
+                TempData["success"] = "The workout(s) were deleted successfully";
                 return RedirectToAction("Index"); // send to a success page in the future
             }
 
+            TempData["error"] = "There was no records found with the provided data";
             return RedirectToAction("Index");  // send to an error page in the future (no records were found).
         }
 
@@ -733,8 +756,18 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 SelectRunnerFromPracticeViewModel selectRunnerFromPracticeViewModel = new SelectRunnerFromPracticeViewModel
                 {
                     PracticeLocation = dbQueries.FirstOrDefault()?.PracticeLocation == null ? " " : dbQueries.FirstOrDefault()?.PracticeLocation,
-                    PracticeStartTimeAndDate = dbQueries.FirstOrDefault().PracticeStartTimeAndDate
+                    
                 };
+
+                try
+                {
+                    selectRunnerFromPracticeViewModel.PracticeStartTimeAndDate = dbQueries.FirstOrDefault().PracticeStartTimeAndDate;
+                }
+                catch (ArgumentNullException)
+                {
+                    TempData["error"] = "Invalid practice date found in query";
+                    return RedirectToAction(nameof(Index));
+                }
 
                 foreach (var dbQuery in dbQueries)
                 {
@@ -753,10 +786,12 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     selectRunnerFromPracticeViewModel.SelectRunnerFromPracticeViewModelHelpers = selectRunnerFromPracticeViewModel.SelectRunnerFromPracticeViewModelHelpers.OrderByDescending(r => r.RunnerName).Reverse().ToList();
                     return View(selectRunnerFromPracticeViewModel);
                 }
-                
+
+                TempData["error"] = "There were no runners found in the provided practice";
                 return RedirectToAction("Index"); // send to an error page in the future (no runners were found in the provided practice).
             }
 
+            TempData["error"] = "There were no records found with the provided data";
             return RedirectToAction("Index"); // send to an error page in the future
         }
 
@@ -764,6 +799,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (practiceId == 0)
             {
+                TempData["error"] = "Invalid practice id provided";
                 return RedirectToAction("Index"); // send to an error page in the future
             }
 
@@ -788,8 +824,18 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 SelectRunnerFromPracticeViewModel selectRunnerFromPracticeViewModel = new SelectRunnerFromPracticeViewModel
                 {
                     PracticeLocation = dbQueries.FirstOrDefault()?.PracticeLocation == null ? " " : dbQueries.FirstOrDefault()?.PracticeLocation,
-                    PracticeStartTimeAndDate = dbQueries.FirstOrDefault().PracticeStartTimeAndDate
+                    
                 };
+
+                try
+                {
+                    selectRunnerFromPracticeViewModel.PracticeStartTimeAndDate = dbQueries.FirstOrDefault().PracticeStartTimeAndDate;
+                }
+                catch (ArgumentNullException)
+                {
+                    TempData["error"] = "Invalid practice date found in query";
+                    return RedirectToAction(nameof(Index));
+                }
 
                 foreach (var dbQuery in dbQueries)
                 {
@@ -818,6 +864,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (runnerId == null || practiceId == 0)
             {
+                TempData["error"] = "Invalid ID(s) provided";
                 return RedirectToAction("Index"); // send to an error page in the future (invalid Id(s) provided)
             }
 
@@ -834,7 +881,10 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             foreach (var workout in workoutsQuery.Where(w => w.Workout != null))
             {
-                editRunnerCurrentPracticeDataViewModel.Workouts?.Add(workout.Workout);
+                if (workout.Workout != null)
+                {
+                    editRunnerCurrentPracticeDataViewModel.Workouts?.Add(workout.Workout);
+                } 
             }
 
             var dbQuery = (from a in _context.Attendances
@@ -893,7 +943,10 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             foreach (var workout in workoutsQuery.Where(w => w.Workout != null))
             {
-                editRunnerCurrentPracticeDataViewModel.Workouts?.Add(workout.Workout);
+                if (workout.Workout != null)
+                {
+                    editRunnerCurrentPracticeDataViewModel.Workouts?.Add(workout.Workout);
+                } 
             }
 
             var dbQuery = (from a in _context.Attendances

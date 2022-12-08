@@ -40,6 +40,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 return RedirectToAction("Index");
             }
 
+            practices = practices.OrderByDescending(x => x.PracticeStartTimeAndDate);
+
             return View(practices);
         }
          
