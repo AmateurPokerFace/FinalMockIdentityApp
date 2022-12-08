@@ -23,37 +23,32 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    
-                    <ul class="navbar-nav nav-tabs flex-grow-1">
-                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin"))
-                        {
 
+                    <ul class="navbar-nav nav-tabs flex-grow-1">
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin") || User.IsInRole("Coach"))
                         {
-                            
-
                             @*<div class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Admin
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                                    <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Admin Panel</a>
-                                    </li>
-                                    @*<li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Coach" asp-action="CoachAdminPanel">Coach Admin Panel</a>
-                                    </li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="AdminPanel">Admin Panel</a>
-                                    </li>*@
-                                    @*li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="WaitingForApprovalList">Approve New Users</a>
-                                    </*li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="RejectUsers">Reject New Users</a>
-                                    </li>
-                                </ul>
-                            </div>*@
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Admin
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                        <li class="dropdown-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Admin Panel</a>
+                        </li>
+                        @*<li class="dropdown-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Coach" asp-action="CoachAdminPanel">Coach Admin Panel</a>
+                        </li>
+                        <li class="dropdown-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="AdminPanel">Admin Panel</a>
+                        </li>*@
+                            @*li class="dropdown-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="WaitingForApprovalList">Approve New Users</a>
+                        </*li>
+                        <li class="dropdown-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="RejectUsers">Reject New Users</a>
+                        </li>
+                        </ul>
+                        </div>*@
                             @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin"))
                             {
                                 <li class="nav-item">
@@ -66,7 +61,6 @@
                                     <a class="nav-link text-dark" asp-area="Admin" asp-controller="Coach" asp-action="CoachAdminPanel">Admin</a>
                                 </li>
                             }
-
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Coach" asp-controller="Forum" asp-action="Home">Forums</a>
                             </li>
@@ -81,18 +75,15 @@
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Coach" asp-controller="Data" asp-action="RunnerPracticeWorkoutData">Runner Data</a>
                                     </li>
-
-
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Coach" asp-controller="Statistics" asp-action="SelectRunner">Statistics</a>
                                     </li>
                                     @*<li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Coach">Data Exportation</a>
-                                    </li>*@
-
+                                <a class="nav-link text-dark" asp-area="Coach">Data Exportation</a>
+                                </li>*@
                                 </ul>
                             </div>
-                            
+
 
                             <div class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="practiceDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -126,9 +117,7 @@
                                     </li>
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Coach" asp-controller="Workouts" asp-action="CurrentWorkouts">Edit Workout Types</a>
-
-                                    </li> 
-
+                                    </li>
                                 </ul>
                             </div>
                             <div class="nav-item dropdown">
@@ -145,7 +134,7 @@
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Runner" asp-controller="PaceCalculator" asp-action="OmniCalculator">Omni Calculator</a>
                                     </li>
-                                    
+
                                 </ul>
                             </div>
                         }
@@ -202,7 +191,7 @@
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Runner" asp-controller="PaceCalculator" asp-action="OmniCalculator">Omni Calculator</a>
                                     </li>
-                                    
+
                                 </ul>
                             </div>
                         }
