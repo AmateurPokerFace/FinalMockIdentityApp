@@ -50,7 +50,12 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
 
             ApplicationUser adminUser = _context.ApplicationUsers.Find(_userManager.GetUserId(User));
 
-            coachAdminPanelViewModel.CoachAdminPanelRole = _userManager.IsInRoleAsync(adminUser, StaticDetails.Role_Master_Admin).Result == true ? StaticDetails.Role_Master_Admin : StaticDetails.Role_Coach;
+            if (adminUser == null)
+            {
+
+            }
+
+            coachAdminPanelViewModel.CoachAdminPanelRole = _userManager?.IsInRoleAsync(adminUser, StaticDetails.Role_Master_Admin).Result == true ? StaticDetails.Role_Master_Admin : StaticDetails.Role_Coach;
 
             foreach (var dbQuery in dbQueries)
             {
@@ -86,6 +91,8 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                            join aspnetroles in _context.Roles
                            on userRole.RoleId equals aspnetroles.Id
                            where userRole.UserId == userId
+                           && aspnetroles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower()
+                           && aspnetroles.Name.ToLower() != StaticDetails.Role_Coach.ToLower()
                            select new
                            {
                                aspnetroles.Name
@@ -101,14 +108,22 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
             changeUserRoleViewModel.CurrentRoleName = dbQuery.Name;
             changeUserRoleViewModel.UserId = userId;
 
-            var roles = _context.Roles.Where(r => r.Name.ToLower() != currentRoleName.ToLower());
+            var roles = _context.Roles.Where(r => r.Name.ToLower() != currentRoleName.ToLower() 
+                                             && r.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower()
+                                             && r.Name.ToLower() != StaticDetails.Role_Coach.ToLower());
 
-            foreach (var role in roles)
+            if (roles != null && roles.Count() > 0)
             {
-                changeUserRoleViewModel.RolesList?.Add(new SelectListItem { Text = role.Name, Value = role.Name });
+                foreach (var role in roles)
+                {
+                    changeUserRoleViewModel.RolesList?.Add(new SelectListItem { Text = role.Name, Value = role.Name });
+                }
+
+                return View(changeUserRoleViewModel);
             }
 
-            return View(changeUserRoleViewModel);
+            TempData["error"] = "There were no other roles found in the database to assign.";
+            return RedirectToAction(nameof(CoachAdminPanel));
         }
 
 
@@ -168,7 +183,9 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                            on aspnetusers.Id equals userroles.UserId
                            join roles in _context.Roles
                            on userroles.RoleId equals roles.Id
-                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() && aspnetusers.Id == userId
+                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() 
+                           && roles.Name.ToLower() != StaticDetails.Role_Coach.ToLower()
+                           && aspnetusers.Id == userId
                            select new
                            {
                                aspnetusers.UserName,
@@ -208,7 +225,9 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                            on aspnetusers.Id equals userroles.UserId
                            join roles in _context.Roles
                            on userroles.RoleId equals roles.Id
-                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() && roles.Name.ToLower() != StaticDetails.Role_Coach.ToLower() && aspnetusers.Id == userId
+                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() 
+                           && roles.Name.ToLower() != StaticDetails.Role_Coach.ToLower() 
+                           && aspnetusers.Id == userId
                            select new
                            {
                                aspnetusers.FirstName,
@@ -236,9 +255,10 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult EditUsersName(EditUsersNameViewModel editUserViewModel)
         {
+            ApplicationUser applicationUser;
             if (ModelState.IsValid)
             {
-                ApplicationUser applicationUser = _context.ApplicationUsers.Find(editUserViewModel.UserId);
+                applicationUser = _context.ApplicationUsers.Find(editUserViewModel.UserId);
                 if (applicationUser == null)
                 {
                     TempData["error"] = "Invalid User Provided";
@@ -256,8 +276,20 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                 return RedirectToAction(nameof(CoachAdminPanel));
             }
 
-            TempData["error"] = "Invalid User Provided";
-            return RedirectToAction("Index");
+            TempData["error"] = "Invalid Data Provided";
+
+            applicationUser = _context.ApplicationUsers.Find(editUserViewModel.UserId);
+            if (applicationUser == null)
+            {
+                TempData["error"] = "Invalid User Provided";
+                return RedirectToAction("Index");
+            }
+
+            editUserViewModel.FirstName = applicationUser.FirstName == null ? " " : applicationUser.FirstName;
+            editUserViewModel.LastName = applicationUser.LastName == null ? " " : applicationUser.LastName;
+            editUserViewModel.OldName = $"{(applicationUser.FirstName == null ? " " : applicationUser.FirstName)} {(applicationUser.LastName == null ? " " : applicationUser.LastName)}";
+
+            return View(editUserViewModel);
         }
 
         public IActionResult EditUserUsersName(string userId)
@@ -275,7 +307,9 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                            on aspnetusers.Id equals userroles.UserId
                            join roles in _context.Roles
                            on userroles.RoleId equals roles.Id
-                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() && aspnetusers.Id == userId
+                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() 
+                           && roles.Name.ToLower() != StaticDetails.Role_Coach.ToLower()
+                           && aspnetusers.Id == userId
                            select new
                            {
                                aspnetusers.FirstName,
@@ -302,13 +336,24 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult EditUserUsersName(EditUserUsersNameViewModel editUserUsersNameViewModel)
         {
+            ApplicationUser applicationUser;
+
             if (ModelState.IsValid && editUserUsersNameViewModel.UserName != null)
             {
-                ApplicationUser applicationUser = _context.ApplicationUsers.Find(editUserUsersNameViewModel.UserId);
+                applicationUser = _context.ApplicationUsers.Find(editUserUsersNameViewModel.UserId);
                 if (applicationUser == null)
                 {
                     TempData["error"] = "Invalid User Provided.";
                     return RedirectToAction("Index");
+                }
+
+                var userNameAlreadyExistsInDb = _context.ApplicationUsers.Any(x => x.UserName == editUserUsersNameViewModel.UserName);
+                if (userNameAlreadyExistsInDb)
+                {
+                    TempData["error"] = "Duplicate username found";
+                    ModelState.AddModelError("UserName", $"A user already exists with the provided username {editUserUsersNameViewModel.UserName}. Please enter a different username");
+                    editUserUsersNameViewModel.OldUserName = applicationUser.UserName;
+                    return View(editUserUsersNameViewModel);
                 }
 
                 applicationUser.UserName = editUserUsersNameViewModel.UserName;
@@ -322,8 +367,18 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                 return RedirectToAction(nameof(CoachAdminPanel));
             }
 
-            TempData["error"] = "Invalid User Provided.";
-            return RedirectToAction(nameof(CoachAdminPanel));
+            TempData["error"] = "Invalid data provided.";
+            applicationUser = _context.ApplicationUsers.Find(editUserUsersNameViewModel.UserId);
+            if (applicationUser == null)
+            {
+                TempData["error"] = "Invalid User Provided.";
+                return RedirectToAction(nameof(CoachAdminPanel));
+            }
+
+            editUserUsersNameViewModel.OldUserName = applicationUser.UserName;
+            editUserUsersNameViewModel.UserName = applicationUser.UserName;
+
+            return View(editUserUsersNameViewModel);
         }
 
 
@@ -341,7 +396,9 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                            on aspnetusers.Id equals userroles.UserId
                            join roles in _context.Roles
                            on userroles.RoleId equals roles.Id
-                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() && aspnetusers.Id == userId
+                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() 
+                           && roles.Name.ToLower() != StaticDetails.Role_Coach.ToLower()
+                           && aspnetusers.Id == userId
                            select new
                            {
                                roles.Name
@@ -374,20 +431,21 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                 return RedirectToAction(nameof(CoachAdminPanel));
             }
 
-            if (changeUserPasswordViewModel.NewPassword == null)
+            if (ModelState.IsValid)
             {
-                TempData["error"] = "Invalid password provided";
+                var newPassword = _userManager.PasswordHasher.HashPassword(user, changeUserPasswordViewModel.NewPassword);
+                user.PasswordHash = newPassword;
+
+                _context.ApplicationUsers.Update(user);
+                _context.SaveChanges();
+
+                TempData["success"] = "Password updated successfully";
                 return RedirectToAction(nameof(CoachAdminPanel));
             }
 
-            var newPassword = _userManager.PasswordHasher.HashPassword(user, changeUserPasswordViewModel.NewPassword);
-            user.PasswordHash = newPassword;
+            changeUserPasswordViewModel.UsersName = $"{user.FirstName} {user.LastName}";
 
-            _context.ApplicationUsers.Update(user);
-            _context.SaveChanges();
-
-            TempData["success"] = "Password updated successfully";
-            return RedirectToAction(nameof(CoachAdminPanel));
+            return View(changeUserPasswordViewModel);
         }
 
         public IActionResult DeleteUser(string userId)
@@ -403,7 +461,9 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
                            on aspnetusers.Id equals userroles.UserId
                            join roles in _context.Roles
                            on userroles.RoleId equals roles.Id
-                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower() && aspnetusers.Id == userId
+                           where roles.Name.ToLower() != StaticDetails.Role_Master_Admin.ToLower()
+                           && roles.Name.ToLower() != StaticDetails.Role_Coach.ToLower()
+                           && aspnetusers.Id == userId
                            select new
                            {
                                aspnetusers.Id,
@@ -429,32 +489,46 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteUser(DeleteUserViewModel deleteUserViewModel)
         {
-            throw new Exception("Need to delete foreign key relationship(s). Error is thrown because of reference");
             if (deleteUserViewModel.UserId == null)
             {
                 TempData["error"] = "Invalid User Provided.";
                 return RedirectToAction(nameof(CoachAdminPanel));
             }
 
-            var user = await _userManager.FindByIdAsync(deleteUserViewModel.UserId);
-            if (user == null)
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(deleteUserViewModel.UserId);
+                if (user == null)
+                {
+                    TempData["error"] = "Invalid User Provided.";
+                    return RedirectToAction(nameof(CoachAdminPanel));
+                }
+                else
+                {
+                    var result = await _userManager.DeleteAsync(user);
+
+                    if (result.Succeeded)
+                    {
+                        TempData["success"] = $"The user {deleteUserViewModel.UsersName} was deleted from the database successfully";
+                        return RedirectToAction(nameof(CoachAdminPanel));
+                    }
+
+                    TempData["error"] = $"An error occured during the delete process. The user {deleteUserViewModel.UsersName} was not deleted from the database successfully";
+                    return RedirectToAction(nameof(CoachAdminPanel));
+                }
+            }
+
+            ApplicationUser invalidUser = (ApplicationUser)await _userManager.FindByIdAsync(deleteUserViewModel.UserId);
+            if (invalidUser == null)
             {
                 TempData["error"] = "Invalid User Provided.";
                 return RedirectToAction(nameof(CoachAdminPanel));
             }
-            else
-            {
-                var result = await _userManager.DeleteAsync(user);
 
-                if (result.Succeeded)
-                {
-                    TempData["success"] = $"The user {deleteUserViewModel.UsersName} was deleted from the database successfully";
-                    return RedirectToAction(nameof(CoachAdminPanel));
-                }
+            deleteUserViewModel.UsersName = $"{invalidUser.FirstName} {invalidUser.LastName}";
 
-                TempData["error"] = $"An error occured during the delete process. The user {deleteUserViewModel.UsersName} was not deleted from the database successfully";
-                return RedirectToAction(nameof(CoachAdminPanel));
-            }
+            TempData["error"] = "Invalid user provided.";
+            return RedirectToAction(nameof(CoachAdminPanel));
 
         }
     }

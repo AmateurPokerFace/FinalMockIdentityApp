@@ -106,12 +106,18 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
             
             var roles = _context.Roles.Where(r => r.Name.ToLower() != currentRoleName.ToLower());
 
-            foreach (var role in roles)
+            if (roles != null && roles.Count() > 0)
             {
-                changeUserRoleViewModel.RolesList?.Add(new SelectListItem { Text = role.Name, Value = role.Name});
+                foreach (var role in roles)
+                {
+                    changeUserRoleViewModel.RolesList?.Add(new SelectListItem { Text = role.Name, Value = role.Name });
+                }
+
+                return View(changeUserRoleViewModel);
             }
 
-            return View(changeUserRoleViewModel); 
+            TempData["error"] = "There were no other roles found in the database to assign.";
+            return RedirectToAction(nameof(MasterAdminPanel));
         }
          
 
@@ -356,7 +362,7 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
             if (applicationUser == null)
             {
                 TempData["error"] = "Invalid User Provided.";
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(MasterAdminPanel));
             }
 
             editUserUsersNameViewModel.OldUserName = applicationUser.UserName;
