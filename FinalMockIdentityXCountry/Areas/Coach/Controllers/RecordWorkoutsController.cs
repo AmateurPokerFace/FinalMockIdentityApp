@@ -52,8 +52,9 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             IEnumerable<WorkoutType> workoutTypes = _context.WorkoutTypes;
             
-            if (workoutTypes.Count() < 1)
+            if (workoutTypes == null || workoutTypes.Count() < 1)
             {
+                TempData["error"] = "There were no workout types found in the database. Contact an administrator";
                 return RedirectToAction("Home"); // Send to an error page in the future
             }
 
@@ -123,10 +124,19 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                             {
                                 WorkoutInformation workoutInfo = new WorkoutInformation
                                 {
-                                    PracticeId = checkboxOptions.PracticeId,
-                                    RunnerId = checkboxOptions.RunnerId,
+                                    PracticeId = checkboxOptions.PracticeId, 
                                     WorkoutTypeId = checkboxOptions.WorkoutTypeId
                                 };
+
+                                try
+                                {
+                                    workoutInfo.RunnerId = checkboxOptions.RunnerId;
+                                }
+                                catch (Exception)
+                                {
+                                    TempData["error"] = "An Invalid runner id found";
+                                    continue;
+                                }
                                 _context.WorkoutInformation.Add(workoutInfo);
                             }
                         }

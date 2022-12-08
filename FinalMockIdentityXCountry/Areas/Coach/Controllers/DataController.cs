@@ -202,7 +202,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             }
 
             TempData["error"] = "There was no data practice data found for the provided runner";
-            return RedirectToAction("Index"); // send to an error page in the future. Check to see if an empty workoutTypes.WorkoutName adds a blank string (var dbQueries = select new ({}); line).
+            return RedirectToAction(nameof(RunnerPracticeWorkoutData)); // send to an error page in the future. Check to see if an empty workoutTypes.WorkoutName adds a blank string (var dbQueries = select new ({}); line).
         }
 
         public IActionResult ViewDataEntered(string runnerId, int practiceId)
@@ -415,6 +415,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions == null || addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions.Count() < 1)
             {
+                TempData["error"] = "You cannot add anymore workouts because the selected runner already has every workout assigned";
                 return RedirectToAction("Index"); // send to an error page in the future. Runner already has every workout selected
             }
 
@@ -427,45 +428,52 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (addNewWorkoutsToPracticeViewModel.RunnerId == null) 
             {
+                TempData["error"] = "Invalid runner id provided";
                 return RedirectToAction("Index"); // send to an error page in the future.
             }
 
             Practice practice = _context.Practices.Find(addNewWorkoutsToPracticeViewModel.PracticeId);
             if (practice == null)
             {
+                TempData["error"] = "Invalid practice provided";
                 return RedirectToAction("Index"); // send to an error page in the future. (Invalid practice id provided).
             }
 
             bool loopedOnce = false;
-             
-            foreach (var newWorkout in addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions.Where(i => i.IsSelected))
-            {
-                loopedOnce = true;
 
-                WorkoutInformation workoutInformation = new WorkoutInformation
+            if (addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions != null && addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions.Count > 0)
+            {
+                foreach (var newWorkout in addNewWorkoutsToPracticeViewModel.SelectedNewWorkoutCheckboxOptions.Where(i => i.IsSelected))
                 {
-                    PracticeId = newWorkout.PracticeId,
-                    WorkoutTypeId = newWorkout.WorkoutTypeId,
-                    RunnerId = newWorkout.RunnerId,
-                };
+                    loopedOnce = true;
 
-                _context.WorkoutInformation.Add(workoutInformation);
-            }
+                    WorkoutInformation workoutInformation = new WorkoutInformation
+                    {
+                        PracticeId = newWorkout.PracticeId,
+                        WorkoutTypeId = newWorkout.WorkoutTypeId,
+                        RunnerId = newWorkout.RunnerId,
+                    };
 
-            if (loopedOnce)
-            {
-                _context.SaveChanges();
-                return RedirectToAction("Index"); // send to a success page in the future
-            }
+                    _context.WorkoutInformation.Add(workoutInformation);
+                }
 
-             return RedirectToAction("Index"); // send to an error page in the future. Changes not reflected (loopOnce is false).  
+                if (loopedOnce)
+                {
+                    TempData["success"] = "New workouts were added to the runner's practice session successfully.";
+                    _context.SaveChanges();
+                    return RedirectToAction("Index"); // send to a success page in the future
+                }
+            } 
 
+            TempData["error"] = "Invalid data provided";
+            return RedirectToAction("Index"); // send to an error page in the future. Changes not reflected (loopOnce is false).  
         }
 
         public IActionResult DeleteWorkoutsFromPractice(string runnerId, int practiceId)
         {
             if (runnerId == null || practiceId == 0)
             {
+                TempData["error"] = "Invalid ID(s) provided";
                 return RedirectToAction("Index"); // send to an error page in the future
             }
 
@@ -473,6 +481,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             
             if (practice == null)
             {
+                TempData["error"] = "Invalid practice provided";
                 return RedirectToAction("Index"); // send to an error page in the future
             }
 
@@ -496,7 +505,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                  wi.RunnerId
                              });
 
-            if (dbQueries.Count() > 0)
+            if (dbQueries != null && dbQueries.Count() > 0)
             {
                 DeleteWorkoutsFromPracticeViewModel deleteWorkoutsFromPracticeViewModel = new DeleteWorkoutsFromPracticeViewModel 
                 {
@@ -536,9 +545,11 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                     return View(deleteWorkoutsFromPracticeViewModel);
                 }
 
+                TempData["error"] = "Invalid data was provided";
                 return RedirectToAction("Index"); // Send to an error page in the future
-            } 
+            }
 
+            TempData["error"] = "Invalid data provided. No matching results were found inside the database";
             return RedirectToAction("Index"); // Send to an error page in the future
         }
 
@@ -547,12 +558,14 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (deleteWorkoutsFromPracticeViewModel.PracticeId == 0)
             {
+                TempData["error"] = "Invalid practice id provided";
                 return RedirectToAction("Index"); // Send to an error page in the future
             }
              
             
             bool recordFound = false;
             
+
             foreach (var workout in deleteWorkoutsFromPracticeViewModel.SelectedCheckboxOptions.Where(w => w.IsSelected))
             {
                 WorkoutInformation workoutInformation = _context.WorkoutInformation.Find(workout.WorkoutInformationId);
@@ -917,8 +930,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             IQueryable<WorkoutType> records = _context.WorkoutTypes;
             editRunnerCurrentPracticeDataViewModel.WorkoutTypeRecordCount = records.Count();
-
-
 
             return View(editRunnerCurrentPracticeDataViewModel);
         }
