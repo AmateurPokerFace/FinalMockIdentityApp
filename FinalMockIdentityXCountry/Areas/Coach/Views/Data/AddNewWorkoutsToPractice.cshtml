@@ -21,7 +21,7 @@
                     {
                     <tr>
                         <td class="form-check">
-                            <input asp-for="@Model.SelectedNewWorkoutCheckboxOptions[i].IsSelected" type="checkbox" class="form-check-input"/> @Model.SelectedNewWorkoutCheckboxOptions[i].WorkoutName
+                            <input asp-for="@Model.SelectedNewWorkoutCheckboxOptions[i].IsSelected" type="checkbox" /> @Model.SelectedNewWorkoutCheckboxOptions[i].WorkoutName
                             <input type="hidden" asp-for="@Model.PracticeId">
                             <input type="hidden" asp-for="@Model.RunnerId">
                             <input type="hidden" asp-for="@Model.SelectedNewWorkoutCheckboxOptions[i].RunnerId">
