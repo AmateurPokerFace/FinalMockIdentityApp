@@ -49,9 +49,18 @@
                                     </li>
                                 </ul>
                             </div>*@
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Admin</a>
-                            </li>
+                            @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Admin</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="Coach" asp-action="CoachAdminPanel">Admin</a>
+                                </li>
+                            }
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Coach" asp-controller="Forum" asp-action="Home">Forums</a>
                             </li>
@@ -67,11 +76,11 @@
                                         <a class="nav-link text-dark" asp-area="Coach" asp-controller="Data" asp-action="RunnerPracticeWorkoutData">Runner Data</a>
                                     </li>
                                     <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Coach" >Statistics</a>
+                                        <a class="nav-link text-dark" asp-area="Coach" asp-controller="Statistics" asp-action="SelectRunner">Statistics</a>
                                     </li>
-                                    <li class="dropdown-item">
+                                    @*<li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Coach">Data Exportation</a>
-                                    </li>
+                                    </li>*@
                                 </ul>
                             </div>
                             
@@ -93,6 +102,9 @@
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Coach" asp-controller="PracticeHistory" asp-action="History">Practice History</a>
                                     </li>
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Coach" asp-controller="AthleteHistory" asp-action="All">Athlete Practice History</a>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="nav-item dropdown">
@@ -105,10 +117,7 @@
                                     </li>
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Coach" asp-controller="Workouts" asp-action="CurrentWorkouts">Edit Workout Types</a>
-                                    </li>
-                                    <li class="dropdown-item">
-                                        <a class="nav-link text-dark" asp-area="Coach" asp-controller="AthleteHistory" asp-action="All">Athlete Workout History</a>
-                                    </li>
+                                    </li> 
                                 </ul>
                             </div>
                             <div class="nav-item dropdown">
