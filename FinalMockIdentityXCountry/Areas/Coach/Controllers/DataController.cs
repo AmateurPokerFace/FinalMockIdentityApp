@@ -598,7 +598,7 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 return View(currentPracticeWorkoutDataViewModels);
             }
 
-            TempData["error"] = "There are no practices in progress that have a runner marked as present. Add one or" +
+            TempData["error"] = "There are no practices in progress that have a runner marked as present. Add one or " +
                 "more runners to a practice that is in progress before attempting to view/edit workout data";
             return RedirectToAction("Index", "Home", new { area = "Welcome" }); // send to an error page in the future (no practice history found)
 
