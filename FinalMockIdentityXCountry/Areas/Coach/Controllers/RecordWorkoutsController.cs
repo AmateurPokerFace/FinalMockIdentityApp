@@ -158,10 +158,10 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 _context.SaveChanges();
 
                 TempData["success"] = "The workout(s) were added to the practice successfully";
-                return RedirectToAction("SelectPractice", "RecordWorkouts");
+                return RedirectToAction("Index");
             }
             
-            return RedirectToAction("Index", "Welcome"); // return error in the future
+            return RedirectToAction("Index"); // return error in the future
         }
     }
 }
