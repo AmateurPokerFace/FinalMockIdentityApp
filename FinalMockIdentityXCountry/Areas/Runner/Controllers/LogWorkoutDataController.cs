@@ -170,7 +170,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
             var dbQuery = (from w in _context.WorkoutInformation
                            join practices in _context.Practices
-                           on w.PracticeId equals practices.Id
+                           on w.PracticeId equals logDataViewModel.PracticeId
                            join workoutTypes in _context.WorkoutTypes
                            on w.WorkoutTypeId equals workoutTypes.Id
                            where w.Id == logDataViewModel.WorkoutInformationId && w.PracticeId == logDataViewModel.PracticeId && w.DataWasLogged == false
@@ -214,7 +214,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                                    on w.PracticeId equals practices.Id
                                    join workoutTypes in _context.WorkoutTypes
                                    on w.WorkoutTypeId equals workoutTypes.Id
-                                   where w.Id == workoutInfoId && w.PracticeId == practiceId
+                                   where w.Id == workoutInfoId && w.PracticeId == practiceId && w.DataWasLogged == true
                                    select new
                                    {
                                        w.PracticeId,
@@ -231,7 +231,8 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                     if (dbQuery == null)
                     {
-                        return RedirectToAction(); // Send to an error page in the future
+                        TempData["error"] = "Invalid workout provided. The data cannot be edited because it has no logged data.";
+                        return RedirectToAction("Index", "Home", new { area = "Welcome" });
                     }
 
                     EditLoggedDataViewModel editLoggedDataViewModel = new EditLoggedDataViewModel
@@ -250,10 +251,13 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                     return View(editLoggedDataViewModel);
                 }
-                return View();
+
+                TempData["error"] = "Invalid user";
+                return RedirectToAction("Index", "Home", new { area = "Welcome" });
             }
 
-            return RedirectToAction(); // Send to an error page in the future
+            TempData["error"] = "Invalid ID(s) provided";
+            return RedirectToAction("Index", "Home", new { area = "Welcome" });
         }
 
         [HttpPost]
@@ -287,10 +291,10 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
             var dbQuery = (from w in _context.WorkoutInformation
                            join practices in _context.Practices
-                           on w.PracticeId equals practices.Id
+                           on w.PracticeId equals editLoggedDataViewModel.PracticeId
                            join workoutTypes in _context.WorkoutTypes
                            on w.WorkoutTypeId equals workoutTypes.Id
-                           where w.Id == editLoggedDataViewModel.WorkoutInformationId && w.PracticeId == editLoggedDataViewModel.PracticeId && w.DataWasLogged == false
+                           where w.Id == editLoggedDataViewModel.WorkoutInformationId && w.PracticeId == editLoggedDataViewModel.PracticeId && w.DataWasLogged == true
                            select new
                            {
                                w.PracticeId,
@@ -312,7 +316,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
             editLoggedDataViewModel.PracticeStartDateTime = dbQuery.PracticeStartTimeAndDate;
             editLoggedDataViewModel.RunnerId = dbQuery.RunnerId;
             editLoggedDataViewModel.WorkoutInformationId = dbQuery.Id;
-            editLoggedDataViewModel.WorkoutName = dbQuery.WorkoutName;
+            editLoggedDataViewModel.WorkoutName = dbQuery.WorkoutName; 
 
             return View(editLoggedDataViewModel);
         }
