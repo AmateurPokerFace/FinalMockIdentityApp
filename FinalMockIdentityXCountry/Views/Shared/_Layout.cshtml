@@ -138,6 +138,24 @@
                                 </ul>
                             </div>
                         }
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Banned user"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Banned" asp-controller="Banned" asp-action="Index">Info</a>
+                            </li>
+                        }
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Waiting for approval"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Unapproved" asp-controller="WaitingForApproval" asp-action="Index">Info</a>
+                            </li>
+                        }
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Rejected"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Rejected" asp-controller="Rejected" asp-action="Index">Info</a>
+                            </li>
+                        }
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Runner"))
                         {
                             <li class="nav-item">
