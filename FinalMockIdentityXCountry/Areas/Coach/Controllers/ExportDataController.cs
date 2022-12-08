@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Syncfusion.EJ2.ImageEditor;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 {
@@ -249,13 +250,16 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                                  PracticeStartTime = TimeOnly.FromDateTime(matchesFound.Key.PracticeStartTimeAndDate),
                                  AttendanceCount = matchesFound.Count(),
                                  PracticeLocation = matchesFound.Key.PracticeLocation,
-                                 PracticeFullDateTime = matchesFound.Key.PracticeStartTimeAndDate
+                                 PracticeFullDateTime = matchesFound.Key.PracticeStartTimeAndDate,
+                                 PracticeId = matchesFound.Key.PracticeId
                              }).ToList();
 
+
+            List<ExportAllPracticeHistoryToCSVViewModel> exportAllPracticeHistoryToCSVViewModels = new List<ExportAllPracticeHistoryToCSVViewModel>();
+            List<int> practicesWithAttendanceIds = new List<int>();
+
             if (dbQueries != null && dbQueries.Count() > 0)
-            {
-                List<ExportAllPracticeHistoryToCSVViewModel> exportAllPracticeHistoryToCSVViewModels = new List<ExportAllPracticeHistoryToCSVViewModel>();
-               
+            {  
                 foreach (var dbQuery in dbQueries)
                 {
                     ExportAllPracticeHistoryToCSVViewModel exportPracticeHistoryViewModel = new ExportAllPracticeHistoryToCSVViewModel
@@ -265,34 +269,62 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                         AttendanceCount = dbQuery.AttendanceCount,
                         PracticeLocation = dbQuery.PracticeLocation,
                         PracticeFullDateTime = dbQuery.PracticeFullDateTime
-                    }; 
-                 
-                    exportAllPracticeHistoryToCSVViewModels.Add(exportPracticeHistoryViewModel);
-                }
-                
-                if (exportAllPracticeHistoryToCSVViewModels != null && exportAllPracticeHistoryToCSVViewModels.Count > 0)
-                {
-                    exportAllPracticeHistoryToCSVViewModels = exportAllPracticeHistoryToCSVViewModels.OrderByDescending(d => d.PracticeFullDateTime).ToList();
+                    };
 
-                    var builder = new StringBuilder();
-                    builder.AppendLine("Date,Start Time,Location,Attendance Count");
+                    practicesWithAttendanceIds.Add(dbQuery.PracticeId); 
 
-                    foreach (var data in exportAllPracticeHistoryToCSVViewModels)
+                    if (exportPracticeHistoryViewModel != null)
                     {
-                        builder.AppendLine($"{data.PracticeDateOnly},{data.PracticeStartTime},{data.PracticeLocation},{data.AttendanceCount}"); 
+                        exportAllPracticeHistoryToCSVViewModels.Add(exportPracticeHistoryViewModel);
                     }
-                    return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", $"all_practice_history.csv");
-                }
-                else
-                {
-                    TempData["error"] = "No data was found with the provided query";
-                    return RedirectToAction("Index");
-                }
-
+                } 
             }
 
-            TempData["error"] = "There was no data found with the provided query.";
-            return View("Index");
+            if (practicesWithAttendanceIds != null && practicesWithAttendanceIds.Count > 0)
+            {
+                var practicesWithNoAttendances = (from p in _context.Practices
+                                                  where practicesWithAttendanceIds.Contains(p.Id) == false && p.PracticeIsInProgress == false
+                                                  select p).Distinct().ToList();
+
+                if (practicesWithNoAttendances != null && practicesWithNoAttendances.Count > 0)
+                {
+                    foreach (var practiceWithNoAttendances in practicesWithNoAttendances)
+                    {
+                        ExportAllPracticeHistoryToCSVViewModel exportPracticeHistoryViewModel = new ExportAllPracticeHistoryToCSVViewModel
+                        {
+                            PracticeDateOnly = DateOnly.FromDateTime(practiceWithNoAttendances.PracticeStartTimeAndDate),
+                            PracticeStartTime = TimeOnly.FromDateTime(practiceWithNoAttendances.PracticeStartTimeAndDate),
+                            AttendanceCount = 0, 
+                            PracticeLocation = practiceWithNoAttendances.PracticeLocation,
+                            PracticeFullDateTime = practiceWithNoAttendances.PracticeStartTimeAndDate
+                        };
+
+                        if (exportPracticeHistoryViewModel != null)
+                        {
+                            exportAllPracticeHistoryToCSVViewModels.Add(exportPracticeHistoryViewModel);
+                        }
+                    }
+                }
+            }
+
+            if (exportAllPracticeHistoryToCSVViewModels != null && exportAllPracticeHistoryToCSVViewModels.Count > 0)
+            {
+                exportAllPracticeHistoryToCSVViewModels = exportAllPracticeHistoryToCSVViewModels.OrderByDescending(d => d.PracticeFullDateTime).ToList();
+
+                var builder = new StringBuilder();
+                builder.AppendLine("Date,Start Time,Location,Attendance Count");
+
+                foreach (var data in exportAllPracticeHistoryToCSVViewModels)
+                {
+                    builder.AppendLine($"{data.PracticeDateOnly},{data.PracticeStartTime},{data.PracticeLocation},{data.AttendanceCount}");
+                }
+                return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", $"all_practice_history.csv");
+            }
+            else
+            {
+                TempData["error"] = "No data was found with the provided query";
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpPost]
@@ -327,6 +359,18 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 var builder = new StringBuilder();
                 builder.AppendLine("Date,Start Time,Location,Attendance Count");
                 builder.AppendLine($"{dbQuery.PracticeDate},{dbQuery.PracticeStartTime},{dbQuery.PracticeLocation},{dbQuery.AttendanceCount}");
+
+                return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", $"selected_practice_history.csv");
+            }
+
+            var practiceWithNoAttendance = _context.Practices.Where(x => x.Id == practiceId && x.PracticeIsInProgress == false).FirstOrDefault();
+
+            if (practiceWithNoAttendance != null)
+            {
+                var builder = new StringBuilder();
+                builder.AppendLine("Date,Start Time,Location,Attendance Count");
+                builder.AppendLine($"{DateOnly.FromDateTime(practiceWithNoAttendance.PracticeStartTimeAndDate)},{TimeOnly.FromDateTime(practiceWithNoAttendance.PracticeStartTimeAndDate)}," +
+                    $"{practiceWithNoAttendance.PracticeLocation},{0}");
 
                 return File(Encoding.UTF8.GetBytes(builder.ToString()), "text/csv", $"selected_practice_history.csv");
             }
