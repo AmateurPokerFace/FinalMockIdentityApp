@@ -1,0 +1,25 @@
+﻿@using FinalMockIdentityXCountry.Models.ViewModels.CoachAreaViewModels.StatisticsController;
+@model List<SelectRunnerViewModel>
+
+@if(Model != null && Model.Count > 0)
+{
+   <div class="table-responsive">
+       <table class="table">
+           <thead>
+               <tr>
+                   <th scope="col">Runner</th>
+                   <th scope="col"></th>
+               </tr>
+           </thead>
+           <tbody>
+                @foreach (var runner in Model)
+                {
+                    <tr>
+                        <td>@runner.RunnersName</td>
+                        <td><a asp-action="Statistics" asp-route-runnerId="@runner.RunnersId" class="btn btn-primary">View Statistics</a></td>
+                    </tr>
+                }
+           </tbody>
+       </table>
+   </div>
+}

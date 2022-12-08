@@ -14,24 +14,38 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var runner in Model.CurrentPracticesViewModelsHelper)
+                @if (Model.CurrentPracticesViewModelsHelper != null && Model.CurrentPracticesViewModelsHelper.Count > 0)
+                {
+                    @foreach (var runner in Model.CurrentPracticesViewModelsHelper)
+                    {
+                        <tr>
+                            <td scope="row">@runner.PracticeStartTimeAndDate</td>
+                            <td>@runner.PracticeLocation</td>
+                            <td>
+                                @if (runner.IsPresent && runner.HasBeenSignedOut == false)
+                                {
+                                    <a asp-action="SignOutOfPractice" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId" class="btn btn-danger">Sign Out</a>
+                                }
+                                else if (!runner.IsPresent && runner.HasBeenSignedOut == false)
+                                {
+                                    <a asp-action="JoinPractice" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId" class="btn btn-primary">Join</a>
+                                }
+                                else if (runner.HasBeenSignedOut)
+                                {
+                                    <button disabled class="btn alert-danger">Complete</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td scope="row">@runner.PracticeStartTimeAndDate</td>
-                        <td>@runner.PracticeLocation</td>
                         <td>
-                            @if (runner.IsPresent && runner.HasBeenSignedOut == false)
-                            {
-                                <a asp-action="SignOutOfPractice" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId" class="btn btn-danger">Sign Out</a>
-                            }
-                            else if (!runner.IsPresent && runner.HasBeenSignedOut == false)
-                            {
-                                <a asp-action="JoinPractice" asp-route-runnerId="@runner.RunnerId" asp-route-practiceId="@runner.PracticeId" class="btn btn-primary">Join</a>
-                            }
-                            else if (runner.HasBeenSignedOut)
-                            {
-                                <button disabled class="btn alert-danger">Complete</button>
-                            }
+                            <div class="alert alert-danger" role="alert">
+                                There was no practice data found
+                            </div>
+
                         </td>
                     </tr>
                 }

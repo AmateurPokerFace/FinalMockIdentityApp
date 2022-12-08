@@ -7,5 +7,6 @@
         public string? PracticeLocation { get; set; }
         public int AttendanceCount { get; set; }
         public DateTime PracticeFullDateTime { get; set; }
+        public int PracticeId { get; set; }
     }
 }

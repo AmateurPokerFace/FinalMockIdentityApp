@@ -42,7 +42,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (addNewWorkoutViewModel == null)
             {
-                return RedirectToAction(); //send to an error page in the future
+                TempData["error"] = "Invalid data provided";
+                return RedirectToAction(nameof(CurrentWorkouts)); //send to an error page in the future
             }
 
             WorkoutType workoutType = _context.WorkoutTypes.Where(w => w.WorkoutName.ToLower() == addNewWorkoutViewModel.WorkoutName.ToLower()).FirstOrDefault(); // see if the provided workout name is already in the database

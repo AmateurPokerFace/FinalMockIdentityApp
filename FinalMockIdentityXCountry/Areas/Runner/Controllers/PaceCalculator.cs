@@ -56,7 +56,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                 return View(model);
             }
 
-            return View();
+            return View(model);
         }
     }
 }

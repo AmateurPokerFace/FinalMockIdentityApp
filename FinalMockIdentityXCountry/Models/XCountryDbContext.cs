@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalMockIdentityXCountry.Models
@@ -44,6 +45,92 @@ namespace FinalMockIdentityXCountry.Models
                 new WorkoutType { WorkoutName = "Track Work", Id = 6 }
                 );
         }
+
+        //public static void SeedData(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        //{
+        //    SeedRoles(roleManager);
+        //    SeedUsers(userManager);
+        //}
+
+        //public static void SeedRoles(RoleManager<IdentityRole> roleManager)
+        //{
+        //    if (!roleManager.RoleExistsAsync("Master Admin").Result)
+        //    {
+        //        IdentityRole role = new IdentityRole();
+        //        role.Name = "Master Admin";
+        //        IdentityResult roleResult = roleManager.
+        //        CreateAsync(role).Result;
+        //    }
+
+        //}
+
+        //public static void SeedUsers(UserManager<IdentityUser> userManager)
+        //{
+        //    if (userManager.FindByNameAsync("Master Admin").Result == null)
+        //    {
+        //        IdentityUser user = new IdentityUser()
+        //        {
+        //            UserName = "Master Admin",
+        //            Email = "admin@africa.email.com",
+        //            NormalizedUserName = "MASTER ADMIN"
+        //        };
+        //        IdentityResult result = userManager.CreateAsync
+        //        (user, "Sesame").Result;
+
+        //        if (result.Succeeded)
+        //        {
+        //            userManager.AddToRoleAsync(user, "Master Admin").Wait(); 
+        //        }
+        //    }
+        //}
+
+        public static void SeedData(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            SeedRoles(roleManager);
+            SeedUsers(userManager);
+        }
+
+        public static void SeedRoles(RoleManager<IdentityRole> roleManager)
+        {
+            if (!roleManager.RoleExistsAsync("Master Admin").Result)
+            {
+                IdentityRole role = new IdentityRole();
+                role.Name = "Master Admin";
+                IdentityResult roleResult = roleManager.
+                CreateAsync(role).Result;
+            }
+
+            //if (!roleManager.RoleExistsAsync("Student").Result)
+            //{
+            //    IdentityRole role = new IdentityRole();
+            //    role.Name = "Student";
+            //    IdentityResult roleResult = roleManager.
+            //    CreateAsync(role).Result;
+            //}
+        }
+
+        public static void SeedUsers(UserManager<IdentityUser> userManager)
+        {
+            if (userManager.FindByNameAsync("admin").Result == null)
+            {
+                IdentityUser user = new IdentityUser()
+                {
+                    UserName = "admin",
+                    Email = "admin@admin.com",
+                    //FirstName = "AdminFN",
+                    //LastName = "AdminLN",
+                    NormalizedUserName = "ADMIN"
+                };
+                IdentityResult result = userManager.CreateAsync
+                (user, "Admin*123").Result;
+
+                if (result.Succeeded)
+                {
+                    userManager.AddToRoleAsync(user, "Master Admin").Wait();
+                }
+            }
+        }
     }
+
 }
 

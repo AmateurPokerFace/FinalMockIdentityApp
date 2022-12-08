@@ -27,19 +27,46 @@
                     <ul class="navbar-nav nav-tabs flex-grow-1">
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin"))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Admin</a>
-                            </li>
-                        }
-                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Coach"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="Coach" asp-action="CoachAdminPanel">Admin</a>
-                            </li>
-                        }
+
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin") || User.IsInRole("Coach"))
                         {
                             
+
+                            @*<div class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Admin
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Admin Panel</a>
+                                    </li>
+                                    @*<li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Coach" asp-action="CoachAdminPanel">Coach Admin Panel</a>
+                                    </li>
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="AdminPanel">Admin Panel</a>
+                                    </li>*@
+                                    @*li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="WaitingForApprovalList">Approve New Users</a>
+                                    </*li>
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="RejectUsers">Reject New Users</a>
+                                    </li>
+                                </ul>
+                            </div>*@
+                            @if (signInManager.IsSignedIn(User) && User.IsInRole("Master Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="MasterAdmin" asp-action="MasterAdminPanel">Admin</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="Admin" asp-controller="Coach" asp-action="CoachAdminPanel">Admin</a>
+                                </li>
+                            }
+
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Coach" asp-controller="Forum" asp-action="Home">Forums</a>
                             </li>
@@ -54,6 +81,15 @@
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Coach" asp-controller="Data" asp-action="RunnerPracticeWorkoutData">Runner Data</a>
                                     </li>
+
+
+                                    <li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Coach" asp-controller="Statistics" asp-action="SelectRunner">Statistics</a>
+                                    </li>
+                                    @*<li class="dropdown-item">
+                                        <a class="nav-link text-dark" asp-area="Coach">Data Exportation</a>
+                                    </li>*@
+
                                 </ul>
                             </div>
                             
@@ -90,7 +126,9 @@
                                     </li>
                                     <li class="dropdown-item">
                                         <a class="nav-link text-dark" asp-area="Coach" asp-controller="Workouts" asp-action="CurrentWorkouts">Edit Workout Types</a>
-                                    </li>
+
+                                    </li> 
+
                                 </ul>
                             </div>
                             <div class="nav-item dropdown">
@@ -110,6 +148,24 @@
                                     
                                 </ul>
                             </div>
+                        }
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Banned user"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Banned" asp-controller="Banned" asp-action="Index">Info</a>
+                            </li>
+                        }
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Waiting for approval"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Unapproved" asp-controller="WaitingForApproval" asp-action="Index">Info</a>
+                            </li>
+                        }
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Rejected"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Rejected" asp-controller="Rejected" asp-action="Index">Info</a>
+                            </li>
                         }
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Runner"))
                         {

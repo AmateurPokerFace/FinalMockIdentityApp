@@ -49,16 +49,26 @@ namespace FinalMockIdentityXCountry.Areas.Admin.Controllers
 
             MasterAdminPanelViewModel masterAdminPanelViewModel = new MasterAdminPanelViewModel { MasterAdminPanelRole = "" };
 
-            ApplicationUser adminUser = _context.ApplicationUsers.Find(_userManager.GetUserId(User));
+            ApplicationUser applicationAdminUser = _context.ApplicationUsers.Find(_userManager.GetUserId(User));
+            IdentityUser identityAdminUser = _context.Users.Find(_userManager.GetUserId(User));
 
 
-            if (adminUser == null)
+            if (applicationAdminUser != null )
+            {
+                masterAdminPanelViewModel.MasterAdminPanelRole = _userManager.IsInRoleAsync(applicationAdminUser, StaticDetails.Role_Master_Admin).Result == true ? StaticDetails.Role_Master_Admin : StaticDetails.Role_Coach;
+                
+            }
+            else if (identityAdminUser != null)
+            {
+                masterAdminPanelViewModel.MasterAdminPanelRole = _userManager.IsInRoleAsync(identityAdminUser, StaticDetails.Role_Master_Admin).Result == true ? StaticDetails.Role_Master_Admin : StaticDetails.Role_Coach;
+            }
+            else
             {
                 TempData["error"] = "An error occured. You were not found in the database. Please contact an administrator for more assistance.";
                 return RedirectToAction("Index");
             }
 
-            masterAdminPanelViewModel.MasterAdminPanelRole = _userManager.IsInRoleAsync(adminUser, StaticDetails.Role_Master_Admin).Result == true ? StaticDetails.Role_Master_Admin : StaticDetails.Role_Coach;
+            
 
             foreach (var dbQuery in dbQueries)
             {

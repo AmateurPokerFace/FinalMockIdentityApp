@@ -30,8 +30,8 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
         public IActionResult SelectAPractice()
         {
-            var userClaimsIdentity = (ClaimsIdentity)User.Identity;
-            var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var userClaimsIdentity = (ClaimsIdentity?)User.Identity;
+            var userClaim = userClaimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
             List<SelectAPracticeViewModel> selectAPracticeViewModels = new List<SelectAPracticeViewModel>();
 
@@ -54,26 +54,35 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                                      workoutTypes.WorkoutName
                                  });
 
-                foreach (var dbQuery in dbQueries)
+                if (dbQueries != null && dbQueries.Count() > 0)
                 {
-                    SelectAPracticeViewModel selectedVm = new SelectAPracticeViewModel
+                    foreach (var dbQuery in dbQueries)
                     {
-                        WorkoutInformationId = dbQuery.Id,
-                        PracticeId = dbQuery.PracticeId,
-                        RunnerId = dbQuery.RunnerId,
-                        DataWasLogged = dbQuery.DataWasLogged,
-                        PracticeStartTimeAndDate = dbQuery.PracticeStartTimeAndDate,
-                        PracticeLocation = dbQuery.PracticeLocation,
-                        WorkoutName = dbQuery.WorkoutName
+                        SelectAPracticeViewModel selectedVm = new SelectAPracticeViewModel
+                        {
+                            WorkoutInformationId = dbQuery.Id,
+                            PracticeId = dbQuery.PracticeId,
+                            RunnerId = dbQuery.RunnerId,
+                            DataWasLogged = dbQuery.DataWasLogged,
+                            PracticeStartTimeAndDate = dbQuery.PracticeStartTimeAndDate,
+                            PracticeLocation = dbQuery.PracticeLocation,
+                            WorkoutName = dbQuery.WorkoutName
+                        };
+
+                        selectAPracticeViewModels.Add(selectedVm);
+                        //currentPracticesViewModel.CurrentPracticesViewModelsHelper.Add(currentViewModel);
                     };
 
-                    selectAPracticeViewModels.Add(selectedVm);
-                    //currentPracticesViewModel.CurrentPracticesViewModelsHelper.Add(currentViewModel);
-                };
+                    return View(selectAPracticeViewModels);
+                }
 
-                return View(selectAPracticeViewModels);
+                TempData["error"] = "You do not have any workout history";
+                return RedirectToAction("Index", "Home", new { area = "Welcome" });
+
             }
-                return RedirectToAction(); // send to an error page in the future
+
+            TempData["error"] = "Invalid user";
+            return RedirectToAction("Index", "Home", new { area = "Welcome" });
         }
 
         public IActionResult LogData(int workoutInfoId, int practiceId)
@@ -81,8 +90,8 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
             if (workoutInfoId != 0 && practiceId != 0)
             {
-                var userClaimsIdentity = (ClaimsIdentity)User.Identity;
-                var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                var userClaimsIdentity = (ClaimsIdentity?)User.Identity;
+                var userClaim = userClaimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
                 if (userClaim != null)
                 {
@@ -104,7 +113,8 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                     if (dbQuery == null)
                     {
-                        return RedirectToAction(); // Send to an error page in the future
+                        TempData["error"] = "Invalid data provided. There was no workout information found in the database";
+                        return RedirectToAction("Index", "Home", new { area = "Welcome" });
                     }
 
                     LogDataViewModel logDataViewModel = new LogDataViewModel
@@ -119,47 +129,83 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                     return View(logDataViewModel);
                 }
-                return View();
+
+                TempData["error"] = "Invalid user";
+                return RedirectToAction("Index", "Home", new { area = "Welcome" });
             }
 
-            return RedirectToAction(); // Send to an error page in the future
-            
+            TempData["error"] = "Invalid ID(s) provided";
+            return RedirectToAction("Index", "Home", new { area = "Welcome" });
+
         }
 
         [HttpPost]
         public IActionResult LogData(LogDataViewModel logDataViewModel)
         {
-            if (logDataViewModel != null)
+
+            if (ModelState.IsValid)
             {
-                WorkoutInformation workoutInformation = _context.WorkoutInformation
+                WorkoutInformation workoutInformationToUpdate = _context.WorkoutInformation
                 .Where(w => w.Id == logDataViewModel.WorkoutInformationId).FirstOrDefault();
 
-                if (workoutInformation != null)
+                if (workoutInformationToUpdate != null)
                 {
-                    workoutInformation.Distance = logDataViewModel.Distance; 
-                    workoutInformation.Hours = logDataViewModel.Hours;
-                    workoutInformation.Minutes = logDataViewModel.Minutes;
-                    workoutInformation.Seconds = logDataViewModel.Seconds;
-                    workoutInformation.DataWasLogged = true;
-                    
-                    _context.Update(workoutInformation);
+                    workoutInformationToUpdate.Distance = logDataViewModel.Distance;
+                    workoutInformationToUpdate.Hours = logDataViewModel.Hours;
+                    workoutInformationToUpdate.Minutes = logDataViewModel.Minutes;
+                    workoutInformationToUpdate.Seconds = logDataViewModel.Seconds;
+                    workoutInformationToUpdate.DataWasLogged = true;
+
+                    _context.Update(workoutInformationToUpdate);
                     _context.SaveChanges();
+
+                    TempData["success"] = "The workout data was saved successfully";
 
                     return RedirectToAction("Index"); // send to success page in the future
                 }
-
-                return RedirectToAction(); // send to an error page in the future
+                 
+                TempData["error"] = "The provided workout information was not found in the database.";
+                return RedirectToAction("Index", "Home", new { area = "Welcome" });
             }
 
-            return RedirectToAction(); // send to an error page in the future
+            var dbQuery = (from w in _context.WorkoutInformation
+                           join practices in _context.Practices
+                           on w.PracticeId equals logDataViewModel.PracticeId
+                           join workoutTypes in _context.WorkoutTypes
+                           on w.WorkoutTypeId equals workoutTypes.Id
+                           where w.Id == logDataViewModel.WorkoutInformationId && w.PracticeId == logDataViewModel.PracticeId && w.DataWasLogged == false
+                           select new
+                           {
+                               w.PracticeId,
+                               w.Id,
+                               w.RunnerId,
+                               practices.PracticeStartTimeAndDate,
+                               practices.PracticeLocation,
+                               workoutTypes.WorkoutName
+                           }).FirstOrDefault();
+
+            if (dbQuery == null)
+            {
+                TempData["error"] = "Invalid data provided. There was no workout information found in the database";
+                return RedirectToAction("Index", "Home", new { area = "Welcome" });
+            }
+             
+            logDataViewModel.PracticeId = dbQuery.PracticeId;
+            logDataViewModel.PracticeLocation = dbQuery.PracticeLocation;
+            logDataViewModel.PracticeStartDateTime = dbQuery.PracticeStartTimeAndDate;
+            logDataViewModel.RunnerId = dbQuery.RunnerId;
+            logDataViewModel.WorkoutInformationId = dbQuery.Id;
+            logDataViewModel.WorkoutName = dbQuery.WorkoutName; 
+             
+            return View(logDataViewModel);  
         }
 
         public IActionResult EditLoggedData(int workoutInfoId, int practiceId)
         {
             if (workoutInfoId != 0 && practiceId != 0)
             {
-                var userClaimsIdentity = (ClaimsIdentity)User.Identity;
-                var userClaim = userClaimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                var userClaimsIdentity = (ClaimsIdentity?)User.Identity;
+                var userClaim = userClaimsIdentity?.FindFirst(ClaimTypes.NameIdentifier);
 
                 if (userClaim != null)
                 {
@@ -168,7 +214,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                                    on w.PracticeId equals practices.Id
                                    join workoutTypes in _context.WorkoutTypes
                                    on w.WorkoutTypeId equals workoutTypes.Id
-                                   where w.Id == workoutInfoId && w.PracticeId == practiceId
+                                   where w.Id == workoutInfoId && w.PracticeId == practiceId && w.DataWasLogged == true
                                    select new
                                    {
                                        w.PracticeId,
@@ -185,7 +231,8 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                     if (dbQuery == null)
                     {
-                        return RedirectToAction(); // Send to an error page in the future
+                        TempData["error"] = "Invalid workout provided. The data cannot be edited because it has no logged data.";
+                        return RedirectToAction("Index", "Home", new { area = "Welcome" });
                     }
 
                     EditLoggedDataViewModel editLoggedDataViewModel = new EditLoggedDataViewModel
@@ -204,38 +251,74 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
 
                     return View(editLoggedDataViewModel);
                 }
-                return View();
+
+                TempData["error"] = "Invalid user";
+                return RedirectToAction("Index", "Home", new { area = "Welcome" });
             }
 
-            return RedirectToAction(); // Send to an error page in the future
+            TempData["error"] = "Invalid ID(s) provided";
+            return RedirectToAction("Index", "Home", new { area = "Welcome" });
         }
 
         [HttpPost]
         public IActionResult EditLoggedData(EditLoggedDataViewModel editLoggedDataViewModel)
         {
-            if (editLoggedDataViewModel != null)
+            
+            if (ModelState.IsValid)
             {
-                WorkoutInformation workoutInformation = _context.WorkoutInformation
+                WorkoutInformation workoutInformationToUpdate = _context.WorkoutInformation
                 .Where(w => w.Id == editLoggedDataViewModel.WorkoutInformationId).FirstOrDefault();
 
-                if (workoutInformation != null)
+                if (workoutInformationToUpdate != null)
                 {
-                    workoutInformation.Distance = editLoggedDataViewModel.Distance;
-                    workoutInformation.Hours = editLoggedDataViewModel.Hours;
-                    workoutInformation.Minutes = editLoggedDataViewModel.Minutes;
-                    workoutInformation.Seconds = editLoggedDataViewModel.Seconds;   
-                    workoutInformation.DataWasLogged = true;
+                    workoutInformationToUpdate.Distance = editLoggedDataViewModel.Distance;
+                    workoutInformationToUpdate.Hours = editLoggedDataViewModel.Hours;
+                    workoutInformationToUpdate.Minutes = editLoggedDataViewModel.Minutes;
+                    workoutInformationToUpdate.Seconds = editLoggedDataViewModel.Seconds;
+                    workoutInformationToUpdate.DataWasLogged = true;
 
-                    _context.Update(workoutInformation);
+                    _context.Update(workoutInformationToUpdate);
                     _context.SaveChanges();
+
+                    TempData["success"] = "The workout data was edited successfully";
 
                     return RedirectToAction("Index"); // send to success page in the future
                 }
 
-                return RedirectToAction(); // send to an error page in the future
+                TempData["error"] = "The provided workout information was not found in the database.";
+                return RedirectToAction("Index", "Home", new { area = "Welcome" });
             }
 
-            return RedirectToAction(); // send to an error page in the future
+            var dbQuery = (from w in _context.WorkoutInformation
+                           join practices in _context.Practices
+                           on w.PracticeId equals editLoggedDataViewModel.PracticeId
+                           join workoutTypes in _context.WorkoutTypes
+                           on w.WorkoutTypeId equals workoutTypes.Id
+                           where w.Id == editLoggedDataViewModel.WorkoutInformationId && w.PracticeId == editLoggedDataViewModel.PracticeId && w.DataWasLogged == true
+                           select new
+                           {
+                               w.PracticeId,
+                               w.Id,
+                               w.RunnerId,
+                               practices.PracticeStartTimeAndDate,
+                               practices.PracticeLocation,
+                               workoutTypes.WorkoutName
+                           }).FirstOrDefault();
+
+            if (dbQuery == null)
+            {
+                TempData["error"] = "Invalid data provided. There was no workout information found in the database";
+                return RedirectToAction("Index", "Home", new { area = "Welcome" });
+            }
+
+            editLoggedDataViewModel.PracticeId = dbQuery.PracticeId;
+            editLoggedDataViewModel.PracticeLocation = dbQuery.PracticeLocation;
+            editLoggedDataViewModel.PracticeStartDateTime = dbQuery.PracticeStartTimeAndDate;
+            editLoggedDataViewModel.RunnerId = dbQuery.RunnerId;
+            editLoggedDataViewModel.WorkoutInformationId = dbQuery.Id;
+            editLoggedDataViewModel.WorkoutName = dbQuery.WorkoutName; 
+
+            return View(editLoggedDataViewModel);
         }
     }
 }

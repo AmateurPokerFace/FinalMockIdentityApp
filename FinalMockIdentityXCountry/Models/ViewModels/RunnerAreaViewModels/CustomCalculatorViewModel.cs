@@ -9,15 +9,19 @@ namespace FinalMockIdentityXCountry.Models.ViewModels.RunnerAreaViewModels
         [Required]
         [Range(0, 12)]
         public int Hours { get; set; } = 0;
+
         [Required]
         [Range(0, 60)]
         public int Minutes { get; set; } = 0;
+        
         [Required]
         [Range(0, 60)]
         public int Seconds { get; set; } = 0;
+        
         [Required] 
         [Range(1, 100)]
         public double Distance { get; set; } = 0;
+        
         [ValidateNever]
         [Display(Name = "Pace")]
         public string? PaceString { get; set; } = "";

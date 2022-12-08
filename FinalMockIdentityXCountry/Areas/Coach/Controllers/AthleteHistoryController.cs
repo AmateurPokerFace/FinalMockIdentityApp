@@ -33,7 +33,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (runnerUsers == null)
             {
-                return RedirectToAction(); // send to an error page in the future (no runners in the database).
+                TempData["error"] = "There are no runner users in the database";
+                return RedirectToAction(nameof(Index)); // send to an error page in the future (no runners in the database).
             }
 
             AllViewModel allViewModel = new AllViewModel();
@@ -43,9 +44,10 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                 allViewModel.RunnerUsers.Add((ApplicationUser)runner);
             }
 
-            if (allViewModel.RunnerUsers.Count() < 1)
+            if (allViewModel.RunnerUsers == null || allViewModel.RunnerUsers.Count() < 1)
             {
-                return RedirectToAction(); // send to an error page in the future
+                TempData["error"] = "There are no runner users in the database";
+                return RedirectToAction("Index"); // send to an error page in the future
             }
 
             return View(allViewModel);
@@ -57,7 +59,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             
             if (applicationUser == null)
             {
-                return RedirectToAction(); // send to an error page in the future
+                TempData["error"] = "Invalid user provided. The user doesn't exist in the database";
+                return RedirectToAction(nameof(Index)); // send to an error page in the future
             }
 
             SelectedAthleteViewModel selectedAthleteViewModel = new SelectedAthleteViewModel();
@@ -78,7 +81,8 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
             if (dbQueries == null)
             {
-                return RedirectToAction(); // send to an error page in the future
+                TempData["error"] = "The provided user do not have any attendances in the database where they were marked as present/absent";
+                return RedirectToAction(nameof(Index)); // send to an error page in the future
             }
 
             foreach (var dbQuery in dbQueries)
@@ -93,16 +97,18 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
                 if (selectedAthleteViewModelHelper != null)
                 {
-                    selectedAthleteViewModel.SelectedAthleteHelper.Add(selectedAthleteViewModelHelper);
+                    selectedAthleteViewModel.SelectedAthleteHelper?.Add(selectedAthleteViewModelHelper);
                 }
             }
 
             if (selectedAthleteViewModel.SelectedAthleteHelper != null && selectedAthleteViewModel.SelectedAthleteHelper.Count() > 0)
             {
                 selectedAthleteViewModel.SelectedAthleteHelper = selectedAthleteViewModel.SelectedAthleteHelper.OrderByDescending(p => p.PracticeStartTimeAndDate).ToList();
+                return View(selectedAthleteViewModel);
             }
 
-            return View(selectedAthleteViewModel);
+            TempData["error"] = "The selected user does not have any practice history";
+            return RedirectToAction(nameof(All));
         }
     }
 }

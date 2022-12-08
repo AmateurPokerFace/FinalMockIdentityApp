@@ -122,9 +122,19 @@ namespace FinalMockIdentityXCountry.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            if (_roleManager.RoleExistsAsync(StaticDetails.Role_Master_Admin).GetAwaiter().GetResult() == false)
+            //if (_roleManager.RoleExistsAsync(StaticDetails.Role_Master_Admin).GetAwaiter().GetResult() == false)
+            //{
+            //    _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Master_Admin)).GetAwaiter().GetResult();
+            //    _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Coach)).GetAwaiter().GetResult();
+            //    _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Runner)).GetAwaiter().GetResult();
+            //    _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Not_Assigned)).GetAwaiter().GetResult();
+            //    _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Was_Revoked)).GetAwaiter().GetResult();
+            //    _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Was_Rejected)).GetAwaiter().GetResult();
+            //}
+
+            if (_roleManager.RoleExistsAsync(StaticDetails.Role_Runner).GetAwaiter().GetResult() == false)
             {
-                _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Master_Admin)).GetAwaiter().GetResult();
+                //_roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Master_Admin)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Coach)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Runner)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(StaticDetails.Role_Not_Assigned)).GetAwaiter().GetResult();
