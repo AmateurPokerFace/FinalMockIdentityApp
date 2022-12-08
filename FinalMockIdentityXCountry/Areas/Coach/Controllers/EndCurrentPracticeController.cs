@@ -31,14 +31,15 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
 
         public IActionResult End(int currentPracticeId)
         {
-            Practice? practice = _context.Practices.Where(p => p.PracticeIsInProgress).Where(p => p.Id == currentPracticeId).FirstOrDefault();
+            Practice practice = _context.Practices.Where(p => p.PracticeIsInProgress).Where(p => p.Id == currentPracticeId).FirstOrDefault();
             
             if (practice != null)
             {
                 return View(practice);
             }
 
-            return RedirectToAction();  // send to an error page in the future. return a view -> No practices match the id that was provided
+            TempData["error"] = "Invalid practice provided";
+            return RedirectToAction(nameof(Index));  // send to an error page in the future. return a view -> No practices match the id that was provided
         }
 
         [HttpPost]
@@ -46,14 +47,16 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
         {
             if (id == 0)
             {
-                return RedirectToAction();  // send to an error page in the future.
+                TempData["error"] = "Invalid practice provided";
+                return RedirectToAction(nameof(Index));
             }
 
             Practice practice = _context.Practices.Find(id);
 
             if (practice == null)
             {
-                return RedirectToAction();  // send to an error page in the future.
+                TempData["error"] = "Invalid practice provided";
+                return RedirectToAction(nameof(Index));
             }
 
             var runnersNotSignedOut = _context.Attendances.Where(a => a.PracticeId == id && a.IsPresent && a.HasBeenSignedOut == false).ToList();
@@ -73,7 +76,6 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             _context.SaveChanges();
 
             TempData["success"] = "Practice ended successfully.";
-
             return RedirectToAction("Index", "Home", new { area = "Welcome" });
         }
     }

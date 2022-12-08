@@ -4,21 +4,17 @@
 <div class="container mx-auto">
     <h3>Pace Calculator</h3>
     <form method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div asp-validation-summary="All" class="text-danger"></div>
         <div class="input-group">
             <span class="input-group-text">Time (Hours:Minutes:Seconds)</span>
-            <input asp-for="Hours" class="form-control" />
-            <span asp-validation-for="Hours" class="text-danger"></span>
-            <input asp-for="Minutes" class="form-control" />
-            <span asp-validation-for="Minutes" class="text-danger"></span>
-            <input asp-for="Seconds" class="form-control" />
-            <span asp-validation-for="Seconds" class="text-danger"></span>
+            <input asp-for="Hours" class="form-control" required/>
+            <input asp-for="Minutes" class="form-control" required/>
+            <input asp-for="Seconds" class="form-control" required />
         </div>
         <br />
         <div class="input-group">
             <span class="input-group-text">Distance (in miles)</span>
             <input asp-for="@Model.Distance" class="form-control" aria-label="distance" />
-            <span asp-validation-for="Distance" class="text-danger"></span>
         </div>
         <br />
         <div class="input-group">

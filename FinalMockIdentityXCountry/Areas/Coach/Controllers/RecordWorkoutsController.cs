@@ -94,14 +94,15 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
                             WorkoutTypeId = workoutType.Id
                         };
 
-                        vm.SelectedWorkoutCheckboxOptions.Add(addPracticeWorkoutCheckbox);
+                        vm.SelectedWorkoutCheckboxOptions?.Add(addPracticeWorkoutCheckbox);
                     }
                 }
                 return View(addPracticeWorkoutsViewModels);
             }
             else
             {
-                return RedirectToAction(); // return an invalid page (error in database query)
+                TempData["error"] = "There was no data found with the provided query";
+                return RedirectToAction("Index"); // return an invalid page (error in database query)
             } 
         }
 
@@ -112,27 +113,39 @@ namespace FinalMockIdentityXCountry.Areas.Coach.Controllers
             {
                 foreach (var addPracticeWorkoutVm in addPracticeWorkoutsViewModels)
                 {
-                    foreach (var checkboxOptions in addPracticeWorkoutVm.SelectedWorkoutCheckboxOptions)
+                    if (addPracticeWorkoutVm.SelectedWorkoutCheckboxOptions != null && addPracticeWorkoutVm.SelectedWorkoutCheckboxOptions.Count > 0)
                     {
-                        if (checkboxOptions.IsSelected && checkboxOptions.PracticeId != 0)
+                        foreach (var checkboxOptions in addPracticeWorkoutVm.SelectedWorkoutCheckboxOptions)
                         {
-                            WorkoutInformation workoutInfo = new WorkoutInformation
+                            if (checkboxOptions.IsSelected && checkboxOptions.PracticeId != 0)
                             {
-                                PracticeId = checkboxOptions.PracticeId,
-                                RunnerId = checkboxOptions.RunnerId,
-                                WorkoutTypeId = checkboxOptions.WorkoutTypeId
-                            };
-                            _context.WorkoutInformation.Add(workoutInfo);
+                                WorkoutInformation workoutInfo = new WorkoutInformation
+                                {
+                                    PracticeId = checkboxOptions.PracticeId,
+                                    RunnerId = checkboxOptions.RunnerId,
+                                    WorkoutTypeId = checkboxOptions.WorkoutTypeId
+                                };
+                                _context.WorkoutInformation.Add(workoutInfo);
+                            }
                         }
-                    }    
+                    }
+                       
                 }
 
                 Practice practice = _context.Practices.Where(p => p.Id == practiceId).FirstOrDefault();
+
+                if (practice == null)
+                {
+                    TempData["error"] = "Invalid practice provided";
+                    return RedirectToAction(nameof(SelectPractice));
+                };
+
                 practice.WorkoutsAddedToPractice = true;
                 _context.Practices.Update(practice);
 
                 _context.SaveChanges();
 
+                TempData["success"] = "The workout(s) were added to the practice successfully";
                 return RedirectToAction("SelectPractice", "RecordWorkouts");
             }
             
