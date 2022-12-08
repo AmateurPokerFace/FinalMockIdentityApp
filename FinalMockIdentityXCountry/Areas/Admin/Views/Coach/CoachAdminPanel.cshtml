@@ -1,9 +1,20 @@
 ﻿@using FinalMockIdentityXCountry.Models.ViewModels.AdminAreaViewModels.CoachControllerViewModels
 @model CoachAdminPanelViewModel
 
-<div class="conatiner mx-auto">
+<div class="container mx-auto">
     <h3>Administrator Panel</h3>
     <p style="font-weight: lighter;">Your Role: @Model.CoachAdminPanelRole</p>
+    <div class="dropdown">
+        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="newUsersDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            See New Users...
+        </a>
+
+        <ul class="dropdown-menu" aria-labelledby="newUsersDropdown">
+            <li><a class="dropdown-item" asp-area="Admin" asp-controller="Admin" asp-action="WaitingForApprovalList">Approve New Users</a></li>
+            <li><a class="dropdown-item" asp-area="Admin" asp-controller="Admin" asp-action="RejectUsers">Reject New Users</a></li>
+        </ul>
+    </div>
+    <br />
     <div class="table-responsive">
         <table class="table">
             <thead>
