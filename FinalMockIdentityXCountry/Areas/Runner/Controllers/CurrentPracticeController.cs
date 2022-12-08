@@ -108,6 +108,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                 if (currentPracticesViewModel.CurrentPracticesViewModelsHelper != null 
                     && currentPracticesViewModel.CurrentPracticesViewModelsHelper.Count > 0)
                 {
+                    currentPracticesViewModel.CurrentPracticesViewModelsHelper = currentPracticesViewModel.CurrentPracticesViewModelsHelper.OrderByDescending(x => x.PracticeStartTimeAndDate).ToList();
                     return View(currentPracticesViewModel);
                 }
 
@@ -129,7 +130,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
                 var dbQuery = (from a in _context.Attendances
                                join practices in _context.Practices
                                on a.PracticeId equals practiceId
-                               where practices.PracticeIsInProgress && a.RunnerId == userClaim.Value && a.IsPresent == false
+                               where practices.PracticeIsInProgress && a.RunnerId == userClaim.Value && a.IsPresent == false && practices.Id == practiceId
                                select new
                                {
                                    practices.Id,
@@ -245,7 +246,7 @@ namespace FinalMockIdentityXCountry.Areas.Runner.Controllers
             var dbQuery = (from a in _context.Attendances
                            join practices in _context.Practices
                            on a.PracticeId equals practiceId
-                           where practices.PracticeIsInProgress && a.RunnerId == runnerId && a.IsPresent == true
+                           where practices.PracticeIsInProgress && a.RunnerId == runnerId && a.IsPresent == true && practices.Id == practiceId
                            select new
                            {
                                practices.Id,
